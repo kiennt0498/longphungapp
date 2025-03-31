@@ -1,0 +1,528 @@
+import {
+  Button,
+  Col,
+  Divider,
+  Form,
+  Image,
+  Input,
+  Row,
+  Select,
+  Upload,
+} from "antd";
+import { SaveOutlined, UploadOutlined } from "@ant-design/icons";
+import { MdScale } from "react-icons/md";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { FaArrowLeft, FaLayerGroup } from "react-icons/fa6";
+import ModalSanPham from "./ModalSanPham";
+import SanPhamService from "../../services/SanPhamService";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  setChatLieu,
+  setHinhDang,
+  setKieuMau,
+  setLoaiSP,
+  setSanPham,
+} from "../../redux/slide/SanPhamSlice";
+
+const SanPhamForm = () => {
+  const [form] = Form.useForm();
+  const service = new SanPhamService();
+  const data = useSelector((state) => state.SanPham.sanPham);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [choose, setChose] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  const [donvi, setDonvi] = useState([]);
+  const [checkVien, setCheckVien] = useState(true);
+  const [gia, setGia] = useState(0);
+  const [giaLoai, setGiaLoai] = useState(0);
+  const [giaCL, setGiaCL] = useState(0);
+
+  const hinhSP = useSelector((state) => state.SanPham.hinhDang);
+  const theLoaiSp = useSelector((state) => state.SanPham.loaiSP);
+  const chatLieu = useSelector((state) => state.SanPham.chatLieu);
+  const kieuMau = useSelector((state) => state.SanPham.kieuMau);
+
+  const onOpen = (value) => {
+    setChose(value);
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const onChange = (value) => {
+    if (value === "TRON_CO_VIEN") {
+      setCheckVien(false);
+    } else {
+      setCheckVien(true);
+    }
+  };
+
+ const handleSetName = () => {
+  form.setFieldValue("tenSP", "");
+
+  const tenSP = form.getFieldValue("tenSP");
+  const loaiSp = form.getFieldValue("loaiSp");
+  const chatLieuId = form.getFieldValue("chatLieu");
+  const hinhDangId = form.getFieldValue("hinhDang");
+  const mauSP = form.getFieldValue("mauSP");
+  const kieuMau = form.getFieldValue("kieuMau");
+  const mauVien = form.getFieldValue("mauVien");
+
+  let newName = "";
+
+  if (tenSP) {
+    newName += tenSP;
+  }
+  if (loaiSp) {
+    const data = theLoaiSp.find((i) => i.id === loaiSp);
+    if (data) {
+      newName += ` ${data.ten}`;
+    }
+  }
+  if (chatLieuId) {
+    // Check if chatLieu is an array before using filter/find
+    if (Array.isArray(chatLieu)) {
+      const data = chatLieu.find((i) => i.id === chatLieuId);
+      if (data) {
+        newName += ` ${data.ten}`;
+      }
+    } else {
+      console.error("chatLieu is not an array:", chatLieu);
+    }
+  }
+  if (hinhDangId) {
+    const data = hinhSP.find((i) => i.id === hinhDangId);
+    if (data) {
+      newName += ` ${data.ten}`;
+    }
+  }
+  if (mauSP) {
+    newName += ` ${mauSP}`;
+  }
+  if (kieuMau) {
+    newName += ` ${kieuMau}`;
+  }
+  if (mauVien) {
+    newName += ` ${mauVien}`;
+  }
+
+  form.setFieldsValue({ tenSP: newName.trim().toLowerCase() });
+};
+
+  
+
+
+
+  const getData = async () => {
+    try {
+      const resDonvi = await service.getDonVi();
+      const resTruong = await service.getTruong();
+
+      // Xử lý dữ liệu đơn vị tính
+      if (resDonvi.status === 200 && Array.isArray(resDonvi.data)) {
+        const listDonVi = resDonvi.data.map((item) => ({
+          value: item.id,
+          label: item.ten,
+        }));
+        setDonvi(listDonVi);
+      } else {
+        console.error("Error fetching or processing DonVi data:", resDonvi);
+        setDonvi([]);
+      }
+
+      // Xử lý dữ liệu trường
+      if (resTruong && resTruong.data) {
+        dispatch(setChatLieu(resTruong.data.chatLieuSP));
+        dispatch(setLoaiSP(resTruong.data.theLoaiSP));
+        dispatch(setHinhDang(resTruong.data.hinhDangSP));
+        dispatch(setKieuMau(resTruong.data.kieuMau));
+      }
+      // Nếu đang ở chế độ chỉnh sửa, set dữ liệu vào form
+      if (data.id) {
+        console.log(data);
+        
+        const newData = {
+          ...data,
+          doViTinh: data.doViTinh?.id,
+          chatLieu: data.chatLieu?.id,
+          loaiSp: data.loaiSp?.id,
+          hinhDang: data.hinhDang?.id,
+        };
+        console.log(newData);
+        
+        form.setFieldsValue(newData);
+        return; // Kết thúc hàm sau khi set dữ liệu
+      }
+      // reset data
+      dispatch(setSanPham({}));
+    } catch (error) {
+      console.error("An unexpected error occurred:", error);
+      setKieuMau([]);
+      setDonvi([]);
+      setChatLieu([]);
+    }
+  };
+
+  const listChatLieu = chatLieu.map((i) => {
+    const data = {
+      value: i.id,
+      label: i.ten,
+    };
+    return data;
+  });
+
+  const listHinh = hinhSP.map((i) => {
+    const data = {
+      value: i.id,
+      label: i.ten,
+    };
+    return data;
+  });
+
+  const listLoai = theLoaiSp.map((i) => {
+    const data = {
+      value: i.id,
+      label: i.ten,
+    };
+    return data;
+  });
+
+  const listKieuMau = kieuMau.map((i) => {
+    const data = {
+      value: i.name,
+      label: i.description,
+    };
+    return data;
+  });
+
+  useEffect(() => {
+    getData();
+  }, [data.id]); // Chỉ gọi khi data.id thay đổi
+
+  const onBack = () => {
+    navigate(-1);
+    dispatch(setSanPham({}))
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      const newData = {...values,
+        loaiSp: {id: values.loaiSp},
+        chatLieu: {id: values.chatLieu},
+        doViTinh: {id: values.doViTinh},
+        hinhDang: {id: values.hinhDang}
+      }
+      console.log(values);
+      
+      console.log(newData);
+      
+      if (data.id) {
+        // Update operation
+        const res = await service.updateSanPham(newData);
+        if (res.status === 200) {
+          toast.success("Sửa sản phẩm thành công");
+        } else {
+          toast.error(`Sửa sản phẩm thất bại: ${res.status}`);
+        }
+      } else {
+        // Create operation
+        const res = await service.insertProd(newData);
+        if (res.status === 201) {
+          toast.success("Thêm sản phẩm thành công");
+          form.resetFields();
+        } else {
+          toast.error(`Thêm sản phẩm thất bại: ${res.status}`);
+        }
+      }
+      navigate(-1)
+      dispatch(setSanPham({}))
+      form.resetFields()
+    } catch (error) {
+      toast.error("Có lỗi xảy ra");
+      console.log(error);
+    }
+  };
+
+  const onReset = () => {
+    form.resetFields();
+  };
+
+  const onChangeGiaLoai = (value) => {
+    if (value) {
+      const data = theLoaiSp.filter((i) => i.id === value);
+      setGiaLoai(data[0].gia);
+    }else{
+      setGiaLoai(0)
+    }
+  };
+
+  const onChangeGiaCL = (value) => {
+    if (value) {
+      const data = chatLieu.filter((i) => i.id === value);
+      setGiaCL(data[0].gia);
+    }else{
+      setGiaCL(0)
+    }
+  };
+
+  const onSumPrice = async () => {
+    let newGia = giaCL + giaLoai;
+    setGia(newGia);
+
+    await form.setFieldsValue({ gia: newGia });
+  };
+
+  useEffect(() => {
+    onSumPrice();
+  }, [giaCL, giaLoai]);
+
+  return (
+    <div>
+      <Button type="primary" variant="outlined" onClick={onBack}>
+        <FaArrowLeft />
+      </Button>
+      {data.id ? <h1>Chỉnh sửa sản phẩm</h1> : <h1>Thêm sản phẩm</h1>}
+      <Row>
+        <Col span={8}>
+          <Image
+            width="100%"
+            src="https://t3.ftcdn.net/jpg/04/34/72/82/240_F_434728286_OWQQvAFoXZLdGHlObozsolNeuSxhpr84.jpg"
+          />
+          <Upload listType="picture" accept=".jpg, .png, .gif" maxCount={1}>
+            {/* <Button  icon={<UploadOutlined />}>Upload</Button> */}
+          </Upload>
+        </Col>
+        <Col span={15} offset={1}>
+          <Row justify={"end"} gutter={16}>
+            <Col>
+              <Button color="cyan" variant="solid" onClick={() => onOpen(true)}>
+                <FaLayerGroup /> Thêm nhóm sản phẩm
+              </Button>
+            </Col>
+            <Col>
+              <Button
+                color="magenta"
+                variant="solid"
+                onClick={() => onOpen(false)}
+              >
+                <MdScale />
+                Thêm đơn vị tính
+              </Button>
+            </Col>
+          </Row>
+          <Form
+            layout="vertical"
+            className="form"
+            form={form}
+            onFinish={handleSubmit}
+          >
+            <Form.Item name="id" label="Mã sản phẩm">
+              <Input disabled />
+            </Form.Item>
+            <Row>
+              <Col span={16}>
+                <Form.Item
+                  name="tenSP"
+                  label="Tên sản phẩm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập tên sản phẩm",
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={6} offset={2}>
+                <Form.Item label=" ">
+                  <Button type="primary" onClick={handleSetName}>
+                    Tạo tên
+                  </Button>
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={[16, 16]}>
+              <Col span={8}>
+                <Form.Item
+                  name="loaiSp"
+                  label="Thể loại sản phẩm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn loại sản phẩm",
+                    },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    allowClear
+                    options={listLoai ?? []}
+                    placeholder="Lọai sản phẩm"
+                    onChange={onChangeGiaLoai}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="chatLieu"
+                  label="Chất liệu sản phẩm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn chất liệu",
+                    },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    allowClear
+                    options={listChatLieu ?? []}
+                    placeholder="Chất liệu"
+                    onChange={onChangeGiaCL}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="hinhDang"
+                  label="Hình dáng sản phẩm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn hình dáng sản phẩm",
+                    },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    allowClear
+                    options={listHinh ?? []}
+                    placeholder="Hình dáng"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Divider />
+
+            <label>Màu sản phẩm</label>
+
+            <Row style={{ marginTop: "3%" }} gutter={[16, 16]}>
+              <Col span={8}>
+                <Form.Item
+                  name="mauSP"
+                  label="Màu sản phẩm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập màu sản phẩm",
+                    },
+                  ]}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="kieuMau"
+                  label="Kiểu màu sản phẩm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn kiểu màu sản phẩm",
+                    },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    allowClear
+                    options={listKieuMau ?? []}
+                    placeholder="Kiểu"
+                    onChange={onChange}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="mauVien"
+                  label="Màu viền sản phẩm"
+                  hidden={checkVien}
+                >
+                  <Input />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Divider />
+            <Form.Item
+              name="gia"
+              label="Giá bán"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập giá bán",
+                },
+                {
+                  pattern: /^[0-9]+$/,
+                  message: "Chỉ nhập số",
+                },
+              ]}
+            >
+              <Input addonAfter="VND" disabled />
+            </Form.Item>
+            <Form.Item
+              name="doViTinh"
+              label="Đơn vị tính"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn đơn vị tính",
+                },
+              ]}
+            >
+              <Select
+                showSearch
+                allowClear
+                options={donvi ?? []}
+                placeholder="Chọn đơn vị tính"
+              />
+            </Form.Item>
+
+            <Row justify={"end"} gutter={16}>
+              <Col>
+                <Form.Item>
+                  <Button type="primary" htmlType="submit">
+                    <SaveOutlined /> Lưu
+                  </Button>
+                </Form.Item>
+              </Col>
+              <Col>
+                <Form.Item>
+                  <Button onClick={onReset}>Hủy</Button>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Col>
+      </Row>
+      {/* <ModalSanPham
+        open={open}
+        onClose={onClose}
+        choose={choose}
+        nhomSP={nhomSP}
+        theLoaiSP={theLoaiSp}
+        chatLieuSP={chatLieu}
+      /> */}
+    </div>
+  );
+};
+
+export default SanPhamForm;

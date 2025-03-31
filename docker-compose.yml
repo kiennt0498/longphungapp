@@ -1,0 +1,58 @@
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: longphungsql
+    restart: always
+    environment:
+      MYSQL_DATABASE: longphungapp
+      MYSQL_ROOT_PASSWORD: Kien@123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - longphung-network
+
+  backend:
+    restart: always
+    build: ./LongPhungBE
+    container_name: longphungbe
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: longphungsql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Kien@123
+      CORS_ALLOWED_ORIGINS: http://192.168.1.15:3000
+    ports:
+      - "0.0.0.0:8080:8080"
+    expose:
+      - "8080"
+    networks:
+      - longphung-network
+
+  frontend:
+    restart: always
+    build: 
+      context: ./LongPhungFE
+      args:
+        - REACT_APP_BASE_URL=http://192.168.1.15:8080
+    container_name: longphungfe
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - longphung-network
+    env_file:
+      - ./LongPhungFE/.env.docker
+
+volumes:
+  mysql_data:
+
+networks:
+  longphung-network:
+    driver: bridge
+
