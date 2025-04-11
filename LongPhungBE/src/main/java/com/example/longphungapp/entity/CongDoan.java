@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -19,6 +20,24 @@ public class CongDoan {
   private Integer id;
 
   private String tenCongDoan;
+
+  @Column(name = "gia_mua_nguyen_lieu", precision = 19, scale = 2)
+  private BigDecimal giaMuaNguyenLieu;
+
+  @Column(precision = 19, scale = 2)
+  private BigDecimal khauHaoMay;
+
+  @Column(name = "cong_nv", precision = 19, scale = 2)
+  private BigDecimal congNV;
+
+  @Column(name = "thu_tu")
+  private Integer thuTu;
+
+  @Column(name = "he_so_thu_mua")
+  private Double heSoThuMua;
+
+  @Column(name = "he_so_tien_cong")
+  private Double heSoTienCong;
 
   @Override
   public final boolean equals(Object o) {

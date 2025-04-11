@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Entity
@@ -13,6 +15,8 @@ public class SP_Kho {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+
 
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "san_pham_ma_sp")
@@ -24,5 +28,24 @@ public class SP_Kho {
 
     @Column(name = "so_luong")
     private Long soLuong;
+
+    @Column(name = "noi_nhap", length = 150)
+    private String noiNhap;
+
+    @ManyToOne
+    @JoinColumn(name = "do_vi_tinh_id")
+    private DoViTinh doViTinh;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ngay_nhap")
+    private Date ngayNhap;
+
+    @ManyToOne
+    @JoinColumn(name = "nguyen_vat_lieu_id")
+    private NguyenVatLieu nguyenVatLieu;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "ngay_cap_nhat")
+    private Date ngayCapNhat;
 
 }

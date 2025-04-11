@@ -19,6 +19,7 @@ public class QuyTrinhController {
     public ResponseEntity getList(){
         return ResponseEntity.ok(service.findAll());
     }
+
     @PostMapping("save")
     public ResponseEntity save(@RequestBody QuyTrinhDto dto){
         return ResponseEntity.status(201).body(service.save(dto));
@@ -27,6 +28,7 @@ public class QuyTrinhController {
     public ResponseEntity update(@RequestBody QuyTrinhDto dto){
         return ResponseEntity.ok(service.update(dto));
     }
+
     @DeleteMapping("delete/{id}")
     public ResponseEntity delete(@PathVariable Long id){
         service.delete(id);

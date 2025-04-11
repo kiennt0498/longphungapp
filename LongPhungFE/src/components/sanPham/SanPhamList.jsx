@@ -15,9 +15,10 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import SanPhamService from "../../services/SanPhamService";
 import SearchForm from "../common/SearchForm";
 import { useDispatch, useSelector } from "react-redux";
-import { setListSP, setSanPham } from "../../redux/slide/SanPhamSlice";
+import { deleteSP, setListSP, setSanPham } from "../../redux/slide/SanPhamSlice";
 import ModalSanPham from "./ModalSanPham";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SanPhamList = () => {
   const service = new SanPhamService();
@@ -39,37 +40,40 @@ const SanPhamList = () => {
   };
 
   const addProduct = (data) => {
+    
+    
     if (data) {
       dispatch(setSanPham(data));
       navigate("edit");
     } else {
+      dispatch(setSanPham({}));
       navigate("them");
     }
   };
+  const onDelete = async (data) => {
+    
+   try {
+    const res = await service.deleteSanPham(data.id);
+
+    
+    if(res.status === 200){
+      toast.success("Xóa thành công")
+      dispatch(deleteSP(data.id))
+    }else{
+      toast.error("Xóa thất bại")
+    }
+   } catch (error) {
+    toast.error("Xóa thất bại")
+    console.log(error);
+   }
+  };
+  
 
   const onSearch = async (choose, valuse) => {};
 
   const columns = [
     { title: "Mã sản phẩm", dataIndex: "id", key: "id" },
     { title: "Tên", dataIndex: "tenSP", key: "tenSP" },
-    {
-      title: "Màu sản phẩm",
-      dataIndex: "mauSP",
-      key: "mauSP",
-     
-    },
-    {
-      title: "Kiểu màu nền",
-      dataIndex: "kieuMau",
-      key: "kieuMau",
-    },
-    {
-      title: "Màu viền",
-      dataIndex: "mauVien",
-      key: "mauVien",
-      
-    },
-
     {
       title: "Đơn vị tính",
       dataIndex: "doViTinh",
@@ -101,7 +105,7 @@ const SanPhamList = () => {
             />
           </Tooltip>
           <Tooltip title="Xóa" color="red">
-            <Popconfirm title="Xóa khách hàng này?">
+            <Popconfirm title="Xóa sản phẩmphẩm này?" onConfirm={() => onDelete(record)}>
               <Button icon={<DeleteOutlined />} danger />
             </Popconfirm>
           </Tooltip>

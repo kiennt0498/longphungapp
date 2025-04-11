@@ -30,18 +30,37 @@ public class CongViecService {
     }
 
     public List<CongViecCT> findByTrangThai(TrangThai trangThai) {
-        return dao.findByTrangThai(trangThai);
+        var list = dao.findByTrangThai(trangThai);
+        var newList = list.stream().map(i->{
+            i.getDonHangCT().getSanPham().getQuyTrinh().setCongDoans(null);
+            i.getDonHangCT().getSanPham().setNguyenVatLieus(null);
+
+            return i;
+        }).toList();
+        return newList;
     }
 
     public List<CongViecCT> findByNhanVien_IdAndTrangThai(String id, TrangThai trangThai) {
         var list = dao.findByNhanVien_IdLikeAndTrangThai(id, trangThai);
-        return list;
+        var newList = list.stream().map(i->{
+            i.getDonHangCT().getSanPham().getQuyTrinh().setCongDoans(null);
+            i.getDonHangCT().getSanPham().setNguyenVatLieus(null);
+
+            return i;
+        }).toList();
+        return newList;
     }
 
     public List<CongViecCT> findCongViecHoanThanh(String id) {
         var listLS = lichSuCVDao.findByNhanVien_Id(id);
         var list = listLS.stream().map(i->i.getCongViecCT()).toList();
-        return list;
+        var newList = list.stream().map(i->{
+            i.getDonHangCT().getSanPham().getQuyTrinh().setCongDoans(null);
+            i.getDonHangCT().getSanPham().setNguyenVatLieus(null);
+
+            return i;
+        }).toList();
+        return newList;
     }
 
     public String getNhanVienTK(Long id){

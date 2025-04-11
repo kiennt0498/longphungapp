@@ -11,17 +11,21 @@ import com.example.longphungapp.repository.NhanVienRepository;
 import com.example.longphungapp.repository.TaiKhoanRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 
 @Service
 public class NhanVienService {
+
+
     @Autowired
     NhanVienRepository dao;
     @Autowired

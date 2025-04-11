@@ -107,6 +107,10 @@ const KhachHangList = () => {
     setOpen(false);
   };
 
+  const downFileExcel = () => {
+    window.location.href = API_FILE+"/download/cus"
+  }
+
   const onSearch = async (choose, valuse) => {
       try {
         setLoading(true)
@@ -232,8 +236,7 @@ const KhachHangList = () => {
             color="green"
             variant="solid"
             icon={<PlusOutlined />}
-            onClick={() => showModal()}
-          >
+            onClick={() => downFileExcel()}>
             Xuất excel
           </Button>
         </Col>

@@ -16,7 +16,7 @@ public class QuyTrinhDto implements Serializable {
     Long id;
     String tenQuyTrinh;
     NhanVienDto nhanVienQL;
-    List<Integer> congDoans;
+    Set<CongDoanDto> congDoans;
 
 
 }

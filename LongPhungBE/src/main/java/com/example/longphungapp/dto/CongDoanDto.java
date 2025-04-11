@@ -5,6 +5,7 @@ import com.example.longphungapp.fileEnum.BoPhan;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * DTO for {@link CongDoan}
@@ -13,6 +14,14 @@ import java.io.Serializable;
 public class CongDoanDto implements Serializable {
     Integer id;
     String tenCongDoan;
+    private Integer thuTu;
+    private BigDecimal giaMuaNguyenLieu;
+    private BigDecimal khauHaoMay;
+    private BigDecimal congNV;
+    private Double heSoThuMua;
+    private Double heSoTienCong;
+    private BoPhan boPhan;
+
 
 
 }

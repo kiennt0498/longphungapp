@@ -1,5 +1,6 @@
 package com.example.longphungapp.controller;
 
+import com.example.longphungapp.dto.CongViecCTDto;
 import com.example.longphungapp.entity.CongViecCT;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.service.CongViecService;
@@ -100,5 +101,7 @@ public class CongViecController {
         List<CongViecCT> jobs = service.findCongViecHoanThanh(id);
         messagingTemplate.convertAndSend("/topic/jobshoanthanhtk/" + id, jobs);
     }
+
+
 
 }

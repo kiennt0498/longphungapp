@@ -1,12 +1,15 @@
 package com.example.longphungapp.service;
 
 import com.example.longphungapp.Exception.BadReqException;
+import com.example.longphungapp.Interface.MapperInterface;
 import com.example.longphungapp.dto.CongDoanDto;
 import com.example.longphungapp.dto.NhanVienDto;
 import com.example.longphungapp.entity.CongDoan;
 import com.example.longphungapp.repository.CongDoanRepository;
 import com.example.longphungapp.repository.NhanVienRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,38 +18,31 @@ import java.util.List;
 
 @Service
 public class CongDoanService {
+
+
+
     @Autowired
     CongDoanRepository dao;
     @Autowired
     NhanVienRepository nhanVienRepository;
 
-    public List<CongDoanDto> findAll() {
-        var listEntity = dao.findAll();
-        List<CongDoanDto> listDto = new ArrayList<>();
-        for (CongDoan entity : listEntity) {
-            var dto = new CongDoanDto();
-            var nv = new NhanVienDto();
-            dto.setId(entity.getId());
-            dto.setTenCongDoan(entity.getTenCongDoan());
-            listDto.add(dto);
-        }
-        return listDto;
+    public List<CongDoan> findAll() {
+        return dao.findAll();
     }
+
     @Transactional(rollbackFor = Exception.class)
     public CongDoanDto save(CongDoanDto dto) {
-        var entity = new CongDoan();
-        entity.setTenCongDoan(dto.getTenCongDoan());
 
-
-        var newEntity = dao.save(entity);
-        dto.setId(newEntity.getId());
+        var entity = MapperInterface.MAPPER.toEntity(dto);
+        dao.save(entity);
+        dto.setId(entity.getId());
 
         return dto;
     }
     @Transactional(rollbackFor = Exception.class)
     public CongDoanDto update(CongDoanDto dto) {
         var found = dao.findById(dto.getId()).orElseThrow(()-> new BadReqException("Không tìm thấy id"));
-        found.setTenCongDoan(dto.getTenCongDoan());
+        BeanUtils.copyProperties(dto, found);
 
          dao.save(found);
 

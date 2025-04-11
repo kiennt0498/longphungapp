@@ -1,12 +1,14 @@
 package com.example.longphungapp.service;
 
 import com.example.longphungapp.Exception.BadReqException;
+import com.example.longphungapp.Interface.MapperInterface;
 import com.example.longphungapp.dto.*;
 import com.example.longphungapp.entity.*;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.repository.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,9 @@ import java.util.List;
 
 @Service
 public class DonHangService {
+
+
+
     @Autowired
     DonHangRepository dao;
     @Autowired
@@ -119,8 +124,13 @@ public class DonHangService {
         dao.delete(entity);
     }
 
-    public List<DonHangCT> findByDonHang_MaDonHang(String maDonHang) {
-        return ctDao.findByDonHang_MaDonHang(maDonHang);
+    public List<DonHangCTDto> findByDonHang_MaDonHang(String maDonHang) {
+        var listEntity = ctDao.findByDonHang_MaDonHang(maDonHang);
+        var listDto = listEntity.stream().map(i->{
+            var dto = MapperInterface.MAPPER.toDto(i);
+            return dto;
+        }).toList();
+        return listDto;
     }
 
     public List<DonHang> findByNhanVien_IdAndTrangThai(String id, TrangThai trangThai) {
@@ -144,8 +154,9 @@ public class DonHangService {
         dhDao.save(dh);
 
         var foundLS = lichDao.findByDonHang_Id(found.getId());
-        lichDao.delete(foundLS);
-
+        if(foundLS == null){
+            lichDao.delete(foundLS);
+        }
 
         var listDonCT = ctDao.findByDonHang_Id(found.getId());
         listDonCT.forEach(i->{
@@ -173,5 +184,22 @@ public class DonHangService {
         ls.setNhanVien(found.getNhanVien());
         ls.setTrangThai(TrangThai.DA_GIAO);
         lichDao.save(ls);
+    }
+
+    public void setImage(Long id,ImagesDto dto){
+        var found = ctDao.findById(id).orElseThrow(()-> new BadReqException("không tìm thấy"));
+        var image = new Images();
+        BeanUtils.copyProperties(dto,image);
+        found.setImages(image);
+        ctDao.save(found);
+    }
+    public void deleteImg(String name){
+        var found = ctDao.findByImages_TenTep(name);
+        found.setImages(null);
+        ctDao.save(found);
+    }
+
+    public String getLyDoHuy(Long id){
+        return dhDao.findByDonHang_Id(id).getLydo();
     }
 }

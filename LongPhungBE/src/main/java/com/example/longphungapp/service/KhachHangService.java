@@ -3,6 +3,7 @@ package com.example.longphungapp.service;
 import com.example.longphungapp.Exception.BadReqException;
 import com.example.longphungapp.Interface.MapperInterface;
 import com.example.longphungapp.dto.KhachHangDto;
+import com.example.longphungapp.dto.NhanVienDto;
 import com.example.longphungapp.entity.KhachHang;
 import com.example.longphungapp.entity.NhanVien;
 import com.example.longphungapp.repository.KhachHangRepository;
@@ -13,15 +14,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
 public class KhachHangService {
+
+
     @Autowired
     KhachHangRepository dao;
     @Autowired
@@ -91,4 +91,14 @@ public class KhachHangService {
         return dao.findByIdLike(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public List<KhachHangDto> saveAll(List<KhachHangDto> list) {
+
+        Set<String> existingPhones = new HashSet<>(dao.findAllSdt());
+
+        List<KhachHangDto> newList = list.stream().filter(
+                (i)->!existingPhones.contains(i.getSdt())).toList();
+
+        return newList.stream().map(this::create).collect(Collectors.toList());
+    }
 }

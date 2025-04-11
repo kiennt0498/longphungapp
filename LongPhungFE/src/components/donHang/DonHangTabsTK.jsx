@@ -3,17 +3,11 @@ import React, { useEffect, useRef, useState } from 'react'
 import SearchForm from '../common/SearchForm'
 import { IoEyeSharp } from 'react-icons/io5'
 import ModalDonCT from './ModalDonCT'
-import SockJS from 'sockjs-client'
-import { Client } from '@stomp/stompjs'
-import { API_SOCKET } from '../../services/constans'
 
-const DonHangTabsTK = ({edit,format}) =>{
-   const stompClient = useRef(null);
-    const socket = new SockJS(API_SOCKET);
-
+const DonHangTabsTK = ({listTK,format}) =>{
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bill, setBill] = useState({})
-  const [donHangs,setDonHangs] = useState([])
+
 
   const showModal = (data) => {
     setBill(data)
@@ -22,39 +16,9 @@ const DonHangTabsTK = ({edit,format}) =>{
 
   const handleCancel = () => {
     setIsModalOpen(false);
-  };
-
-  useEffect(() => {
-      const id = "NV00001";
-      stompClient.current = new Client({
-        webSocketFactory: () => socket,
-        onConnect: () => {
-          // Subscribe để nhận danh sách việc
-          stompClient.current.subscribe("/topic/donhang/" + id, (message) => {
-            setDonHangs(JSON.parse(message.body));
-          });
-          
-          // Gửi yêu cầu lấy danh sách việc ngay khi kết nối thành công
-          stompClient.current.publish({
-            destination: "/app/getDonHang",
-            body: id,
-          });
-        },
-      });
+  };   
   
-      stompClient.current.activate();
-  
-      return () => {
-        if (stompClient.current) {
-          stompClient.current.deactivate();
-        }
-      };
-    }, []);
-
-    console.log(donHangs);
-    
-  
-  if(donHangs.length === 0){
+  if(listTK.length === 0){
       return(
           <Empty/>
       )
@@ -62,7 +26,7 @@ const DonHangTabsTK = ({edit,format}) =>{
   return (
     <div style={{ padding: 20 }}>
     <Row gutter={[5, 5]}>
-      {donHangs.map((item) => (
+      {listTK.map((item) => (
         <Col span={6} key={item.maDonHang}>
           <Card
             title={item.maDonHang}

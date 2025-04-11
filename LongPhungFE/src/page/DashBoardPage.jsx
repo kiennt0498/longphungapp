@@ -7,10 +7,10 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Form, Layout, Menu, theme } from "antd";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Login from "../components/Login";
-import TaiKhoanform from "../components/taiKhoan/TaiKhoanForm"
+import TaiKhoanform from "../components/taiKhoan/TaiKhoanForm";
 import NhanVienList from "../components/nhanVien/NhanVienList";
 import NhanVienForm from "../components/nhanVien/NhanVienForm";
 import KhachHangList from "../components/khachHang/KhachHangList";
@@ -24,7 +24,9 @@ import CongDoanList from "../components/congDoan/CongDoanList";
 import DonHangCT from "../components/donHang/DonHangCT";
 import DonHangForm from "../components/donHang/DonHangForm";
 import NhanViecForm from "../components/congViec/NhanViecForm";
-
+import FormSanPham from "../components/sanPham/FormSanPham";
+import TaiKhoanForm from "../components/taiKhoan/TaiKhoanForm";
+import ListNguyenLieu from "../components/nguyenLieu/ListNguyenLieu";
 
 const { Header, Sider, Content } = Layout;
 const DashBoardPage = () => {
@@ -42,11 +44,11 @@ const DashBoardPage = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={["8"]}
           items={[
             {
               key: "1",
-              icon:  <FaRegAddressBook />,
+              icon: <FaRegAddressBook />,
               label: "Khách hàng",
               onClick: () => navigate("/khachhang"),
             },
@@ -60,7 +62,11 @@ const DashBoardPage = () => {
               key: "3",
               icon: <FaBox />,
               label: "Sản phẩm",
-              onClick: () => navigate("/sanpham"),
+              children:[
+                {key: "3.1", label: "Danh sách sản phẩm",onClick: () => navigate("/sanpham")},
+                {key: "3.2", label: "Nguyên liệu",onClick: () => navigate("/nguyenlieu")}
+              ],
+              
             },
             {
               key: "4",
@@ -123,7 +129,7 @@ const DashBoardPage = () => {
               key: "8",
               icon: <AiOutlineLogin />,
               label: "Đăng nhập",
-              onClick: () => navigate("/dangnhap"),
+              onClick: () => navigate("/"),
             },
 
             {
@@ -164,21 +170,50 @@ const DashBoardPage = () => {
         >
           <div className="content-panel">
             <Routes>
-              <Route path="/dangnhap" element={<Login />} />
-              <Route path="/taikhoan" element={<TaiKhoanform />} />
-              <Route path="/nhanvien" element={<NhanVienList />} />
-              <Route path="/nhanvien/them" element={<NhanVienForm />} />
-              <Route path="/khachhang" element={<KhachHangList />} />
-              <Route path="/sanpham" element={<SanPhamList />} />
-              <Route path="/sanpham/them" key={31} element={<SanPhamForm />} />
-              <Route path="/sanpham/edit" key={32} element={<SanPhamForm />} />
-              <Route path="/donhang" element={<DonHangList />} />
-              <Route path="/donhang/taodon" element={<DonHangForm />} />
-              <Route path="/donhang/:id" element={<DonHangCT />} />
-              <Route path="/quytrinh" element={<QuyTrinhList />}/>
-              <Route path="/congdoan" element={<CongDoanList />}/>
-              <Route path="/congviec/thietke" key={61} element={<NhanViecForm />}/>
-              <Route path="/congviec/sanxuat" key={62} element={<NhanViecForm />}/>
+              {/* Auth */}
+              <Route path="/" element={<Login />} />
+
+              {/* Tài khoản */}
+              <Route path="taikhoan" element={<TaiKhoanForm />} />
+
+              {/* Nhân viên */}
+              <Route path="nhanvien">
+                <Route index element={<NhanVienList />} />
+                <Route path="them" element={<NhanVienForm />} />
+              </Route>
+
+              {/* Khách hàng */}
+              <Route path="khachhang" element={<KhachHangList />} />
+
+              {/* Sản phẩm */}
+              <Route path="sanpham">
+                <Route index element={<SanPhamList />} />
+                <Route path="them" element={<FormSanPham />} />
+                <Route path="edit" element={<FormSanPham />} />
+              </Route>
+
+              {/* Đơn hàng */}
+              <Route path="donhang">
+                <Route index element={<DonHangList />} />
+                <Route path="taodon" element={<DonHangForm />} />
+                <Route path=":id" element={<DonHangCT />} />
+              </Route>
+
+              {/* Quy trình & Công đoạn */}
+              <Route path="quytrinh" element={<QuyTrinhList />} />
+              <Route path="congdoan" element={<CongDoanList />} />
+
+              {/* Công việc */}
+              <Route path="congviec">
+                <Route path="thietke" element={<NhanViecForm />} />
+                <Route path="sanxuat" element={<NhanViecForm />} />
+              </Route>
+              {/*Nguyên liệu */}
+              <Route path="nguyenlieu" >
+                <Route index element={<ListNguyenLieu />}/>
+                <Route path="thumua" element={<thuMuaList />}/>
+               
+              </Route>
             </Routes>
           </div>
         </Content>

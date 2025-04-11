@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Input, Select, Space, Tooltip, Popconfirm } from "antd";
+import { Table, Button, Modal, Form, Input, Select, Space, Tooltip, Popconfirm, InputNumber } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import CongDoanService from "../../services/CongDoanService";
 import { addCD, deleteCD, setList, updateCD } from "../../redux/slide/CongDoanSlice";
@@ -23,7 +23,6 @@ const CongDoanList = () => {
 
   useEffect(() => {
     fetchStages();
-    getNhanVien();
   }, []);
 
   const fetchStages = async () => {
@@ -38,25 +37,6 @@ const CongDoanList = () => {
     }
   };
 
-  const getNhanVien = async () => {
-    try {
-        const res = await serviceNV.getListEmpSX();
-        
-    if (res.status === 200 && res.data.length > 0) {
-        const data = res.data.map((item) => {
-            return {
-                value: item.id,
-                label: item.hoTen,
-            };
-        });
-        setNvSanXuat(data);
-      
-    }
-    } catch (error) {
-        console.log(error);
-        
-    }
-  }
 
 
   const handleSave = async (values) => {
@@ -102,10 +82,14 @@ const CongDoanList = () => {
   };
 
   const columns = [
-    { title: "Thứ tự", dataIndex: "id" },
-    { title: "Tên công đoạn", dataIndex: "tenCongDoan" },
-
-    { title: "Người quản lý", dataIndex: "nhanVien", render: (nhanVien) => nhanVien.hoTen },
+    { title: "Mã công đoạn", dataIndex: "id", key: "id" },
+    { title: "Tên công đoạn", dataIndex: "tenCongDoan", key: "tenCongDoan" },
+    { title: "Giá phụ liệu", dataIndex: "giaMuaNguyenLieu", key: "giaMuaNguyenLieu" },
+    { title: "Khấu hao máy", dataIndex: "khauHaoMay" , key: "khauHaoMay"},
+    { title: "Công nhân viên", dataIndex: "congNV" , key: "congNV"},
+    { title: "Hệ số thu mua", dataIndex: "heSoThuMua" , key: "heSoThuMua"},
+    { title: "Hệ số tiền công", dataIndex: "heSoTienCong" , key: "heSoTienCong"},
+    // { title: "Người quản lý", dataIndex: "nhanVien", render: (nhanVien) => nhanVien.hoTen },
     {
       title: "Hành động",
       render: (_, record) => (
@@ -117,7 +101,7 @@ const CongDoanList = () => {
               icon={<EditOutlined />}
               onClick={() => {
                 setEditingStage(record);
-                form.setFieldsValue({...record, nhanVien: record.nhanVien.id});
+                form.setFieldsValue({...record});
                 setModalVisible(true);
               }}
             />
@@ -151,7 +135,7 @@ const CongDoanList = () => {
       <Table
         columns={columns}
         dataSource={congDoans}
-        rowKey="congDoans.id"
+        rowKey="id"
         loading={loading}
       />
 
@@ -177,21 +161,46 @@ const CongDoanList = () => {
           </Form.Item>
 
           <Form.Item
-            name="nhanVien"
-            label="Người quản lý"
-            rules={[{ required: true, message: "Vui lòng nhập thời gian" }]}
+            name="giaMuaNguyenLieu"
+            label="Giá phụ liệu"
+            rules={[{ required: true, message: "Vui lòng nhập giá" }]}
+            
           >
-            <Select
-              showSearch
-              
-              placeholder="Chọn người quản lý"
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              options={nvSanXuat}
-            />
+           <InputNumber min={1} style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            name="khauHaoMay"
+            label="Khấu hao máy"
+            rules={[{ required: true, message: "Vui lòng nhập giá" }]}
+            
+          >
+           <InputNumber min={1} style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            name="congNV"
+            label="Công nhân viên"
+            rules={[{ required: true, message: "Vui lòng nhập giá" }]}
+            
+          >
+           <InputNumber min={1} style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            name="heSoThuMua"
+            label="Hệ số thu mua"
+            rules={[{ required: true, message: "Vui lòng nhập hệ số" }]}
+            
+          >
+           <InputNumber style={{ width: "100%" }} />
+          </Form.Item>
+          <Form.Item
+            name="heSoTienCong"
+            label="Hệ số tiền công nhân viên"
+            rules={[{ required: true, message: "Vui lòng nhập hệ số" }]}
+            
+          >
+           <InputNumber style={{ width: "100%" }} />
           </Form.Item>
         </Form>
       </Modal>

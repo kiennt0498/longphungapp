@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 const { Dragger } = Upload;
 
 
-const ModalExcel = ({ open, onCloseM,API}) => {
+const ModalExcel = ({ open, onCloseM,API, isUpload,setFileUp }) => {
   const props = {
     name: "file",
     multiple: true,
@@ -18,6 +18,8 @@ const ModalExcel = ({ open, onCloseM,API}) => {
       }
       if (status === "done") {
         toast.success(`${info.file.name} nhập file thành công.`);
+        isUpload()
+        setFileUp(info.file.response)
       } else if (status === "error") {
         toast.error(`${info.file.name} nhập file thất bại.`);
       }

@@ -1,5 +1,6 @@
 package com.example.longphungapp.component;
 
+import com.example.longphungapp.dto.KhachHangDto;
 import com.example.longphungapp.dto.NhanVienDto;
 import com.example.longphungapp.dto.TaiKhoanDto;
 import com.example.longphungapp.fileEnum.BoPhan;
@@ -40,6 +41,28 @@ public class ParseFile {
         }
 
         workbook.close();
+
+        return list;
+    }
+
+    public List<KhachHangDto> parseCus(MultipartFile file) throws IOException {
+        List<KhachHangDto> list = new ArrayList<>();
+        Workbook wb = new XSSFWorkbook(file.getInputStream());
+        Sheet sheet = wb.getSheetAt(0);
+
+        for(Row row : sheet){
+            if(row.getRowNum() == 0) continue;
+
+            KhachHangDto dto = new KhachHangDto();
+            dto.setTenKhachHang(row.getCell(1).getStringCellValue());
+            int dt = (int) row.getCell(2).getNumericCellValue();
+            dto.setSdt(String.valueOf(dt));
+            dto.setDiaChi(row.getCell(3).getStringCellValue());
+
+            list.add(dto);
+        }
+
+        wb.close();
 
         return list;
     }

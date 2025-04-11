@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="zalo-java-sdk-4.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/resources/libs/zalo-java-sdk-4.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

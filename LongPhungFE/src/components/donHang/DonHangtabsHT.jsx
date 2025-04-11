@@ -10,71 +10,9 @@ import { toast } from 'react-toastify'
 import { API_SOCKET } from '../../services/constans'
 
 
-const DonHangtabsHT = ({edit,format}) =>{
-  const [donHangs, setDonHangs] = useState([]);
-  const socket = SockJS(API_SOCKET);
-  const service = new DonHangService();
-  const stompClient = useRef(null);
-  const [open,setOpen] = useState(false);
-  const [idHuy,setIdHuy]= useState("");
-  const [form] = Form.useForm()
-  
-
-  useEffect(() => {
-      const id = "NV00001";
-      stompClient.current = new Client({
-        webSocketFactory: () => socket,
-        onConnect: () => {
-          // Subscribe để nhận danh sách việc
-          stompClient.current.subscribe("/topic/donhoanthanh/" + id, (message) => {
-            setDonHangs(JSON.parse(message.body));
-          });
-  
-          // Gửi yêu cầu lấy danh sách việc ngay khi kết nối thành công
-          stompClient.current.publish({
-            destination: "/app/getDonHT",
-            body: id,
-          });
-        },
-      });
-  
-      stompClient.current.activate();
-  
-      return () => {
-        if (stompClient.current) {
-          stompClient.current.deactivate();
-        }
-      };
-    }, []);
-
-    const showMoadl = (id) =>{
-      setOpen(true);
-      setIdHuy(id);
-    }
-
-    const handleHuyDon = async () => {
-      const lyDo = await form.getFieldValue();
-      const newData = {
-        id: idHuy,
-        lyDo: lyDo.lyDo
-      }
-
-
-      
-      try {
-        const res = await service.huyDonHang(newData);
-        if(res.status === 200){
-        toast.success("Hủy đơn hàng thành công")
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error("Hủy đơn hàng thất bại")
-      }
-
-    }
-
-
-  if(donHangs.length === 0){
+const DonHangtabsHT = ({listHT,format,showModalHuy}) =>{
+    
+  if(listHT.length === 0){
     return(
         <Empty/>
     )
@@ -82,7 +20,7 @@ const DonHangtabsHT = ({edit,format}) =>{
   return (
     <div style={{ padding: 20 }}>
     <Row gutter={[5, 5]}>
-      {donHangs.map((item) => (
+      {listHT.map((item) => (
         <Col span={6} key={item.maDonHang}>
           <Card
             title={item.maDonHang}
@@ -92,7 +30,7 @@ const DonHangtabsHT = ({edit,format}) =>{
                 <Popconfirm
                   title="Hủy đơn hàng"
                   description="Bạn có chắc chắn muốn hủy đơn hàng này?"
-                  onConfirm={() => showMoadl(item.id)}
+                  onConfirm={() => showModalHuy(item.id)}
                 
                   okText="Có"
                   cancelText="Không"
@@ -118,7 +56,6 @@ const DonHangtabsHT = ({edit,format}) =>{
         </Col>
       ))}
     </Row>
-    <ModalHuyDon openHuy= {open} onComfirm={handleHuyDon} form={form} onCancel={() => setOpen(false)}/>
   </div>
   )
 }

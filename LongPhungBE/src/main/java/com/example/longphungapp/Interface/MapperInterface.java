@@ -19,7 +19,16 @@ public interface MapperInterface {
     @Mapping(target = "taiKhoan", ignore = true)
     NhanVienDto toDto(NhanVien entity);
 
+    @Mapping(target = "nhanVien", ignore = true)
+    KhachHangDto toDto(KhachHang entity);
+    @Mapping(target = "nhanVien", ignore = true)
+    KhachHang toEntity(KhachHangDto dto);
+
+    @Mapping(target = "quyTrinh", ignore = true)
+    @Mapping(target = "nguyenVatLieus", ignore = true)
     SanPham toEntity(SanPhamDto dto);
+    @Mapping(target = "quyTrinh", ignore = true)
+    @Mapping(target = "nguyenVatLieus", ignore = true)
     SanPhamDto toDto(SanPham entity);
 
     ChatLieu toEntity(ChatLieuDto dto);
@@ -33,5 +42,11 @@ public interface MapperInterface {
 
     HinhDang toEntity(HinhDangDto dto);
     HinhDangDto toDto(HinhDang entity);
+
+    CongDoan toEntity(CongDoanDto dto);
+    CongDoanDto toDto(CongDoan entity);
+
+    DonHangCT toEntity(DonHangCTDto dto);
+    DonHangCTDto toDto(DonHangCT entity);
 
 }

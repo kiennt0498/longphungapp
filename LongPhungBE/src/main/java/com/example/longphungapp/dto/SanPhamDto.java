@@ -8,6 +8,8 @@ import lombok.Value;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DTO for {@link com.example.longphungapp.entity.SanPham}
@@ -20,13 +22,12 @@ public class SanPhamDto implements Serializable {
     String tenSP;
     DoViTinhDto doViTinh;
     LoaiSpDto loaiSp;
-    private KieuMau kieuMau;
-    private String mauVien;
-    private String mauSP;
-    ChatLieuDto chatLieu;
     HinhDangDto hinhDang;
     BigDecimal gia;
     String maVach;
+    private List<NguyenVatLieuDto> nguyenVatLieus ;
+    private QuyTrinhDto quyTrinh;
+    private List<LoiNhuanDto> loiNhuan ;
 
 
 }

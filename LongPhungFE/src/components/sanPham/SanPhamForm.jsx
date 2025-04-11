@@ -26,8 +26,8 @@ import {
   setSanPham,
 } from "../../redux/slide/SanPhamSlice";
 
-const SanPhamForm = () => {
-  const [form] = Form.useForm();
+const SanPhamForm = ({form,quyTrinh}) => {
+
   const service = new SanPhamService();
   const data = useSelector((state) => state.SanPham.sanPham);
   const dispatch = useDispatch();
@@ -36,15 +36,11 @@ const SanPhamForm = () => {
   const [open, setOpen] = useState(false);
 
   const [donvi, setDonvi] = useState([]);
-  const [checkVien, setCheckVien] = useState(true);
-  const [gia, setGia] = useState(0);
-  const [giaLoai, setGiaLoai] = useState(0);
-  const [giaCL, setGiaCL] = useState(0);
 
   const hinhSP = useSelector((state) => state.SanPham.hinhDang);
   const theLoaiSp = useSelector((state) => state.SanPham.loaiSP);
   const chatLieu = useSelector((state) => state.SanPham.chatLieu);
-  const kieuMau = useSelector((state) => state.SanPham.kieuMau);
+
 
   const onOpen = (value) => {
     setChose(value);
@@ -55,13 +51,8 @@ const SanPhamForm = () => {
     setOpen(false);
   };
 
-  const onChange = (value) => {
-    if (value === "TRON_CO_VIEN") {
-      setCheckVien(false);
-    } else {
-      setCheckVien(true);
-    }
-  };
+console.log(quyTrinh);
+
 
  const handleSetName = () => {
   form.setFieldValue("tenSP", "");
@@ -70,9 +61,6 @@ const SanPhamForm = () => {
   const loaiSp = form.getFieldValue("loaiSp");
   const chatLieuId = form.getFieldValue("chatLieu");
   const hinhDangId = form.getFieldValue("hinhDang");
-  const mauSP = form.getFieldValue("mauSP");
-  const kieuMau = form.getFieldValue("kieuMau");
-  const mauVien = form.getFieldValue("mauVien");
 
   let newName = "";
 
@@ -101,15 +89,6 @@ const SanPhamForm = () => {
     if (data) {
       newName += ` ${data.ten}`;
     }
-  }
-  if (mauSP) {
-    newName += ` ${mauSP}`;
-  }
-  if (kieuMau) {
-    newName += ` ${kieuMau}`;
-  }
-  if (mauVien) {
-    newName += ` ${mauVien}`;
   }
 
   form.setFieldsValue({ tenSP: newName.trim().toLowerCase() });
@@ -145,7 +124,6 @@ const SanPhamForm = () => {
       }
       // Nếu đang ở chế độ chỉnh sửa, set dữ liệu vào form
       if (data.id) {
-        console.log(data);
         
         const newData = {
           ...data,
@@ -193,22 +171,13 @@ const SanPhamForm = () => {
     return data;
   });
 
-  const listKieuMau = kieuMau.map((i) => {
-    const data = {
-      value: i.name,
-      label: i.description,
-    };
-    return data;
-  });
+  
 
   useEffect(() => {
     getData();
   }, [data.id]); // Chỉ gọi khi data.id thay đổi
 
-  const onBack = () => {
-    navigate(-1);
-    dispatch(setSanPham({}))
-  };
+  
 
   const handleSubmit = async () => {
     try {
@@ -257,37 +226,18 @@ const SanPhamForm = () => {
   const onChangeGiaLoai = (value) => {
     if (value) {
       const data = theLoaiSp.filter((i) => i.id === value);
-      setGiaLoai(data[0].gia);
+     
     }else{
-      setGiaLoai(0)
+     
     }
   };
 
-  const onChangeGiaCL = (value) => {
-    if (value) {
-      const data = chatLieu.filter((i) => i.id === value);
-      setGiaCL(data[0].gia);
-    }else{
-      setGiaCL(0)
-    }
-  };
 
-  const onSumPrice = async () => {
-    let newGia = giaCL + giaLoai;
-    setGia(newGia);
 
-    await form.setFieldsValue({ gia: newGia });
-  };
-
-  useEffect(() => {
-    onSumPrice();
-  }, [giaCL, giaLoai]);
 
   return (
     <div>
-      <Button type="primary" variant="outlined" onClick={onBack}>
-        <FaArrowLeft />
-      </Button>
+      
       {data.id ? <h1>Chỉnh sửa sản phẩm</h1> : <h1>Thêm sản phẩm</h1>}
       <Row>
         <Col span={8}>
@@ -301,11 +251,6 @@ const SanPhamForm = () => {
         </Col>
         <Col span={15} offset={1}>
           <Row justify={"end"} gutter={16}>
-            <Col>
-              <Button color="cyan" variant="solid" onClick={() => onOpen(true)}>
-                <FaLayerGroup /> Thêm nhóm sản phẩm
-              </Button>
-            </Col>
             <Col>
               <Button
                 color="magenta"
@@ -372,26 +317,6 @@ const SanPhamForm = () => {
               </Col>
               <Col span={8}>
                 <Form.Item
-                  name="chatLieu"
-                  label="Chất liệu sản phẩm"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn chất liệu",
-                    },
-                  ]}
-                >
-                  <Select
-                    showSearch
-                    allowClear
-                    options={listChatLieu ?? []}
-                    placeholder="Chất liệu"
-                    onChange={onChangeGiaCL}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
                   name="hinhDang"
                   label="Hình dáng sản phẩm"
                   rules={[
@@ -411,73 +336,6 @@ const SanPhamForm = () => {
               </Col>
             </Row>
 
-            <Divider />
-
-            <label>Màu sản phẩm</label>
-
-            <Row style={{ marginTop: "3%" }} gutter={[16, 16]}>
-              <Col span={8}>
-                <Form.Item
-                  name="mauSP"
-                  label="Màu sản phẩm"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng nhập màu sản phẩm",
-                    },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="kieuMau"
-                  label="Kiểu màu sản phẩm"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Vui lòng chọn kiểu màu sản phẩm",
-                    },
-                  ]}
-                >
-                  <Select
-                    showSearch
-                    allowClear
-                    options={listKieuMau ?? []}
-                    placeholder="Kiểu"
-                    onChange={onChange}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item
-                  name="mauVien"
-                  label="Màu viền sản phẩm"
-                  hidden={checkVien}
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Divider />
-            <Form.Item
-              name="gia"
-              label="Giá bán"
-              rules={[
-                {
-                  required: true,
-                  message: "Vui lòng nhập giá bán",
-                },
-                {
-                  pattern: /^[0-9]+$/,
-                  message: "Chỉ nhập số",
-                },
-              ]}
-            >
-              <Input addonAfter="VND" disabled />
-            </Form.Item>
             <Form.Item
               name="doViTinh"
               label="Đơn vị tính"
@@ -495,21 +353,6 @@ const SanPhamForm = () => {
                 placeholder="Chọn đơn vị tính"
               />
             </Form.Item>
-
-            <Row justify={"end"} gutter={16}>
-              <Col>
-                <Form.Item>
-                  <Button type="primary" htmlType="submit">
-                    <SaveOutlined /> Lưu
-                  </Button>
-                </Form.Item>
-              </Col>
-              <Col>
-                <Form.Item>
-                  <Button onClick={onReset}>Hủy</Button>
-                </Form.Item>
-              </Col>
-            </Row>
           </Form>
         </Col>
       </Row>

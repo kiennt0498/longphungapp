@@ -1,66 +1,15 @@
-import { Button, Card, Col, List, message, Row, Tag, Typography } from "antd";
+import { Button, Card, Col, List, Row, Tag, Typography } from "antd";
 import { IoBriefcaseOutline } from "react-icons/io5";
 import { CiClock2, CiInboxIn } from "react-icons/ci";
 import { FiCheckCircle } from "react-icons/fi";
-import React, { useEffect, useRef, useState } from "react";
+import React, { use, useState } from "react";
 import axios from "axios";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
+import { API_FILE } from "../../services/constans";
 import { toast } from "react-toastify";
-import { API_SOCKET } from "../../services/constans";
 
-const DonHangTabsCD = () => {
+const DonHangTabsCD = ({ listCD, handleDuyetSP, handleLamLai }) => {
   const { Text } = Typography;
-  const stompClient = useRef(null);
-  const socket = new SockJS(API_SOCKET);
-  const [item, setItem] = useState([]);
-
-  useEffect(() => {
-    const id = "NV00001";
-    stompClient.current = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        // Subscribe để nhận danh sách việc
-        stompClient.current.subscribe("/topic/jobsduyet/" + id, (message) => {
-          setItem(JSON.parse(message.body));
-          
-        });
-
-        // Gửi yêu cầu lấy danh sách việc ngay khi kết nối thành công
-        stompClient.current.publish({
-          destination: "/app/getJobsDuyet",
-          body: id,
-        });
-      },
-    });
-
-    stompClient.current.activate();
-
-    return () => {
-      if (stompClient.current) {
-        stompClient.current.deactivate();
-      }
-    };
-  }, []);
-
-  const handleDuyetSP = (id) => {
-    if (stompClient.current) {
-      stompClient.current.publish({
-        destination: "/app/duyet",
-        body: JSON.stringify(id),
-      });
-      toast.success("Bạn đã duyệt đơn thành công!");
-    }
-  };
-
-  const handleLamLai = (id) =>{
-    if(stompClient.current){
-      stompClient.current.publish({
-        destination: "/app/lamlai",
-        body: JSON.stringify(id)
-      })
-    }
-  }
+  const [check, setCheck] = useState(true);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -92,13 +41,28 @@ const DonHangTabsCD = () => {
     }
   };
 
-  console.log(item);
+  const downFile = async (data) => {
+    try {
+      const res = await axios.get(
+        `${API_FILE}/image/${data.donHangCT.images.tenTep}`,
+        { responseType: "blob" }
+      );
+      const url = URL.createObjectURL(res.data);
+      Object.assign(document.createElement("a"), {
+        href: url,
+        download: data.donHangCT.images.tenTep,
+      }).click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error("Không thể tải file!");
+    }
+  };
 
   return (
     <>
       <List
         grid={{ gutter: 16, column: 4 }}
-        dataSource={item}
+        dataSource={listCD}
         renderItem={(i) => (
           <List.Item key={i.id}>
             <Card
@@ -123,14 +87,10 @@ const DonHangTabsCD = () => {
                   </Col>
                 </Row>
               </div>
-              <div style={{ marginTop: "auto", marginLeft:"5%" }}>
+              <div style={{ marginTop: "auto", marginLeft: "5%" }}>
                 <Row gutter={16}>
                   <Col>
-                    <Button
-                      type="primary"
-                      block
-                     disabled
-                    >
+                    <Button type="primary" block onClick={() => downFile(i)}>
                       Tải file
                     </Button>
                   </Col>
@@ -147,7 +107,7 @@ const DonHangTabsCD = () => {
                     <Button
                       type="primary"
                       block
-                      onClick={() => handleLamLai(i.id)}
+                      onClick={() => handleLamLai(i)}
                     >
                       Làm lại
                     </Button>

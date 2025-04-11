@@ -15,7 +15,7 @@ import {
   Col,
 } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import FormQuyTrinh from "./FormQuyTrinh";
+import FormQuyTrinh from "./QTChiTiet";
 import { toast } from "react-toastify";
 import QuyTrinhService from "../../services/QuyTrinhService";
 import { FaCartPlus } from "react-icons/fa6";
@@ -193,7 +193,7 @@ const QuyTrinhList = () => {
   }, []);
 
   const filteredQuyTrinhs = quyTrinhs.filter((quyTrinh) =>
-    quyTrinh.tenQuyTrinh.toLowerCase().includes(searchKeyword.toLowerCase())
+    (quyTrinh.tenQuyTrinh || "").toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
   const processModal = (
@@ -234,15 +234,6 @@ const QuyTrinhList = () => {
               placeholder="Tìm kiếm"
               onChange={(e) => setSearchKeyword(e.target.value)}
             />
-          </Col>
-          <Col span={5} offset={7} style={{ textAlign: "right" }}>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsModalVisible(true)}
-            >
-              Thêm quy trình
-            </Button>
           </Col>
         </Row>
         <Table

@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Col, Divider, Modal, Row, Typography } from 'antd';
-import DonHangService from '../../services/DonHangService';
+import React, { useEffect, useState } from "react";
+import { Button, Col, Divider, Modal, Row, Typography } from "antd";
+import DonHangService from "../../services/DonHangService";
 
-const ModalDonCT = ({ isModalOpen, handleCancel, data }) => {
+const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
   const service = new DonHangService();
   const [products, setProducts] = useState([]);
+  const [checkHuy, setCheckHuy] = useState(true);
+
   const { Text } = Typography;
 
   const formatCurrency = (amount) => {
@@ -48,19 +50,38 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data }) => {
 
   return (
     <>
-      <Modal title="Đơn hàng chi tiết" open={isModalOpen} onCancel={handleCancel} footer={null}>
+      <Modal
+        title="Đơn hàng chi tiết"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        {isHuy && (
+          <Row>
+            <Text>Lý do hủy đơn: </Text>
+            <Text>{isHuy}</Text>
+          </Row>
+        )}
         <Row>
           <Col span={11}>
-            <Text>Tên khách hàng: {data && data.khachHang ? data.khachHang.tenKhachHang : "N/A"}</Text>
+            <Text>
+              Tên khách hàng:{" "}
+              {data && data.khachHang ? data.khachHang.tenKhachHang : "N/A"}
+            </Text>
           </Col>
           <Col span={11} offset={2}>
-            <Text>Số điện thoại: {data && data.khachHang ? data.khachHang.sdt : "N/A"}</Text>
+            <Text>
+              Số điện thoại:{" "}
+              {data && data.khachHang ? data.khachHang.sdt : "N/A"}
+            </Text>
           </Col>
         </Row>
 
         <Row>
           <Col span={11}>
-            <Text>Địa chỉ: {data && data.khachHang ? data.khachHang.diaChi : "N/A"}</Text>
+            <Text>
+              Địa chỉ: {data && data.khachHang ? data.khachHang.diaChi : "N/A"}
+            </Text>
           </Col>
           <Col span={11} offset={2}>
             <Text>Trạng thái: {data ? data.trangThai : "N/A"}</Text>

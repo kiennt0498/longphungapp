@@ -2,6 +2,7 @@ package com.example.longphungapp.confi;
 
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +13,15 @@ import org.springframework.web.socket.config.annotation.*;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-  
+    @Value("${cors.allowed-origins}")
+    private String allowedOrigins;
+   
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        String[] originArray = allowedOrigins.split(",");
         registry.addEndpoint("/api/ws")
-                .setAllowedOrigins("http://localhost:3000, http://192.168.1.15:3000")
+                .setAllowedOrigins(originArray)
                 .withSockJS();
 
     }

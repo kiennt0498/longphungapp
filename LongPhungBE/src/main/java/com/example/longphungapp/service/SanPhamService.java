@@ -4,12 +4,14 @@ import com.example.longphungapp.Exception.BadReqException;
 import com.example.longphungapp.Interface.MapperInterface;
 import com.example.longphungapp.dto.EnumDto;
 
+import com.example.longphungapp.dto.LoiNhuanDto;
 import com.example.longphungapp.dto.SanPhamDto;
 import com.example.longphungapp.entity.*;
 import com.example.longphungapp.fileEnum.KieuMau;
 import com.example.longphungapp.repository.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +19,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SanPhamService {
+
     @Autowired
     SanPhamRepository dao;
 
@@ -32,6 +36,9 @@ public class SanPhamService {
     ChatLieuRepository chatLieuDao;
     @Autowired
     HinhDangRepository hinhDangDao;
+    @Autowired
+    QuyTrinhRepository qtDao;
+
 
 
 
@@ -39,7 +46,8 @@ public class SanPhamService {
         return dao.findAll();
     }
 
-    public void delete(SanPham entity) {
+    public void delete(Long id) {
+        var entity = dao.findById(id).orElseThrow(()-> new BadReqException("Không tìm thấy"));
         dao.delete(entity);
     }
 
@@ -74,9 +82,37 @@ public class SanPhamService {
     @Transactional(rollbackFor = Exception.class)
     public SanPhamDto save(SanPhamDto dto){
         var entity = MapperInterface.MAPPER.toEntity(dto);
+
+        var listNL = dto.getNguyenVatLieus().stream().map(i->{
+            var nl = new NguyenVatLieu();
+            nl.setId(i.getId());
+            return nl;
+        }).toList();
+
+        entity.setNguyenVatLieus(listNL);
+
+        System.out.println("list dto");
+        listNL.stream().forEach(i-> System.out.println(i.getId()));
+
+        var listCD = dto.getQuyTrinh().getCongDoans().stream()
+                .map(i->{
+                    var cd = new CongDoan();
+                    cd.setId(i.getId());
+                    cd.setThuTu(i.getThuTu());
+                    return cd;
+                })
+                .collect(Collectors.toSet());
+        var qt = new QuyTrinh();
+        qt.setTenQuyTrinh(dto.getQuyTrinh().getTenQuyTrinh());
+        qt.setCongDoans(listCD);
+        var qtEntity =qtDao.save(qt);
+
+        entity.setQuyTrinh(qtEntity);
         var loai = loaiDao.findById(dto.getLoaiSp().getId()).get();
         entity.setLoaiSp(loai);
         var newEntity = dao.save(entity);
+
+        newEntity.getNguyenVatLieus().stream().forEach(i-> System.out.println(i.getId()));
         dto.setId(newEntity.getId());
         return dto;
     }
@@ -86,10 +122,43 @@ public class SanPhamService {
         System.out.println(dto.getLoaiSp().getId());
         var found = dao.findById(dto.getId()).orElseThrow(()-> new BadReqException("Không tìm thấy"));
         var entity = MapperInterface.MAPPER.toEntity(dto);
+
+        var listNL = dto.getNguyenVatLieus().stream().map(i->{
+            var nl = new NguyenVatLieu();
+            BeanUtils.copyProperties(i, nl);
+            return nl;
+        }).toList();
+        entity.setNguyenVatLieus(listNL);
+
+        var listCD = dto.getQuyTrinh().getCongDoans().stream()
+                .map(i->{
+                    var cd = new CongDoan();
+                    cd.setId(i.getId());
+                    cd.setThuTu(i.getThuTu());
+                    return cd;
+                })
+                .collect(Collectors.toSet());
+
+        var qt = new QuyTrinh();
+        qt.setTenQuyTrinh(dto.getQuyTrinh().getTenQuyTrinh());
+        qt.setCongDoans(listCD);
+        var qtEntity =qtDao.save(qt);
+
+        entity.setQuyTrinh(qtEntity);
         var loai = loaiDao.findById(dto.getLoaiSp().getId()).get();
         entity.setLoaiSp(loai);
-        dao.save(entity);
+        var newEntity = dao.save(entity);
         return dto;
+    }
+
+    public List<LoiNhuanDto> getLoiNhuan(Long id){
+        var found = dao.findById(id).orElseThrow(()-> new BadReqException("Không tìm thấy"));
+        var list = found.getLoiNhuan().stream().map(i->{
+            var dto = new LoiNhuanDto();
+            BeanUtils.copyProperties(i, dto);
+            return dto;
+        }).toList();
+        return list;
     }
 
 }

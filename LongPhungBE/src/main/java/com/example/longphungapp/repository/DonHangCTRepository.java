@@ -12,4 +12,6 @@ public interface DonHangCTRepository extends JpaRepository<DonHangCT, Long> {
     List<DonHangCT> findByDonHang_Id(Long id);
 
     List<DonHangCT> findByDonHang_MaDonHang(String maDonHang);
+
+    DonHangCT findByImages_TenTep(String tenTep);
 }

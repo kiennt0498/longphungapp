@@ -4,9 +4,12 @@ package com.example.longphungapp.controller;
 import com.example.longphungapp.component.ExportFile;
 import com.example.longphungapp.component.ParseFile;
 import com.example.longphungapp.dto.ImagesDto;
+import com.example.longphungapp.dto.KhachHangDto;
 import com.example.longphungapp.dto.NhanVienDto;
 
+import com.example.longphungapp.service.DonHangService;
 import com.example.longphungapp.service.ImageService;
+import com.example.longphungapp.service.KhachHangService;
 import com.example.longphungapp.service.NhanVienService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,11 +33,15 @@ public class FileControll {
     @Autowired
     NhanVienService service;
     @Autowired
+    KhachHangService khachHangService;
+    @Autowired
     ParseFile parseFile;
     @Autowired
     ExportFile exportFile;
     @Autowired
     ImageService imageService;
+    @Autowired
+    DonHangService hangService;
 
 
     @PostMapping("upload/emp")
@@ -48,6 +55,17 @@ public class FileControll {
         }
 
     }
+    @PostMapping("upload/cus")
+    public ResponseEntity upFileCus(@RequestParam("file") MultipartFile file){
+        try {
+            List<KhachHangDto> list = parseFile.parseCus(file);
+            khachHangService.saveAll(list);
+            return new ResponseEntity<>(service.findAll(), HttpStatus.CREATED);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("lỗi xử lý file: "+ e.getMessage());
+        }
+
+    }
 
     @GetMapping("download/emp")
     public ResponseEntity downFileEmp() throws IOException {
@@ -55,6 +73,15 @@ public class FileControll {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= nhanvien.xlsx")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(exportFile.ExportEmp());
+        return body;
+    }
+
+    @GetMapping("download/cus")
+    public ResponseEntity downFileCus() throws IOException {
+        ResponseEntity<byte[]> body = ResponseEntity.status(200)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= khachHang.xlsx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(exportFile.exportCus());
         return body;
     }
 
@@ -78,7 +105,7 @@ public class FileControll {
             HttpServletRequest req) {
         try {
 
-            System.out.println(download);
+
             Resource resource = imageService.loadImageFile(filename);
 
 
@@ -107,7 +134,7 @@ public class FileControll {
     }
     @DeleteMapping("image/{filename:.+}")
     public ResponseEntity<String> deleteImage(@PathVariable String filename) {
-
+        hangService.deleteImg(filename);
         imageService.deleteImageFile(filename);
 
         return ResponseEntity.ok("Đã xóa ảnh: " + filename);

@@ -3,74 +3,18 @@ import { IoBriefcaseOutline } from "react-icons/io5";
 import { CiClock2, CiInboxIn } from "react-icons/ci";
 import { FiCheckCircle } from "react-icons/fi";
 import React, { use, useEffect, useRef, useState } from "react";
-import axios from "axios";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
-import { toast } from "react-toastify";
 import { API_FILE, API_SOCKET } from "../../services/constans";
 import ModalExcel from "../common/ModalExcel";
 
-const DaNhanCV = () => {
+const DaNhanCV = ({
+  listDaNhan,
+  handleNopViec,
+  handleCancel,
+  isModalOpen,
+  setIsUpload,
+  setFileUp,
+}) => {
   const { Text } = Typography;
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [check,setCheck] = useState(false)
-  const stompClient = useRef(null);
-  const socket = new SockJS(API_SOCKET);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-
-
-  useEffect(() => {
-    const id = "NV00001";
-    stompClient.current = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        // Subscribe để nhận danh sách việc
-        stompClient.current.subscribe("/topic/jobsNhan/" + id, (message) => {
-          setItem(JSON.parse(message.body));
-        });
-
-        // Gửi yêu cầu lấy danh sách việc ngay khi kết nối thành công
-        stompClient.current.publish({
-          destination: "/app/getJobsNhan",
-          body: "NV00001",
-        });
-      },
-    });
-
-    stompClient.current.activate();
-
-    return () => {
-      if (stompClient.current) {
-        stompClient.current.deactivate();
-      }
-    };
-  }, []);
-
-  const handleNhanViec = (id) => {
-   if(!check) {
-    showModal()
-    setCheck(true)
-   } else {
-    if (stompClient.current) {
-      stompClient.current.publish({
-        destination: "/app/noptk",
-        body: JSON.stringify(id),
-      });
-      toast.success("Bạn đã nộp việc thành công!");
-    }
-    setCheck(false)
-   }
-  };
-
-  const [item, setItem] = useState([]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -101,13 +45,12 @@ const DaNhanCV = () => {
         return null;
     }
   };
- 
 
   return (
     <>
       <List
         grid={{ gutter: 16, column: 4 }}
-        dataSource={item}
+        dataSource={listDaNhan}
         renderItem={(i) => (
           <List.Item key={i.id}>
             <Card
@@ -121,10 +64,14 @@ const DaNhanCV = () => {
               }}
               extra={
                 i.donHangCT?.images ? (
-                  <a 
+                  <a
                     href={`${API_FILE}/image/${i.donHangCT.images.tenTep}?download=true`}
-                    download={i.donHangCT.images.tenTep} 
-                    style={{ textDecoration: "none", color: "blue", cursor: "pointer" }}
+                    download={i.donHangCT.images.tenTep}
+                    style={{
+                      textDecoration: "none",
+                      color: "blue",
+                      cursor: "pointer",
+                    }}
                   >
                     Tải mẫu
                   </a>
@@ -147,7 +94,7 @@ const DaNhanCV = () => {
                 <Button
                   type="primary"
                   block
-                  onClick={() => handleNhanViec(i.id)}
+                  onClick={() => handleNopViec(i.id)}
                 >
                   Giao nộp việc
                 </Button>
@@ -156,7 +103,13 @@ const DaNhanCV = () => {
           </List.Item>
         )}
       />
-      <ModalExcel open={isModalOpen} onCloseM={handleCancel} API={API_FILE+"/upload/image"}/>
+      <ModalExcel
+        open={isModalOpen}
+        onCloseM={handleCancel}
+        API={API_FILE + "/upload/image"}
+        isUpload={() => setIsUpload(true)}
+        setFileUp={setFileUp}
+      />
     </>
   );
 };

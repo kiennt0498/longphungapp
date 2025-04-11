@@ -9,47 +9,8 @@ import { Client } from "@stomp/stompjs";
 import { toast } from "react-toastify";
 import { API_SOCKET } from "../../services/constans";
 
-const DuyetCV = () => {
+const DuyetCV = ({ listDuyet }) => {
   const { Text } = Typography;
-  const stompClient = useRef(null);
-  const socket = new SockJS(API_SOCKET);
-
-  useEffect(() => {
-    const id = "NV00001"
-    stompClient.current = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        console.log("STOMP Connected");
-        stompClient.current.subscribe("/topic/jobsduyet/" + id, (message) => {
-          setItem(JSON.parse(message.body));
-          console.log(message.body);
-          
-        });
-    
-        stompClient.current.publish({
-          destination: "/app/getJobsDuyet",
-          body: id,
-        });
-      },
-      onDisconnect: () => {
-        console.warn("STOMP Disconnected");
-      },
-      onWebSocketError: (error) => {
-        console.error("WebSocket Error:", error);
-      },
-    });
-
-    stompClient.current.activate();
-
-    return () => {
-      if (stompClient.current) {
-        stompClient.current.deactivate();
-      }
-    };
-  }, []);
-
-  
-  const [item, setItem] = useState([]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -81,13 +42,11 @@ const DuyetCV = () => {
     }
   };
 
-  console.log(item);
-
   return (
     <>
       <List
         grid={{ gutter: 16, column: 4 }}
-        dataSource={item}
+        dataSource={listDuyet}
         renderItem={(i) => (
           <List.Item key={i.id}>
             <Card
@@ -112,7 +71,6 @@ const DuyetCV = () => {
                   </Col>
                 </Row>
               </div>
-              
             </Card>
           </List.Item>
         )}

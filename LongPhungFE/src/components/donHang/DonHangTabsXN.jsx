@@ -1,30 +1,15 @@
 import { Button, Card, Col, Empty, Popconfirm, Row, Tooltip } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
 import ModalChotDon from "./ModalChotDon";
 import { IoMdTrash } from "react-icons/io";
-import ModalHuyDon from "./ModalHuyDon";
 import DonHangService from "../../services/DonHangService"
-import { API_SOCKET } from "../../services/constans";
 
-const DonHangTabsXN = ({ edit, format }) => {
+
+const DonHangTabsXN = ({ listXN, format, showModalHuy }) => {
   const service = new DonHangService()
-  const stompClient = useRef(null);
-  const socket = new SockJS(API_SOCKET);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [openHuy, setOpenHuy] = useState(false);
-  const [donHangs, setDonHangs] = useState([]);
   const [bill, setBill] = useState({});
   const [products, setProducts] = useState([])
-
-  const showModalHuy = () => {
-    setOpenHuy(true);
-  };
-
-  const closeModalHuy = () => {
-    setOpenHuy(false);
-  };
 
   const showModal = (data) => {
     getHoaDonCT(data.maDonHang)
@@ -49,43 +34,13 @@ const DonHangTabsXN = ({ edit, format }) => {
     }
   }
 
-  useEffect(() => {
-    const id = "NV00001";
-    stompClient.current = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        // Subscribe để nhận danh sách việc
-        stompClient.current.subscribe("/topic/donduyet/" + id, (message) => {
-          setDonHangs(JSON.parse(message.body));
-          console.log(message.body);
-        });
-
-        // Gửi yêu cầu lấy danh sách việc ngay khi kết nối thành công
-        stompClient.current.publish({
-          destination: "/app/getDonDuyet",
-          body: id,
-        });
-      },
-    });
-
-    stompClient.current.activate();
-
-    return () => {
-      if (stompClient.current) {
-        stompClient.current.deactivate();
-      }
-    };
-  }, []);
-
-  console.log(donHangs);
-
-  if (donHangs.length === 0) {
+  if (listXN.length === 0) {
     return <Empty />;
   }
   return (
     <div style={{ padding: 20 }}>
       <Row gutter={[5, 5]}>
-        {donHangs.map((item) => (
+        {listXN.map((item) => (
           <Col span={6} key={item.maDonHang}>
             <Card
               title={item.maDonHang}
@@ -95,7 +50,7 @@ const DonHangTabsXN = ({ edit, format }) => {
                     <Popconfirm
                       title="Hủy đơn"
                       description="Bạn thực sự muốn hủy đơn nàynày?"
-                      onConfirm={showModalHuy}
+                      onConfirm={()=>showModalHuy(item.id)}
                       okText="Xác nhận"
                       cancelText="Không"
                     >
@@ -146,7 +101,6 @@ const DonHangTabsXN = ({ edit, format }) => {
         data={bill}
         products={products}
       />
-      <ModalHuyDon openHuy={openHuy} onCancel={closeModalHuy} />
     </div>
   );
 };

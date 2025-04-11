@@ -7,6 +7,11 @@
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="zalo-sdk-repo" />
+      <option name="name" value="zalo-sdk-repo" />
+      <option name="url" value="https://github.com/zaloplatform/zalo-java-sdk" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Maven Central repository" />
       <option name="url" value="https://repo1.maven.org/maven2" />

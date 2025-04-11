@@ -18,4 +18,10 @@ export default class SanPhamService  {
     updateSanPham = async (data) =>{
       return await axios.put(API_SAN_PHAM, data)
     }
+    deleteSanPham = async (id) =>{
+      return await axios.delete(API_SAN_PHAM + "/delete/" + id)
+    }
+    getLoiNhuan = async (id) =>{
+      return await axios.get(API_SAN_PHAM + "/loinhuan/" + id)
+    }
 }

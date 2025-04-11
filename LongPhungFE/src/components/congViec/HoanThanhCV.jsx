@@ -1,57 +1,17 @@
-import { Button, Card, Col, List, message, Row, Tag, Typography } from "antd";
+import { Badge, Button, Card, Col, List, Typography, Row } from "antd";
 import { IoBriefcaseOutline } from "react-icons/io5";
 import { CiClock2, CiInboxIn } from "react-icons/ci";
 import { FiCheckCircle } from "react-icons/fi";
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { toast } from "react-toastify";
 import { API_SOCKET } from "../../services/constans";
 
-const HoanThanhCV = () => {
+const HoanThanhCV = ({listHoanThanh}) => {  // Pass `onTabClick` to handle resetting badge when the tab is clicked
   const { Text } = Typography;
-  const stompClient = useRef(null);
-  const [prevItem, setPrevItem] = useState([]);
-  const [item, setItem] = useState([]);
 
-  useEffect(() => {
-    const id = "NV00001";
-    const socket = new SockJS(API_SOCKET);
-    stompClient.current = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        console.log("STOMP Connected");
-        stompClient.current.subscribe("/topic/jobshoanthanhtk/" + id, (message) => {
-          const newItem = JSON.parse(message.body);
-          if (JSON.stringify(newItem) !== JSON.stringify(item)) {
-            setPrevItem(item);
-            setItem(newItem);
-            toast.success("Bạn đã hoàn thành công việc!");
-          }
-        });
 
-        stompClient.current.publish({
-          destination: "/app/getJobsTKHoanThanh",
-          body: id,
-        });
-      },
-      onDisconnect: () => {
-        console.warn("STOMP Disconnected");
-      },
-      onWebSocketError: (error) => {
-        console.error("WebSocket Error:", error);
-      },
-    });
-
-    stompClient.current.activate();
-
-    return () => {
-      if (stompClient.current) {
-        stompClient.current.deactivate();
-      }
-    };
-  }, [item]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -83,13 +43,11 @@ const HoanThanhCV = () => {
     }
   };
 
-  console.log(item);
-
   return (
     <>
       <List
         grid={{ gutter: 16, column: 4 }}
-        dataSource={item}
+        dataSource={listHoanThanh}
         renderItem={(i) => (
           <List.Item key={i.id}>
             <Card
@@ -114,7 +72,6 @@ const HoanThanhCV = () => {
                   </Col>
                 </Row>
               </div>
-              
             </Card>
           </List.Item>
         )}

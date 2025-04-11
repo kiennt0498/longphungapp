@@ -37,6 +37,7 @@ const NhanVienList = () => {
   const [open, setOpen] = useState(false);
   const [check, setCheck] = useState(false);
   const API = API_FILE+"/upload/emp"
+  const API_DOWN = API_FILE+"/download/emp"
   const [loading, setLoading] = useState(false); 
 
   const getData = async () => {
@@ -158,6 +159,11 @@ const NhanVienList = () => {
       setLoading(false)
     }
   }
+
+  const onDownloadEx = () =>{
+    window.location.href = API_DOWN
+  }
+
   return (
     <div >
       <h1>Danh sách nhân viên</h1>
@@ -183,7 +189,9 @@ const NhanVienList = () => {
             style={{ marginLeft: 10 }}
             color="green"
             variant="solid"
-            icon={<PlusOutlined />}
+            onClick={() => onDownloadEx()}
+            icon={<PlusOutlined />
+            }
           >
             Xuất excel
           </Button>

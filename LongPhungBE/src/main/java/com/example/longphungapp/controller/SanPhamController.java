@@ -31,6 +31,11 @@ public class SanPhamController {
         return ResponseEntity.ok(service.getTruong());
     }
 
+    @GetMapping("loinhuan/{id}")
+    public ResponseEntity getLoiNhuan(@PathVariable Long id){
+        return new ResponseEntity<>(service.getLoiNhuan(id), HttpStatus.OK);
+    }
+
     @GetMapping("donvi")
     public ResponseEntity getDoViTinh(){
         return new ResponseEntity<>(service.getAllDV(), HttpStatus.OK);
@@ -47,5 +52,11 @@ public class SanPhamController {
         var newDto = service.update(dto);
         return new ResponseEntity(newDto, HttpStatus.OK);
 
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity delete(@PathVariable Long id){
+        service.delete(id);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

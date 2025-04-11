@@ -17,7 +17,13 @@ export default class DonHangService {
   getDonHangCT = async (id) => {
     return await axios.get(API_HOA_DON + "/donct/" + id);
   }
+  updateDonCT = async (id,data) => {
+    return await axios.put(API_HOA_DON + "/updateCT/"+id, data);
+  }
   huyDonHang = async (data) =>{
     return await axios.put(API_HOA_DON + "/huydon",data);
+  }
+  getDonHuy = async (id) =>{
+    return await axios.get(API_HOA_DON + "/donhuy/"+id);
   }
 }

@@ -1,6 +1,8 @@
 package com.example.longphungapp.controller;
 
 import com.example.longphungapp.dto.DonHuyDto;
+import com.example.longphungapp.dto.ImagesDto;
+import com.example.longphungapp.dto.SetImageReq;
 import com.example.longphungapp.dto.TaoDonDTO;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.service.DonHangService;
@@ -26,6 +28,10 @@ public class DonHangController {
         return ResponseEntity.ok(service.findByDonHang_MaDonHang(id));
     }
 
+    @PutMapping("updateCT/{id}")
+    public void setImage(@PathVariable Long id, @RequestBody ImagesDto dto){
+        service.setImage(id,dto);
+    }
 
     @PostMapping("create")
     public ResponseEntity save(@RequestBody TaoDonDTO dto){
@@ -48,6 +54,11 @@ public class DonHangController {
         getDonDuyet();
         getDonHT("NV00001");
         return ResponseEntity.ok("Chốt đơn thành công");
+    }
+
+    @GetMapping("donhuy/{id}")
+    public ResponseEntity getLyDo(@PathVariable Long id){
+        return ResponseEntity.ok(service.getLyDoHuy(id));
     }
 
     @MessageMapping("/getDonDuyet")

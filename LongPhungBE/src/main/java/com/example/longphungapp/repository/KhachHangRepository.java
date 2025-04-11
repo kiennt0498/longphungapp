@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 @Repository
 public interface KhachHangRepository extends JpaRepository<KhachHang, String> {
     KhachHang findBySdt(String sdt);
@@ -21,6 +23,9 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, String> {
     List<KhachHang> findByIdLike(@Param("id") String id);
 
     long countByIdLike(String id);
+
+    @Query("select k.sdt from KhachHang k")
+    Set<String> findAllSdt();
 
 
 }

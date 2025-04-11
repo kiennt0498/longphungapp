@@ -1,6 +1,8 @@
 package com.example.longphungapp.component;
 
+import com.example.longphungapp.entity.KhachHang;
 import com.example.longphungapp.entity.NhanVien;
+import com.example.longphungapp.repository.KhachHangRepository;
 import com.example.longphungapp.repository.NhanVienRepository;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -18,6 +20,8 @@ public class ExportFile {
 
     @Autowired
     NhanVienRepository dao;
+    @Autowired
+    KhachHangRepository khDao;
 
     public byte[] ExportEmp() throws IOException {
         Workbook workbook = new XSSFWorkbook();
@@ -50,6 +54,31 @@ public class ExportFile {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
+
+        return outputStream.toByteArray();
+    }
+
+    public byte[] exportCus() throws IOException {
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet("Khách Hàng");
+
+        List<KhachHang> list = khDao.findAll();
+        String[] tieuDe = {"id", "Họ và tên", "Số điện thoại","Địa chỉ"};
+        int rowNum = 0;
+        Row headerRow = sheet.createRow(rowNum++);
+        for (int i = 0; i < tieuDe.length; i++) {
+            headerRow.createCell(i).setCellValue(tieuDe[i]);
+        }
+        for(KhachHang kh : list){
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(kh.getId());
+            row.createCell(1).setCellValue(kh.getTenKhachHang());
+            row.createCell(2).setCellValue(kh.getSdt());
+            row.createCell(3).setCellValue(kh.getDiaChi());
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        wb.write(outputStream);
+        wb.close();
 
         return outputStream.toByteArray();
     }
