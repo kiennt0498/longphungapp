@@ -24,6 +24,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import MoalExcel from "../common/ModalExcel";
 import { API_FILE } from "../../services/constans";
 import SanPhamService from "../../services/SanPhamService";
+import { capNhatGia } from "../../helpers/CongThucTinhGia";
 
 const { Title, Text } = Typography;
 
@@ -36,7 +37,7 @@ const BaoGiaDonHang = ({ getData }) => {
   const [check, setCheck] = useState(true);
   const API = API_FILE + "/upload/image";
   const service = new SanPhamService();
-  const TAX_RATE = 0.08;
+  const TAX_RATE = 0.1;
 
   const onOpenFile = () => {
     setOpenFile(true);
@@ -98,78 +99,8 @@ const BaoGiaDonHang = ({ getData }) => {
     setProducts((prev) => [...prev, newData]);
   };
 
-  const getGiaTheoSL = (giaGoc, soLuongNhap, loiNhuans) => {
-    let upper = null;
-    let lower = null;
-
-    for (let i = 0; i < loiNhuans.length; i++) {
-      const item = loiNhuans[i];
-      if (item.soLuong === soLuongNhap) {
-        return (giaGoc * item.loiNhuan) / 100;
-      }
-      if (item.soLuong < soLuongNhap) lower = item;
-      if (item.soLuong > soLuongNhap && upper === null) {
-        upper = item;
-        break;
-      }
-    }
-    if (lower === null) lower = upper;
-    if (upper === null) upper = lower;
-
-    const deltaSL = lower.soLuong - upper.soLuong;
-    const TB =
-      deltaSL === 0
-        ? lower.loiNhuan
-        : lower.loiNhuan +
-          ((lower.loiNhuan - upper.loiNhuan) / deltaSL) *
-            (soLuongNhap - lower.soLuong);
-    const gia = (giaGoc * TB) / 100;
-    return gia;
-  };
-
-  const giaCongDoan = (list, chieuDai, chieuRong) => {
-    let total = 0;
-    list.forEach((cd) => {
-      const giaNguyenLieu = cd.giaMuaNguyenLieu || 0;
-      const heSoThuMua = cd.heSoThuMua || 0;
-      const tongChiPhi = giaNguyenLieu + heSoThuMua * chieuDai * chieuRong;
-      total += tongChiPhi;
-    });
-    return total;
-  };
-
-  const giaNguyenLieu = (list, chieuDai, chieuRong) => {
-    let total = 0;
-    list.forEach((item) => {
-      const giaNhap = item.giaNhap || 0;
-      const heSoThuMua = item.heSoThuMua || 1;
-      const heSoBu = item.heSoBu || 1;
-
-      const thanhTien =
-        giaNhap + heSoThuMua * (chieuDai + heSoBu) * (chieuRong + heSoBu);
-      total += thanhTien;
-    });
-    return total;
-  };
-
-  const tinhGiaBan = (data, chieuDai, chieuRong) => {
-    const tong =
-      giaCongDoan(data.quyTrinh.congDoans, chieuDai, chieuRong) +
-      giaNguyenLieu(data.nguyenVatLieus, chieuDai, chieuRong);
-    return tong;
-  };
-
-  const capNhatGia = (product, newProps = {}) => {
-    const {
-      chieuDai = product.chieuDai,
-      chieuRong = product.chieuRong,
-      soLuong = product.soLuong,
-    } = newProps;
-
-    const giaCoBan = tinhGiaBan(product, chieuDai, chieuRong);
-
-    return getGiaTheoSL(giaCoBan, soLuong, product.loiNhuan);
-  };
+  
+  
 
   const updateDai = (key, value) => {
     setProducts((prevProducts) =>
@@ -179,6 +110,8 @@ const BaoGiaDonHang = ({ getData }) => {
               ...product,
               chieuDai: value || 1,
               gia: capNhatGia(product, { chieuDai: value || 1 }),
+              donGia: capNhatGia(product, { chieuDai: value || 1 }),
+              
             }
           : product
       )
@@ -193,6 +126,7 @@ const BaoGiaDonHang = ({ getData }) => {
               ...product,
               chieuRong: value || 1,
               gia: capNhatGia(product, { chieuRong: value || 1 }),
+              donGia: capNhatGia(product, { chieuRong: value || 1 }),
             }
           : product
       )
@@ -207,6 +141,7 @@ const BaoGiaDonHang = ({ getData }) => {
               ...product,
               soLuong: quantity || 1,
               gia: capNhatGia(product, { soLuong: quantity || 1 }),
+              donGia: capNhatGia(product, { soLuong: quantity || 1 }),
             }
           : product
       )
@@ -252,6 +187,13 @@ const BaoGiaDonHang = ({ getData }) => {
       currency: "VND",
     }).format(amount);
   };
+
+  const finalyData = () =>{
+    const newData = products.map((item)=>{
+      return {...item, donGia:item.gia-item.gia*discount/100}
+    })
+    getData(newData,total)
+  }
 
   const summary = (pageData) => {
     let totalDonGia = 0;
@@ -496,7 +438,7 @@ const BaoGiaDonHang = ({ getData }) => {
           <Button
             style={{ marginLeft: "46%" }}
             type="primary"
-            onClick={() => getData(products, total)}
+            onClick={() => finalyData()}
           >
             Lên đơn
           </Button>

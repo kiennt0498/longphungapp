@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * DTO for {@link com.example.longphungapp.entity.DonHangCT}
@@ -20,6 +21,8 @@ public class DonHangCTDto implements Serializable {
     TrangThai trangThai;
     DonHangDto donHang;
     private ImagesDto images;
+    private BigDecimal donGia;
+
 
     private QuyTrinhDto quyTrinh;
 

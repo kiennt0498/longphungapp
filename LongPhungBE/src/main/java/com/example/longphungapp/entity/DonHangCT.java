@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -56,6 +57,9 @@ public class DonHangCT {
     @ManyToOne
     @JoinColumn(name = "images_id")
     private Images images;
+
+    @Column(name = "don_gia", precision = 19, scale = 2)
+    private BigDecimal donGia;
 
     @Override
     public final boolean equals(Object o) {

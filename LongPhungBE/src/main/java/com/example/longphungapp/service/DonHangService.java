@@ -75,7 +75,9 @@ public class DonHangService {
         if(dto.getDon().getKhachHang().getId() == null){
            var newDTO = khDao.create(dto.getDon().getKhachHang());
            BeanUtils.copyProperties(newDTO, kh);
+            System.out.println("dung");
         }else{
+            System.out.println("sai");
             var found = khDao.findByIdLike(dto.getDon().getKhachHang().getId());
             if(found.isEmpty()){
                 throw new BadReqException("Không tìm thấy khách hàng");
@@ -154,7 +156,7 @@ public class DonHangService {
         dhDao.save(dh);
 
         var foundLS = lichDao.findByDonHang_Id(found.getId());
-        if(foundLS == null){
+        if(foundLS != null){
             lichDao.delete(foundLS);
         }
 

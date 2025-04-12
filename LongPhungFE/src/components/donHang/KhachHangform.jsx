@@ -52,10 +52,25 @@ const KhachHangform = ({ khachHangs, form }) => {
           label="Số điện thoại"
           name="sdt"
           onChange={(e) => filterData(e.target.value)}
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập số điện thoại",
+            },
+          ]}
         >
           <Input placeholder="Nhập số điện thoại" />
         </Form.Item>
-        <Form.Item label="Tên khách hàng" name="tenKhachHang">
+        <Form.Item
+          label="Tên khách hàng"
+          name="tenKhachHang"
+          rules={[
+            {
+              required: true,
+              message: "Vui lòng nhập tên khách hànghàng",
+            },
+          ]}
+        >
           <Input placeholder="Nhập khách hàng" />
         </Form.Item>
         <Form.Item label="Địa chỉ nhận hàng" name="diaChi">

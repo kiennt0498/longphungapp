@@ -1,6 +1,8 @@
 const API_BASE = process.env.REACT_APP_BASE_URL
 
 
+
+
 export const API_NHAN_VIEN = `${API_BASE}/api/v1/emp`;
 export const API_KHACH_HANG = `${API_BASE}/api/v1/cus`;
 export const API_SAN_PHAM = `${API_BASE}/api/v1/prod`;

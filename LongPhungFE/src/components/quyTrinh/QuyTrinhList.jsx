@@ -62,32 +62,32 @@ const QuyTrinhList = () => {
       render: (_, record) => `${record.nhanVienQL?.hoTen}`,
     },
 
-    {
-      title: "Hành động",
-      key: "actions",
-      align: "center",
+    // {
+    //   title: "Hành động",
+    //   key: "actions",
+    //   align: "center",
 
-      render: (_, record) => (
-        <Space>
-          <Tooltip title="Cập nhật" color="blue">
-            <Button
-              color="blue"
-              variant="outlined"
-              icon={<EditOutlined />}
-              onClick={() => editProcess(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa" color="red">
-            <Popconfirm
-              title="Xóa khách hàng này?"
-              onConfirm={() => handleDelete(record.id)}
-            >
-              <Button icon={<DeleteOutlined />} danger />
-            </Popconfirm>
-          </Tooltip>
-        </Space>
-      ),
-    },
+    //   render: (_, record) => (
+    //     <Space>
+    //       <Tooltip title="Cập nhật" color="blue">
+    //         <Button
+    //           color="blue"
+    //           variant="outlined"
+    //           icon={<EditOutlined />}
+    //           onClick={() => editProcess(record)}
+    //         />
+    //       </Tooltip>
+    //       <Tooltip title="Xóa" color="red">
+    //         <Popconfirm
+    //           title="Xóa khách hàng này?"
+    //           onConfirm={() => handleDelete(record.id)}
+    //         >
+    //           <Button icon={<DeleteOutlined />} danger />
+    //         </Popconfirm>
+    //       </Tooltip>
+    //     </Space>
+    //   ),
+    // },
   ];
 
   // Edit process

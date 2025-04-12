@@ -21,7 +21,7 @@ import KhachHangform from "./KhachHangform";
 
 import KhachHangService from "../../services/KhachHangService";
 import { useDispatch, useSelector } from "react-redux";
-import { setListKH } from "../../redux/slide/KhachHangSlice";
+import { setKhachHang, setListKH } from "../../redux/slide/KhachHangSlice";
 
 import SanPhamService from "../../services/SanPhamService";
 import DonHangService from "../../services/DonHangService";
@@ -38,12 +38,13 @@ const DonHangForm = () => {
   const dhService = new DonHangService();
 
   const khachHangs = useSelector((state) => state.KhachHang.khachHangs);
-  const sanPhams = useSelector((state) => state.SanPham.sanPhams);
+  const khachHang = useSelector((state) => state.KhachHang.khachHang);
+  
   const dispatch = useDispatch();
 
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
-  const [khachHang, setKhachHang] = useState({});
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const idNV = "NV00001";
@@ -52,7 +53,7 @@ const DonHangForm = () => {
   const createDon = async (sanPham,gia) =>{
      const newData = {
         don: {
-          khachHang : khachHang,
+          khachHang : {...khachHang, nhanVien: {id: idNV}},
           gia:gia,
           nhanVien: {id: idNV}
         },
@@ -61,7 +62,8 @@ const DonHangForm = () => {
             sanPham: { id: i.id , tenSP: i.tenSP},
             chieuDai: i.chieuDai,
             chieuRong: i.chieuRong,
-            soLuong: i.soLuong
+            soLuong: i.soLuong,
+            donGia: i.donGia
           };
         })
       }
@@ -93,11 +95,16 @@ const DonHangForm = () => {
   
 
   const onNext = async () => {
-    const values = await form.validateFields();
+    try {
+      const values = await form.validateFields();
     if (currentStep === 0) {
-      setKhachHang(values);
+      dispatch(setKhachHang(values))
     }
     setCurrentStep(currentStep + 1);
+    } catch (error) {
+      console.log(error);
+      
+    }
      
   }
   

@@ -38,6 +38,7 @@ com\example\longphungapp\entity\SanPham.class
 com\example\longphungapp\entity\SP_Kho.class
 com\example\longphungapp\service\CongDoanService.class
 com\example\longphungapp\service\SanPhamService.class
+com\example\longphungapp\service\ThongBaoDonHangService.class
 com\example\longphungapp\confi\WebSocketConfig.class
 com\example\longphungapp\fileEnum\KieuMau.class
 com\example\longphungapp\service\DonHangService.class

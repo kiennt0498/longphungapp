@@ -14,8 +14,8 @@ const ListNguyenLieu = () => {
     { title: "Tên", key: "ten", dataIndex: "ten" },
     { title: "Giá nhập", key: "giaNhap", dataIndex: "giaNhap" },
     { title: "Hệ số bù", key: "heSoBu", dataIndex: "heSoBu" },
-    { title: "Hệ số diện tích", key: "heSoS", dataIndex: "heSoS" },
-    { title: "Hệ số giá diện tích", key: "heSoGiaS", dataIndex: "heSoGiaS" },
+    { title: "Hệ số thu mua", key: "heSoThuMua", dataIndex: "heSoThuMua" },
+
     {
       title: "Chất liệu",
       key: "chatLieu",

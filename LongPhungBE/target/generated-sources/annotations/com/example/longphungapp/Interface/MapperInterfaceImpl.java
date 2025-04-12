@@ -36,8 +36,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-11T13:36:36+0700",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.42.0.z20250331-1358, environment: Java 21.0.6 (Eclipse Adoptium)"
+    date = "2025-04-12T16:25:54+0700",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.2 (Oracle Corporation)"
 )
 public class MapperInterfaceImpl implements MapperInterface {
 
@@ -49,8 +49,8 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         TaiKhoan taiKhoan = new TaiKhoan();
 
-        taiKhoan.setMatKhau( dto.getMatKhau() );
         taiKhoan.setSdt( dto.getSdt() );
+        taiKhoan.setMatKhau( dto.getMatKhau() );
 
         return taiKhoan;
     }
@@ -63,8 +63,8 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         TaiKhoanDto taiKhoanDto = new TaiKhoanDto();
 
-        taiKhoanDto.setMatKhau( entity.getMatKhau() );
         taiKhoanDto.setSdt( entity.getSdt() );
+        taiKhoanDto.setMatKhau( entity.getMatKhau() );
 
         return taiKhoanDto;
     }
@@ -77,11 +77,11 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         NhanVien nhanVien = new NhanVien();
 
+        nhanVien.setId( dto.getId() );
+        nhanVien.setHoTen( dto.getHoTen() );
+        nhanVien.setDiaChi( dto.getDiaChi() );
         nhanVien.setBoPhan( dto.getBoPhan() );
         nhanVien.setChucVu( dto.getChucVu() );
-        nhanVien.setDiaChi( dto.getDiaChi() );
-        nhanVien.setHoTen( dto.getHoTen() );
-        nhanVien.setId( dto.getId() );
         nhanVien.setTacVu( dto.getTacVu() );
 
         return nhanVien;
@@ -95,11 +95,11 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         NhanVienDto nhanVienDto = new NhanVienDto();
 
+        nhanVienDto.setId( entity.getId() );
+        nhanVienDto.setHoTen( entity.getHoTen() );
+        nhanVienDto.setDiaChi( entity.getDiaChi() );
         nhanVienDto.setBoPhan( entity.getBoPhan() );
         nhanVienDto.setChucVu( entity.getChucVu() );
-        nhanVienDto.setDiaChi( entity.getDiaChi() );
-        nhanVienDto.setHoTen( entity.getHoTen() );
-        nhanVienDto.setId( entity.getId() );
         nhanVienDto.setTacVu( entity.getTacVu() );
 
         return nhanVienDto;
@@ -113,10 +113,10 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         KhachHangDto khachHangDto = new KhachHangDto();
 
-        khachHangDto.setDiaChi( entity.getDiaChi() );
         khachHangDto.setId( entity.getId() );
-        khachHangDto.setSdt( entity.getSdt() );
         khachHangDto.setTenKhachHang( entity.getTenKhachHang() );
+        khachHangDto.setSdt( entity.getSdt() );
+        khachHangDto.setDiaChi( entity.getDiaChi() );
 
         return khachHangDto;
     }
@@ -129,10 +129,10 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         KhachHang khachHang = new KhachHang();
 
-        khachHang.setDiaChi( dto.getDiaChi() );
         khachHang.setId( dto.getId() );
-        khachHang.setSdt( dto.getSdt() );
         khachHang.setTenKhachHang( dto.getTenKhachHang() );
+        khachHang.setSdt( dto.getSdt() );
+        khachHang.setDiaChi( dto.getDiaChi() );
 
         return khachHang;
     }
@@ -145,13 +145,13 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         SanPham sanPham = new SanPham();
 
-        sanPham.setGia( dto.getGia() );
-        sanPham.setHinhDang( toEntity( dto.getHinhDang() ) );
         sanPham.setId( dto.getId() );
-        sanPham.setLoaiSp( toEntity( dto.getLoaiSp() ) );
-        sanPham.setLoiNhuan( loiNhuanDtoListToLoiNhuanList( dto.getLoiNhuan() ) );
-        sanPham.setMaVach( dto.getMaVach() );
         sanPham.setTenSP( dto.getTenSP() );
+        sanPham.setGia( dto.getGia() );
+        sanPham.setMaVach( dto.getMaVach() );
+        sanPham.setLoaiSp( toEntity( dto.getLoaiSp() ) );
+        sanPham.setHinhDang( toEntity( dto.getHinhDang() ) );
+        sanPham.setLoiNhuan( loiNhuanDtoListToLoiNhuanList( dto.getLoiNhuan() ) );
 
         return sanPham;
     }
@@ -164,13 +164,13 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         SanPhamDto sanPhamDto = new SanPhamDto();
 
-        sanPhamDto.setGia( entity.getGia() );
-        sanPhamDto.setHinhDang( toDto( entity.getHinhDang() ) );
         sanPhamDto.setId( entity.getId() );
-        sanPhamDto.setLoaiSp( toDto( entity.getLoaiSp() ) );
-        sanPhamDto.setLoiNhuan( loiNhuanListToLoiNhuanDtoList( entity.getLoiNhuan() ) );
-        sanPhamDto.setMaVach( entity.getMaVach() );
         sanPhamDto.setTenSP( entity.getTenSP() );
+        sanPhamDto.setLoaiSp( toDto( entity.getLoaiSp() ) );
+        sanPhamDto.setHinhDang( toDto( entity.getHinhDang() ) );
+        sanPhamDto.setGia( entity.getGia() );
+        sanPhamDto.setMaVach( entity.getMaVach() );
+        sanPhamDto.setLoiNhuan( loiNhuanListToLoiNhuanDtoList( entity.getLoiNhuan() ) );
 
         return sanPhamDto;
     }
@@ -298,14 +298,14 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         CongDoan congDoan = new CongDoan();
 
-        congDoan.setCongNV( dto.getCongNV() );
+        congDoan.setId( dto.getId() );
+        congDoan.setTenCongDoan( dto.getTenCongDoan() );
         congDoan.setGiaMuaNguyenLieu( dto.getGiaMuaNguyenLieu() );
+        congDoan.setKhauHaoMay( dto.getKhauHaoMay() );
+        congDoan.setCongNV( dto.getCongNV() );
+        congDoan.setThuTu( dto.getThuTu() );
         congDoan.setHeSoThuMua( dto.getHeSoThuMua() );
         congDoan.setHeSoTienCong( dto.getHeSoTienCong() );
-        congDoan.setId( dto.getId() );
-        congDoan.setKhauHaoMay( dto.getKhauHaoMay() );
-        congDoan.setTenCongDoan( dto.getTenCongDoan() );
-        congDoan.setThuTu( dto.getThuTu() );
 
         return congDoan;
     }
@@ -318,14 +318,14 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         CongDoanDto congDoanDto = new CongDoanDto();
 
-        congDoanDto.setCongNV( entity.getCongNV() );
-        congDoanDto.setGiaMuaNguyenLieu( entity.getGiaMuaNguyenLieu() );
-        congDoanDto.setHeSoThuMua( entity.getHeSoThuMua() );
-        congDoanDto.setHeSoTienCong( entity.getHeSoTienCong() );
         congDoanDto.setId( entity.getId() );
-        congDoanDto.setKhauHaoMay( entity.getKhauHaoMay() );
         congDoanDto.setTenCongDoan( entity.getTenCongDoan() );
         congDoanDto.setThuTu( entity.getThuTu() );
+        congDoanDto.setGiaMuaNguyenLieu( entity.getGiaMuaNguyenLieu() );
+        congDoanDto.setKhauHaoMay( entity.getKhauHaoMay() );
+        congDoanDto.setCongNV( entity.getCongNV() );
+        congDoanDto.setHeSoThuMua( entity.getHeSoThuMua() );
+        congDoanDto.setHeSoTienCong( entity.getHeSoTienCong() );
 
         return congDoanDto;
     }
@@ -338,16 +338,17 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         DonHangCT donHangCT = new DonHangCT();
 
-        donHangCT.setChieuDai( dto.getChieuDai() );
-        donHangCT.setChieuRong( dto.getChieuRong() );
-        donHangCT.setDonHang( donHangDtoToDonHang( dto.getDonHang() ) );
-        donHangCT.setGhiChu( dto.getGhiChu() );
         donHangCT.setId( dto.getId() );
-        donHangCT.setImages( imagesDtoToImages( dto.getImages() ) );
-        donHangCT.setQuyTrinh( quyTrinhDtoToQuyTrinh( dto.getQuyTrinh() ) );
         donHangCT.setSanPham( toEntity( dto.getSanPham() ) );
         donHangCT.setSoLuong( dto.getSoLuong() );
         donHangCT.setTrangThai( dto.getTrangThai() );
+        donHangCT.setDonHang( donHangDtoToDonHang( dto.getDonHang() ) );
+        donHangCT.setChieuDai( dto.getChieuDai() );
+        donHangCT.setChieuRong( dto.getChieuRong() );
+        donHangCT.setGhiChu( dto.getGhiChu() );
+        donHangCT.setQuyTrinh( quyTrinhDtoToQuyTrinh( dto.getQuyTrinh() ) );
+        donHangCT.setImages( imagesDtoToImages( dto.getImages() ) );
+        donHangCT.setDonGia( dto.getDonGia() );
 
         return donHangCT;
     }
@@ -360,16 +361,17 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         DonHangCTDto donHangCTDto = new DonHangCTDto();
 
-        donHangCTDto.setChieuDai( entity.getChieuDai() );
-        donHangCTDto.setChieuRong( entity.getChieuRong() );
-        donHangCTDto.setDonHang( donHangToDonHangDto( entity.getDonHang() ) );
-        donHangCTDto.setGhiChu( entity.getGhiChu() );
         donHangCTDto.setId( entity.getId() );
-        donHangCTDto.setImages( imagesToImagesDto( entity.getImages() ) );
-        donHangCTDto.setQuyTrinh( quyTrinhToQuyTrinhDto( entity.getQuyTrinh() ) );
         donHangCTDto.setSanPham( toDto( entity.getSanPham() ) );
         donHangCTDto.setSoLuong( entity.getSoLuong() );
+        donHangCTDto.setChieuDai( entity.getChieuDai() );
+        donHangCTDto.setChieuRong( entity.getChieuRong() );
+        donHangCTDto.setGhiChu( entity.getGhiChu() );
         donHangCTDto.setTrangThai( entity.getTrangThai() );
+        donHangCTDto.setDonHang( donHangToDonHangDto( entity.getDonHang() ) );
+        donHangCTDto.setImages( imagesToImagesDto( entity.getImages() ) );
+        donHangCTDto.setDonGia( entity.getDonGia() );
+        donHangCTDto.setQuyTrinh( quyTrinhToQuyTrinhDto( entity.getQuyTrinh() ) );
 
         return donHangCTDto;
     }
@@ -381,8 +383,8 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         LoiNhuan loiNhuan = new LoiNhuan();
 
-        loiNhuan.setLoiNhuan( loiNhuanDto.getLoiNhuan() );
         loiNhuan.setSoLuong( loiNhuanDto.getSoLuong() );
+        loiNhuan.setLoiNhuan( loiNhuanDto.getLoiNhuan() );
 
         return loiNhuan;
     }
@@ -407,8 +409,8 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         LoiNhuanDto loiNhuanDto = new LoiNhuanDto();
 
-        loiNhuanDto.setLoiNhuan( loiNhuan.getLoiNhuan() );
         loiNhuanDto.setSoLuong( loiNhuan.getSoLuong() );
+        loiNhuanDto.setLoiNhuan( loiNhuan.getLoiNhuan() );
 
         return loiNhuanDto;
     }
@@ -433,30 +435,16 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         DonHang donHang = new DonHang();
 
-        donHang.setGia( donHangDto.getGia() );
-        donHang.setId( donHangDto.getId() );
-        donHang.setKhachHang( toEntity( donHangDto.getKhachHang() ) );
-        donHang.setMaDonHang( donHangDto.getMaDonHang() );
         donHang.setNgayChotDon( donHangDto.getNgayChotDon() );
         donHang.setNgayGiaoHang( donHangDto.getNgayGiaoHang() );
-        donHang.setNhanVien( toEntity( donHangDto.getNhanVien() ) );
+        donHang.setKhachHang( toEntity( donHangDto.getKhachHang() ) );
+        donHang.setId( donHangDto.getId() );
+        donHang.setMaDonHang( donHangDto.getMaDonHang() );
+        donHang.setGia( donHangDto.getGia() );
         donHang.setTrangThai( donHangDto.getTrangThai() );
+        donHang.setNhanVien( toEntity( donHangDto.getNhanVien() ) );
 
         return donHang;
-    }
-
-    protected Images imagesDtoToImages(ImagesDto imagesDto) {
-        if ( imagesDto == null ) {
-            return null;
-        }
-
-        Images images = new Images();
-
-        images.setId( imagesDto.getId() );
-        images.setTenAnh( imagesDto.getTenAnh() );
-        images.setTenTep( imagesDto.getTenTep() );
-
-        return images;
     }
 
     protected Set<CongDoan> congDoanDtoSetToCongDoanSet(Set<CongDoanDto> set) {
@@ -479,12 +467,26 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         QuyTrinh quyTrinh = new QuyTrinh();
 
-        quyTrinh.setCongDoans( congDoanDtoSetToCongDoanSet( quyTrinhDto.getCongDoans() ) );
         quyTrinh.setId( quyTrinhDto.getId() );
-        quyTrinh.setNhanVienQL( toEntity( quyTrinhDto.getNhanVienQL() ) );
         quyTrinh.setTenQuyTrinh( quyTrinhDto.getTenQuyTrinh() );
+        quyTrinh.setNhanVienQL( toEntity( quyTrinhDto.getNhanVienQL() ) );
+        quyTrinh.setCongDoans( congDoanDtoSetToCongDoanSet( quyTrinhDto.getCongDoans() ) );
 
         return quyTrinh;
+    }
+
+    protected Images imagesDtoToImages(ImagesDto imagesDto) {
+        if ( imagesDto == null ) {
+            return null;
+        }
+
+        Images images = new Images();
+
+        images.setId( imagesDto.getId() );
+        images.setTenAnh( imagesDto.getTenAnh() );
+        images.setTenTep( imagesDto.getTenTep() );
+
+        return images;
     }
 
     protected DonHangDto donHangToDonHangDto(DonHang donHang) {
@@ -494,13 +496,13 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         DonHangDto donHangDto = new DonHangDto();
 
-        donHangDto.setGia( donHang.getGia() );
         donHangDto.setId( donHang.getId() );
-        donHangDto.setKhachHang( toDto( donHang.getKhachHang() ) );
         donHangDto.setMaDonHang( donHang.getMaDonHang() );
         donHangDto.setNgayChotDon( donHang.getNgayChotDon() );
         donHangDto.setNgayGiaoHang( donHang.getNgayGiaoHang() );
+        donHangDto.setKhachHang( toDto( donHang.getKhachHang() ) );
         donHangDto.setNhanVien( toDto( donHang.getNhanVien() ) );
+        donHangDto.setGia( donHang.getGia() );
         donHangDto.setTrangThai( donHang.getTrangThai() );
 
         return donHangDto;
@@ -540,10 +542,10 @@ public class MapperInterfaceImpl implements MapperInterface {
 
         QuyTrinhDto quyTrinhDto = new QuyTrinhDto();
 
-        quyTrinhDto.setCongDoans( congDoanSetToCongDoanDtoSet( quyTrinh.getCongDoans() ) );
         quyTrinhDto.setId( quyTrinh.getId() );
-        quyTrinhDto.setNhanVienQL( toDto( quyTrinh.getNhanVienQL() ) );
         quyTrinhDto.setTenQuyTrinh( quyTrinh.getTenQuyTrinh() );
+        quyTrinhDto.setNhanVienQL( toDto( quyTrinh.getNhanVienQL() ) );
+        quyTrinhDto.setCongDoans( congDoanSetToCongDoanDtoSet( quyTrinh.getCongDoans() ) );
 
         return quyTrinhDto;
     }

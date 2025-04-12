@@ -126,6 +126,7 @@ const FormSanPham = () => {
     if (current === 2) {
       try {
         const values = await form.validateFields();
+        console.log(values);
         setFormData(values);
         setCurrent(current + 1);
       } catch {

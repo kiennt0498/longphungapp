@@ -4,6 +4,7 @@ import com.example.longphungapp.dto.CongViecCTDto;
 import com.example.longphungapp.entity.CongViecCT;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.service.CongViecService;
+import com.example.longphungapp.service.ThongBaoDonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -19,6 +20,8 @@ import java.util.List;
 public class CongViecController {
     @Autowired
     CongViecService service;
+    @Autowired
+    ThongBaoDonHangService tbService;
     @Autowired
     SimpMessagingTemplate messagingTemplate;
 
@@ -77,11 +80,14 @@ public class CongViecController {
         service.setDonHangCT(id);
         var nv = service.getNhanVienTK(id);
 
+        tbService.thongBaoDonDuyet(nv);
+
         List<CongViecCT> updatedJobs = service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET);
         messagingTemplate.convertAndSend("/topic/jobsduyet/" + nv, updatedJobs);
 
         List<CongViecCT> jobs = service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DA_GIAO);
         messagingTemplate.convertAndSend("/topic/jobshoanthanhtk/" + nv, jobs);
+
     }
     @MessageMapping("/lamlai")
     public void lamLaiSP(Long id) {

@@ -9,11 +9,9 @@ import {
   Select,
   Upload,
 } from "antd";
-import { SaveOutlined, UploadOutlined } from "@ant-design/icons";
 import { MdScale } from "react-icons/md";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { FaArrowLeft, FaLayerGroup } from "react-icons/fa6";
 import ModalSanPham from "./ModalSanPham";
 import SanPhamService from "../../services/SanPhamService";
 import { useNavigate } from "react-router-dom";
@@ -51,7 +49,6 @@ const SanPhamForm = ({form,quyTrinh}) => {
     setOpen(false);
   };
 
-console.log(quyTrinh);
 
 
  const handleSetName = () => {
@@ -90,7 +87,6 @@ console.log(quyTrinh);
       newName += ` ${data.ten}`;
     }
   }
-
   form.setFieldsValue({ tenSP: newName.trim().toLowerCase() });
 };
 

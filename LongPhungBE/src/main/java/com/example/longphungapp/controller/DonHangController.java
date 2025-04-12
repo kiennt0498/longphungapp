@@ -6,6 +6,7 @@ import com.example.longphungapp.dto.SetImageReq;
 import com.example.longphungapp.dto.TaoDonDTO;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.service.DonHangService;
+import com.example.longphungapp.service.ThongBaoDonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,7 +21,9 @@ public class DonHangController {
     @Autowired
     private DonHangService service;
     @Autowired
-    SimpMessagingTemplate messagingTemplate;
+    ThongBaoDonHangService tbService;
+
+
 
 
     @GetMapping("donct/{id}")
@@ -63,30 +66,22 @@ public class DonHangController {
 
     @MessageMapping("/getDonDuyet")
     public void getDonDuyet(){
-        var list = service.findByNhanVien_IdAndTrangThai("NV00001", TrangThai.CHO_DUYET);
-        getDonHang();
-        messagingTemplate.convertAndSend("/topic/donduyet/"+"NV00001", list);
+        tbService.thongBaoDonDuyet("NV00001");
     }
 
     @MessageMapping("/getDonHang")
     public void getDonHang(){
-        var list = service.findByNhanVien_IdAndTrangThai("NV00001", TrangThai.CHO_THIET_KE);
-        System.out.println(list.size());
-        messagingTemplate.convertAndSend("/topic/donhang/"+"NV00001", list);
+       tbService.thongBaoDonHang("NV00001");
     }
 
     @MessageMapping("/getDonHT")
     public void getDonHT(@Payload String id) {
-        id = id.replace("\"", ""); // Loại bỏ dấu ngoặc kép nếu bị lỗi JSON.stringify
-        var list = service.findDonHoanThanh(id);
-        messagingTemplate.convertAndSend("/topic/donhoanthanh/" + id, list);
+        tbService.thongBaoDonHoanThanh("NV00001");
     }
 
     @MessageMapping("/getDonHuy")
     public void getDonHuy(@Payload String id) {
-        id = id.replace("\"","");
-        var list = service.findByNhanVien_IdAndTrangThai(id, TrangThai.HUY);
-        messagingTemplate.convertAndSend("/topic/donhuy/"+id, list);
+       tbService.thongBaoDonHuy("NV00001");
     }
 
 }

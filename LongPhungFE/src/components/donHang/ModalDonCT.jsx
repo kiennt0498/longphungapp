@@ -9,6 +9,9 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
 
   const { Text } = Typography;
 
+  console.log(products);
+  
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -19,7 +22,7 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
   const calculateSubtotal = () => {
     if (Array.isArray(products)) {
       return products.reduce(
-        (sum, product) => sum + product.sanPham.gia * product.soLuong,
+        (sum, product) => sum + product.donGia * product.soLuong,
         0
       );
     }
@@ -28,8 +31,8 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
 
   const subtotal = calculateSubtotal();
   const tax = subtotal * 0.1;
-  const discount = subtotal * (5 / 100);
-  const total = subtotal + tax - discount;
+  // const discount = subtotal * (5 / 100);
+  const total = subtotal + tax ;
 
   const getData = async () => {
     try {
@@ -105,7 +108,7 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
                 </Col>
                 <Col span={6} offset={6} style={{ textAlign: "right" }}>
                   <Text>
-                    {formatCurrency(product.sanPham.gia * product.soLuong)}
+                    {formatCurrency(product.donGia * product.soLuong)}
                   </Text>
                 </Col>
               </Row>
@@ -136,7 +139,7 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
             </Row>
           </div>
 
-          {discount > 0 && (
+          {/* {discount > 0 && (
             <div className="flex justify-between text-green-600">
               <Row>
                 <Col span={6}>
@@ -147,7 +150,7 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
                 </Col>
               </Row>
             </div>
-          )}
+          )} */}
 
           <Divider />
 

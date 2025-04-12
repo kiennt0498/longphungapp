@@ -75,10 +75,10 @@ const SanPhamList = () => {
     { title: "Mã sản phẩm", dataIndex: "id", key: "id" },
     { title: "Tên", dataIndex: "tenSP", key: "tenSP" },
     {
-      title: "Đơn vị tính",
-      dataIndex: "doViTinh",
-      key: "doViTinh",
-      render: (data) =>data?  `${data.ten}`: "N/A",
+      title: "Mã vạch",
+      dataIndex: "maVach",
+      key: "maVach",
+      render: (data) =>data?  `${data.maVach}`: "N/A",
     },
 
     {

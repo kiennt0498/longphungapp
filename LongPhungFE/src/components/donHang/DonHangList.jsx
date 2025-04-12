@@ -160,6 +160,7 @@ const DonHangList = () => {
       console.log(error);
       toast.error("Hủy đơn hàng thất bại");
     }
+    closeModalHuy();
   };
 
   const formatCurrency = (amount) => {
