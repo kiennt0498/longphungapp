@@ -1,10 +1,12 @@
 package com.example.longphungapp.entity;
 
+import com.example.longphungapp.fileEnum.TacVu;
 import com.example.longphungapp.fileEnum.TrangThai;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -20,7 +22,7 @@ public class CongViecCT {
 
 
     @Column(name = "kpi")
-    private Boolean kpi;
+    private BigDecimal kpi;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "ngay_nhan")
@@ -45,5 +47,9 @@ public class CongViecCT {
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
     private TrangThai trangThai;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tac_vu")
+    private TacVu tacVu;
 
 }

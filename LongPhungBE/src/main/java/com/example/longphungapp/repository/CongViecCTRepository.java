@@ -1,6 +1,7 @@
 package com.example.longphungapp.repository;
 
 import com.example.longphungapp.entity.CongViecCT;
+import com.example.longphungapp.fileEnum.TacVu;
 import com.example.longphungapp.fileEnum.TrangThai;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,4 +16,7 @@ public interface CongViecCTRepository extends JpaRepository<CongViecCT, Long> {
     List<CongViecCT> findByNhanVien_IdLikeAndTrangThai(String id, TrangThai trangThai);
 
     List<CongViecCT> findByDonHangCT_DonHang_Id(Long id);
+
+    List<CongViecCT> findByTrangThaiAndTacVu(TrangThai trangThai, TacVu tacVu);
+
 }

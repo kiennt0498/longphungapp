@@ -1,15 +1,13 @@
 package com.example.longphungapp.dto;
 
 import com.example.longphungapp.fileEnum.TrangThai;
+import lombok.Data;
 import lombok.Value;
 
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * DTO for {@link com.example.longphungapp.entity.LichSuCV}
- */
-@Value
+@Data
 public class LichSuCVDto implements Serializable {
     Long id;
     NhanVienDto nhanVien;

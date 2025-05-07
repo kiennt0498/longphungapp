@@ -21,6 +21,8 @@ import NhanVienSerivce from "../../services/NhanVienService";
 import { toast } from "react-toastify";
 import SearchForm from "../common/SearchForm";
 import { API_FILE } from "../../services/constans";
+import { useFilters } from "../../contexts/FilterContext";
+import { filterData } from "../../contexts/filterUtils";
 
 const NhanVienList = () => {
   const service = new NhanVienSerivce();
@@ -36,13 +38,24 @@ const NhanVienList = () => {
 
   const [open, setOpen] = useState(false);
   const [check, setCheck] = useState(false);
-  const API = API_FILE+"/upload/emp"
-  const API_DOWN = API_FILE+"/download/emp"
-  const [loading, setLoading] = useState(false); 
+  const API = API_FILE + "/upload/emp";
+  const API_DOWN = API_FILE + "/download/emp";
+  const [loading, setLoading] = useState(false);
+
+  const fieldMapping = {
+    search: "hoTen",
+    boPhan: "boPhan",
+    chucVu: "chucVu",
+    tacVu: "tacVu",
+  }
+
+  const {filters} = useFilters()
+  const filtersData = filterData(data,filters,fieldMapping,["boPhan","chucVu","tacVu"])
+ 
 
   const getData = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await service.getListEmp();
 
       if (res.status === 200) {
@@ -50,14 +63,13 @@ const NhanVienList = () => {
       }
     } catch (error) {
       console.error(error);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
   const getBoPhan = async () => {
     const resBP = await service.getBoPhan();
-    
 
     if (resBP && resBP.data) {
       dispatch(setBoPhans(resBP.data));
@@ -102,9 +114,8 @@ const NhanVienList = () => {
 
   const onChange = async (value) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await service.updateEmp(value);
-      
 
       if (res.status === 201) {
         dispatch(updateEmp(value));
@@ -113,11 +124,10 @@ const NhanVienList = () => {
         });
       }
     } catch (error) {
-      toast.error("Cập nhật thất bại",{position: "top-center"})
+      toast.error("Cập nhật thất bại", { position: "top-center" });
       console.log(error);
-      
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,41 +141,40 @@ const NhanVienList = () => {
 
   const onSearch = async (choose, valuse) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await service.onSearch(choose, valuse);
       dispatch(setListEmp(res.data));
     } catch (error) {
       console.log(error);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
-  const onDelete = async (data)=>{
+  const onDelete = async (data) => {
     try {
-      setLoading(true)
-      const res = await service.deleteEmp(data)
-      if(res.status === 200){
-        toast.success(res.data,{
-          position: "top-center"
-        })
-        dispatch(deleteEmp(data))
+      setLoading(true);
+      const res = await service.deleteEmp(data);
+      if (res.status === 200) {
+        toast.success(res.data, {
+          position: "top-center",
+        });
+        dispatch(deleteEmp(data));
       }
     } catch (error) {
-      toast.error("Xóa thất bại",{position: "top-center"})
+      toast.error("Xóa thất bại", { position: "top-center" });
       console.log(error);
-      
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
-  const onDownloadEx = () =>{
-    window.location.href = API_DOWN
-  }
+  const onDownloadEx = () => {
+    window.location.href = API_DOWN;
+  };
 
   return (
-    <div >
+    <div>
       <h1>Danh sách nhân viên</h1>
       <Row style={{ marginBottom: 10 }}>
         <Col span={12}>
@@ -190,18 +199,14 @@ const NhanVienList = () => {
             color="green"
             variant="solid"
             onClick={() => onDownloadEx()}
-            icon={<PlusOutlined />
-            }
+            icon={<PlusOutlined />}
           >
             Xuất excel
           </Button>
         </Col>
-        <Col span={12}>
-          <SearchForm onSearch={onSearch} />
-        </Col>
       </Row>
 
-      <Table dataSource={data} rowKey="id" loading={loading}>
+      <Table dataSource={filtersData} rowKey="id" loading={loading}>
         <Column title="Mã Số" key="id" dataIndex="id"></Column>
 
         <Column
@@ -232,9 +237,10 @@ const NhanVienList = () => {
           key="boPhan"
           dataIndex="boPhan"
           align="center"
-          // render={(_,record)=>{
-          //   <p>{record.}</p>
-          // }}
+          render={(_, record) => {
+            const bp = boPhan.find((bp) => record.boPhan === bp.name);
+            return bp?.description || record.boPhan;
+          }}
         ></Column>
 
         <Column
@@ -242,6 +248,10 @@ const NhanVienList = () => {
           key="chucVu"
           dataIndex="chucVu"
           align="center"
+          render={(_, record) => {
+            const cv = chucVu.find((cv) => record.chucVu === cv.name);
+            return cv?.description || record.chucVu;
+          }}
         ></Column>
 
         <Column
@@ -249,6 +259,10 @@ const NhanVienList = () => {
           key="tacVu"
           dataIndex="tacVu"
           align="center"
+          render={(_,record)=>{
+            const tv = tacVu.find((tv)=> record.tacVu === tv.name)
+            return tv?.description || record.boPhan
+          }}
         ></Column>
 
         <Column

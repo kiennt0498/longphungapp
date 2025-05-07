@@ -141,7 +141,6 @@ const ModalChotDon = ({handleCancel,isModalOpen,data,products}) => {
       <Form.Item style={{ display: "flex", justifyContent: "flex-end" }}>
         <Row gutter={[16]}>
             <Col><Button type="primary" onClick={() => handleChotDon(data.maDonHang)}>Chốt đơn</Button></Col>
-            <Col><Button type="primary">In hóa đơn</Button></Col>
         </Row>
       </Form.Item>
 

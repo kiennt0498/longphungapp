@@ -14,4 +14,17 @@ export default class NguyenLieuService {
   deleteNL = async (id) => {
     return await axios.delete(API_NGUYEN_LIEU + "/delete/" + id);
   };
+  getDonThuMua = async (id) => {
+    return await axios.get(API_NGUYEN_LIEU + "/donthumua/" + id);
+  };
+  insterDTM = async (data) => {
+    return await axios.post(API_NGUYEN_LIEU + "/donthumua/save", data);
+  };
+  huyDonThuMua = async (data) => {
+    return await axios.delete(API_NGUYEN_LIEU + "/donthumua/huy/"+ data);
+  };
+  getListLoaiVatTu = async () => {
+    return await axios.get(API_NGUYEN_LIEU + "/loaivattu");
+  };
+
 }

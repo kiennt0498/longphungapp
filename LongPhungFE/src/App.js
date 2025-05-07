@@ -8,13 +8,16 @@ import { Provider } from "react-redux";
 import "./styles/Dashboard.scss"
 import "react-toastify/dist/ReactToastify.css";
 import store from './redux/store.js';
+import { FilterProvider } from './contexts/FilterContext.jsx';
 
 function App() {
   return (
     
     <Provider store={store}>
       <BrowserRouter>
-        <DashboardPage/>
+        <FilterProvider>
+          <DashboardPage />
+        </FilterProvider>
        </BrowserRouter>
        <ToastContainer
         position='top-center'

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,10 +28,7 @@ public class QuyTrinh {
     @JoinColumn(name = "nhan_vien_ql_id")
     private NhanVien nhanVienQL;
 
-    @ManyToMany
-    @JoinTable(name = "quy_trinh_congDoans",
-            joinColumns = @JoinColumn(name = "quyTrinh_"),
-            inverseJoinColumns = @JoinColumn(name = "congDoans_id"))
-    private Set<CongDoan> congDoans = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "quyTrinh", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuyTrinhCongDoan> quyTrinhCongDoans = new ArrayList<>();
 
 }

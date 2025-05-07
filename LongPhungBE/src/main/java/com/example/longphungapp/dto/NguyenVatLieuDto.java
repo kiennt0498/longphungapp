@@ -1,15 +1,13 @@
 package com.example.longphungapp.dto;
 
-import com.example.longphungapp.entity.NguyenVatLieu;
+import com.example.longphungapp.entity.VatTu;
 import lombok.Data;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
- * DTO for {@link NguyenVatLieu}
+ * DTO for {@link VatTu}
  */
 @Data
 public class NguyenVatLieuDto implements Serializable {

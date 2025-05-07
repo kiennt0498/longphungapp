@@ -1,10 +1,12 @@
 package com.example.longphungapp.dto;
 
+import com.example.longphungapp.fileEnum.TacVu;
 import com.example.longphungapp.fileEnum.TrangThai;
 import lombok.Data;
 import lombok.Value;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -14,11 +16,13 @@ import java.util.Date;
 public class CongViecCTDto implements Serializable {
     Long id;
     CongDoanDto congDoan;
-    Boolean kpi;
+    BigDecimal kpi;
     Date ngayNhan;
     Date ngayGiao;
     DonHangCTDto donHangCT;
     NhanVienDto nhanVien;
+    TacVu tacVu;
+
 
     private TrangThai trangThai;
 

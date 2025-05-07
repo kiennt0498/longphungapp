@@ -13,7 +13,9 @@ import LoiNhuanSP from "./LoiNhuanSP";
 import NguyenLieuService from "../../services/NguyenLieuService";
 import CongDoanService from "../../services/CongDoanService";
 import SanPhamService from "../../services/SanPhamService";
+import NhanVienService from "../../services/NhanVienService";
 import { setSanPham } from "../../redux/slide/SanPhamSlice";
+import { giaCongDoan, giaNguyenLieu } from "../../helpers/CongThucTinhGia";
 
 const FormSanPham = () => {
   const [current, setCurrent] = useState(0);
@@ -22,6 +24,7 @@ const FormSanPham = () => {
 
   const [nguyenLieu, setNguyenLieu] = useState([]);
   const [congDoan, setCongDoan] = useState([]);
+  const [nhanViens, setNhanViens] = useState([]);
   const [nguyenLieuSX, setNguyenLieuSX] = useState([]);
   const [quyTrinh, setQuyTrinh] = useState([]);
   const [loiNhuanSP, setLoiNhuanSP] = useState([]);
@@ -34,6 +37,7 @@ const FormSanPham = () => {
   const nguyenLieuService = new NguyenLieuService();
   const congDoanService = new CongDoanService();
   const sanPhamService = new SanPhamService();
+  const nhanVienService = new NhanVienService();
 
   const steps = [
     { title: "Nguyên liệu sản xuất" },
@@ -45,12 +49,14 @@ const FormSanPham = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [resNL, resCD] = await Promise.all([
+        const [resNL, resCD, resNV] = await Promise.all([
           nguyenLieuService.getListNL(),
           congDoanService.getListCD(),
+          nhanVienService.getListEmp(),
         ]);
         setNguyenLieu(resNL.data || []);
         setCongDoan(resCD.data || []);
+        setNhanViens(resNV.data || []);
       } catch (error) {
         console.error("Lỗi khi tải nguyên liệu / công đoạn:", error);
       }
@@ -60,9 +66,15 @@ const FormSanPham = () => {
 
   useEffect(() => {
     if (!data || !data.id) return;
+    const qt =
+      data.quyTrinh.quyTrinhCongDoans.map((item) => {
+        return (item.congDoan);
+      }) || [];
 
     setNguyenLieuSX(data.nguyenVatLieus || []);
-    setQuyTrinh(data.quyTrinh?.congDoans || []);
+    console.log(data.nguyenVatLieus, nguyenLieuSX);
+    
+    setQuyTrinh(qt);
     if (data.gia) setGia(data.gia);
 
     const fetchLoiNhuan = async () => {
@@ -77,48 +89,18 @@ const FormSanPham = () => {
     fetchLoiNhuan();
   }, [data?.id]);
 
+  console.log(quyTrinh);
+
   useEffect(() => {
     if (current === 3) {
       tinhGia();
     }
   }, [current, nguyenLieuSX, quyTrinh]);
 
- 
-
-  const giaCongDoan = (list, chieuDai, chieuRong) => {
-    let total = 0;
-    list.forEach((cd) => {
-      const giaNguyenLieu = cd.giaMuaNguyenLieu || 0;
-      const heSoThuMua = cd.heSoThuMua || 0;
-      const tongChiPhi = giaNguyenLieu + heSoThuMua * chieuDai * chieuRong;
-      total += tongChiPhi;
-    });
-  
-    
-    
-    return total;
-  };
-
-  const giaNguyenLieu = (list, chieuDai, chieuRong) => {
-    let total = 0;
-    list.forEach((item) => {
-      const giaNhap = item.giaNhap || 0;
-      const heSoThuMua = item.heSoThuMua || 1;
-      const heSoBu = item.heSoBu || 1;
-
-      const thanhTien =
-        giaNhap + heSoThuMua * (chieuDai + heSoBu) * (chieuRong + heSoBu);
-      total += thanhTien;
-    });
-    console.log("nguyen lieu: ", total);
-    
-    return total;
-  };
 
   const tinhGia = () => {
-    const total =
-      giaNguyenLieu(nguyenLieuSX, 1, 1) + giaCongDoan(quyTrinh, 1, 1);
-    console.log(total);
+
+    const total = giaNguyenLieu(nguyenLieuSX, 1, 1) + giaCongDoan(quyTrinh, 1, 1)
     setGia(total);
   };
 
@@ -138,6 +120,9 @@ const FormSanPham = () => {
   };
 
   const submit = async () => {
+    const listQT = quyTrinh.map((item) => {
+      return { congDoan: item, thuTu: item.thuTu };
+    });
     const payload = {
       id: data.id || null,
       tenSP: formData.tenSP,
@@ -147,9 +132,18 @@ const FormSanPham = () => {
       doViTinh: { id: formData.doViTinh },
       gia,
       loiNhuan: loiNhuanSP,
-      quyTrinh: { tenQuyTrinh: formData.tenSP, congDoans: quyTrinh },
+      quyTrinh: {
+        id: data.quyTrinh?.id || null,
+        tenQuyTrinh: formData.tenSP,
+        congDoans: listQT,
+        nhanVienQL: { id: formData.nhanVienQL },
+      },
       nguyenVatLieus: nguyenLieuSX,
+      
     };
+
+    console.log(payload);
+    
 
     try {
       const res = data.id
@@ -168,6 +162,8 @@ const FormSanPham = () => {
       toast.error("Có lỗi xảy ra khi lưu sản phẩm.");
     }
   };
+
+  
 
   return (
     <>
@@ -195,7 +191,7 @@ const FormSanPham = () => {
           setQuyTrinh={setQuyTrinh}
         />
       )}
-      {current === 2 && <SanPhamForm form={form} quyTrinh={quyTrinh} />}
+      {current === 2 && <SanPhamForm form={form} quyTrinh={quyTrinh} listNV={nhanViens}/>}
       {current === 3 && (
         <LoiNhuanSP
           gia={gia}

@@ -5,7 +5,10 @@ public enum TacVu {
     MAKETING("Maketing"),
     TRO_LY("Trợ lý"),
     KE_TOAN("kế toán"),
+    THIET_KE("Thiết kế"),
+    SAN_XUAT("Sản xuất"),
     IN("in");
+
 
     private final String description;
 

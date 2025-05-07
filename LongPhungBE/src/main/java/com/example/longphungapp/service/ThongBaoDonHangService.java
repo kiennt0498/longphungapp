@@ -1,16 +1,19 @@
 package com.example.longphungapp.service;
 
+import com.example.longphungapp.entity.DonThuMua;
+import com.example.longphungapp.entity.ListGiaThuMua;
 import com.example.longphungapp.fileEnum.TrangThai;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ThongBaoDonHangService {
 
     @Autowired
     private DonHangService donHangService;
-
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
@@ -34,4 +37,11 @@ public class ThongBaoDonHangService {
         var list = donHangService.findByNhanVien_IdAndTrangThai(nhanVienId, TrangThai.HUY);
         messagingTemplate.convertAndSend("/topic/donhuy/" + nhanVienId, list);
     }
+
+    public void guiThongBaoCapNhatDonHang(Boolean daThuMua, List<DonThuMua> danhSachDon) {
+        String destination = daThuMua ? "/topic/dondathumua" : "/topic/donthumua";
+        messagingTemplate.convertAndSend(destination, danhSachDon);
+    }
+
+
 }

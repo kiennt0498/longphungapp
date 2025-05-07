@@ -24,8 +24,7 @@ import {
   setSanPham,
 } from "../../redux/slide/SanPhamSlice";
 
-const SanPhamForm = ({form,quyTrinh}) => {
-
+const SanPhamForm = ({ form, quyTrinh, listNV }) => {
   const service = new SanPhamService();
   const data = useSelector((state) => state.SanPham.sanPham);
   const dispatch = useDispatch();
@@ -39,7 +38,6 @@ const SanPhamForm = ({form,quyTrinh}) => {
   const theLoaiSp = useSelector((state) => state.SanPham.loaiSP);
   const chatLieu = useSelector((state) => state.SanPham.chatLieu);
 
-
   const onOpen = (value) => {
     setChose(value);
     setOpen(true);
@@ -49,50 +47,44 @@ const SanPhamForm = ({form,quyTrinh}) => {
     setOpen(false);
   };
 
+  const handleSetName = () => {
+    form.setFieldValue("tenSP", "");
 
+    const tenSP = form.getFieldValue("tenSP");
+    const loaiSp = form.getFieldValue("loaiSp");
+    const chatLieuId = form.getFieldValue("chatLieu");
+    const hinhDangId = form.getFieldValue("hinhDang");
 
- const handleSetName = () => {
-  form.setFieldValue("tenSP", "");
+    let newName = "";
 
-  const tenSP = form.getFieldValue("tenSP");
-  const loaiSp = form.getFieldValue("loaiSp");
-  const chatLieuId = form.getFieldValue("chatLieu");
-  const hinhDangId = form.getFieldValue("hinhDang");
-
-  let newName = "";
-
-  if (tenSP) {
-    newName += tenSP;
-  }
-  if (loaiSp) {
-    const data = theLoaiSp.find((i) => i.id === loaiSp);
-    if (data) {
-      newName += ` ${data.ten}`;
+    if (tenSP) {
+      newName += tenSP;
     }
-  }
-  if (chatLieuId) {
-    // Check if chatLieu is an array before using filter/find
-    if (Array.isArray(chatLieu)) {
-      const data = chatLieu.find((i) => i.id === chatLieuId);
+    if (loaiSp) {
+      const data = theLoaiSp.find((i) => i.id === loaiSp);
       if (data) {
         newName += ` ${data.ten}`;
       }
-    } else {
-      console.error("chatLieu is not an array:", chatLieu);
     }
-  }
-  if (hinhDangId) {
-    const data = hinhSP.find((i) => i.id === hinhDangId);
-    if (data) {
-      newName += ` ${data.ten}`;
+    if (chatLieuId) {
+      // Check if chatLieu is an array before using filter/find
+      if (Array.isArray(chatLieu)) {
+        const data = chatLieu.find((i) => i.id === chatLieuId);
+        if (data) {
+          newName += ` ${data.ten}`;
+        }
+      } else {
+        console.error("chatLieu is not an array:", chatLieu);
+      }
     }
-  }
-  form.setFieldsValue({ tenSP: newName.trim().toLowerCase() });
-};
-
-  
-
-
+    if (hinhDangId) {
+      const data = hinhSP.find((i) => i.id === hinhDangId);
+      if (data) {
+        newName += ` ${data.ten}`;
+      }
+    }
+    form.setFieldsValue({ tenSP: newName.trim().toLowerCase() });
+  };
 
   const getData = async () => {
     try {
@@ -116,21 +108,21 @@ const SanPhamForm = ({form,quyTrinh}) => {
         dispatch(setChatLieu(resTruong.data.chatLieuSP));
         dispatch(setLoaiSP(resTruong.data.theLoaiSP));
         dispatch(setHinhDang(resTruong.data.hinhDangSP));
-        dispatch(setKieuMau(resTruong.data.kieuMau));
       }
       // Nếu đang ở chế độ chỉnh sửa, set dữ liệu vào form
       if (data.id) {
-        
         const newData = {
           ...data,
           doViTinh: data.doViTinh?.id,
           chatLieu: data.chatLieu?.id,
           loaiSp: data.loaiSp?.id,
           hinhDang: data.hinhDang?.id,
+          nhanVienQL: data.quyTrinh?.nhanVienQL?.id,
         };
         console.log(newData);
-        
+
         form.setFieldsValue(newData);
+        
         return; // Kết thúc hàm sau khi set dữ liệu
       }
       // reset data
@@ -167,27 +159,28 @@ const SanPhamForm = ({form,quyTrinh}) => {
     return data;
   });
 
-  
+  const optinons = listNV.map((item) => {
+    return {
+      value: item.id,
+      label: item.hoTen,
+    };
+  });
 
   useEffect(() => {
     getData();
   }, [data.id]); // Chỉ gọi khi data.id thay đổi
 
-  
-
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      const newData = {...values,
-        loaiSp: {id: values.loaiSp},
-        chatLieu: {id: values.chatLieu},
-        doViTinh: {id: values.doViTinh},
-        hinhDang: {id: values.hinhDang}
-      }
-      console.log(values);
-      
-      console.log(newData);
-      
+      const newData = {
+        ...values,
+        loaiSp: { id: values.loaiSp },
+        chatLieu: { id: values.chatLieu },
+        doViTinh: { id: values.doViTinh },
+        hinhDang: { id: values.hinhDang },
+      };
+
       if (data.id) {
         // Update operation
         const res = await service.updateSanPham(newData);
@@ -206,9 +199,9 @@ const SanPhamForm = ({form,quyTrinh}) => {
           toast.error(`Thêm sản phẩm thất bại: ${res.status}`);
         }
       }
-      navigate(-1)
-      dispatch(setSanPham({}))
-      form.resetFields()
+      navigate(-1);
+      dispatch(setSanPham({}));
+      form.resetFields();
     } catch (error) {
       toast.error("Có lỗi xảy ra");
       console.log(error);
@@ -222,18 +215,12 @@ const SanPhamForm = ({form,quyTrinh}) => {
   const onChangeGiaLoai = (value) => {
     if (value) {
       const data = theLoaiSp.filter((i) => i.id === value);
-     
-    }else{
-     
+    } else {
     }
   };
 
-
-
-
   return (
     <div>
-      
       {data.id ? <h1>Chỉnh sửa sản phẩm</h1> : <h1>Thêm sản phẩm</h1>}
       <Row>
         <Col span={8}>
@@ -331,6 +318,37 @@ const SanPhamForm = ({form,quyTrinh}) => {
                 </Form.Item>
               </Col>
             </Row>
+
+            <Form.Item
+              name="nhanVienQL"
+              label="Nhân viên quản lý sản xuất"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng chọn nhân viên quản lý sản xuất",
+                },
+              ]}
+            >
+              <Select
+                style={{ width: "100%" }}
+                options={optinons}
+                showSearch
+                placeholder="Chọn nhân viên quản lý"
+                filterOption={(input, option) => {
+                  var _a;
+                  return (
+                    (_a =
+                      option === null || option === void 0
+                        ? void 0
+                        : option.label) !== null && _a !== void 0
+                      ? _a
+                      : ""
+                  )
+                    .toLowerCase()
+                    .includes(input.toLowerCase());
+                }}
+              />
+            </Form.Item>
 
             <Form.Item
               name="doViTinh"

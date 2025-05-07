@@ -1,6 +1,7 @@
 package com.example.longphungapp.entity;
 
 import com.example.longphungapp.fileEnum.BoPhan;
+import com.example.longphungapp.fileEnum.TacVu;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,14 +31,15 @@ public class CongDoan {
   @Column(name = "cong_nv", precision = 19, scale = 2)
   private BigDecimal congNV;
 
-  @Column(name = "thu_tu")
-  private Integer thuTu;
-
   @Column(name = "he_so_thu_mua")
   private Double heSoThuMua;
 
   @Column(name = "he_so_tien_cong")
   private Double heSoTienCong;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "tac_vu")
+  private TacVu tacVu;
 
   @Override
   public final boolean equals(Object o) {

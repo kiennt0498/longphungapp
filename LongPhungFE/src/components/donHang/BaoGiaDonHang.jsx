@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   Card,
   Table,
@@ -25,6 +25,8 @@ import MoalExcel from "../common/ModalExcel";
 import { API_FILE } from "../../services/constans";
 import SanPhamService from "../../services/SanPhamService";
 import { capNhatGia } from "../../helpers/CongThucTinhGia";
+import ExportPDF from "../common/ExportPDF";
+import { formatCurrency } from "../../helpers/formatData";
 
 const { Title, Text } = Typography;
 
@@ -34,6 +36,7 @@ const BaoGiaDonHang = ({ getData }) => {
   const [discount, setDiscount] = useState(0);
   const [products, setProducts] = useState([]);
   const [tienThucTe,setTienThucTe] = useState()
+  const [openExport,setOpenExport] = useState(false)
   const [check, setCheck] = useState(true);
   const API = API_FILE + "/upload/image";
   const service = new SanPhamService();
@@ -46,6 +49,18 @@ const BaoGiaDonHang = ({ getData }) => {
     setOpenFile(false);
   };
 
+  const onOpenExport = () => {
+    const newData = products.map((item)=>{
+      return {...item, donGia:item.gia-item.gia*discount/100}
+    })
+    setProducts(newData)
+    setOpenExport(true);
+  };
+  const handleCancelExport = () => {
+    setOpenExport(false);
+  };
+  
+
   const onOpen = () => {
     setOpenDraw(true);
   };
@@ -54,7 +69,6 @@ const BaoGiaDonHang = ({ getData }) => {
   };
   const handleOk = (data) => {
     setOpenDraw(false);
-    console.log(data);
   };
   const onChangeChek = () => {
     setCheck(!check);
@@ -76,6 +90,13 @@ const BaoGiaDonHang = ({ getData }) => {
       loiNhuan = res.data;
     }
 
+    console.log(data);
+    
+    const congDoans = data.quyTrinh?.quyTrinhCongDoans.map((item) => item.congDoan)
+
+    console.log(congDoans);
+    
+
     const newData = {
       id: data.id,
       tenSP: data.tenSP,
@@ -83,7 +104,15 @@ const BaoGiaDonHang = ({ getData }) => {
       chieuDai: 1,
       chieuRong: 1,
       gia: capNhatGia({
-        quyTrinh: data.quyTrinh,
+        quyTrinh: {congDoans: congDoans},
+        nguyenVatLieus: data.nguyenVatLieus,
+        loiNhuan: loiNhuan,
+        chieuDai: 1,
+        chieuRong: 1,
+        soLuong: 1,
+      }),
+      donGia: capNhatGia({
+        quyTrinh: {congDoans: congDoans},
         nguyenVatLieus: data.nguyenVatLieus,
         loiNhuan: loiNhuan,
         chieuDai: 1,
@@ -92,7 +121,7 @@ const BaoGiaDonHang = ({ getData }) => {
       }),
       soLuong: 1,
       loiNhuan: loiNhuan,
-      quyTrinh: data.quyTrinh,
+      quyTrinh: {...data.quyTrinh ,congDoans: congDoans},
       nguyenVatLieus: data.nguyenVatLieus,
     };
 
@@ -181,12 +210,7 @@ const BaoGiaDonHang = ({ getData }) => {
     setProducts(newProducs);
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
+  
 
   const finalyData = () =>{
     const newData = products.map((item)=>{
@@ -210,7 +234,7 @@ const BaoGiaDonHang = ({ getData }) => {
   
       totalDonGia += gia;
       totalThanhTien += thanhTien;
-      totalChietKhau += chietKhauTien * soLuong;
+      totalChietKhau += chietKhauTien;
       totalGiaConLai += donGiaConLai;
       totalTienConLai += tienConLai;
     });
@@ -434,14 +458,21 @@ const BaoGiaDonHang = ({ getData }) => {
         </Card>
 
         <Divider />
-        <Row>
-          <Button
-            style={{ marginLeft: "46%" }}
+        <Row gutter={1}>
+          <Col span={12}><Button
+            style={{ marginLeft: "80%" }}
             type="primary"
             onClick={() => finalyData()}
           >
             Lên đơn
-          </Button>
+          </Button></Col>
+          <Col><Button
+            
+            type="primary"
+            onClick={() => onOpenExport()}
+          >
+            Xuất file PDF
+          </Button></Col>
         </Row>
       </div>
       <ModalDonHang
@@ -452,6 +483,9 @@ const BaoGiaDonHang = ({ getData }) => {
         addSp={addSp}
       />
       <MoalExcel open={openFile} onCloseM={handleCancelFile} API={API} />
+      <ExportPDF open={openExport} onClose={handleCancelExport} products={products} />
+
+   
     </div>
   );
 };

@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ModalChotDon from "./ModalChotDon";
 import { IoMdTrash } from "react-icons/io";
 import DonHangService from "../../services/DonHangService"
+import ExportPDF from "../common/ExportPDF";
 
 
 const DonHangTabsXN = ({ listXN, format, showModalHuy }) => {
@@ -94,7 +95,6 @@ const DonHangTabsXN = ({ listXN, format, showModalHuy }) => {
           </Col>
         ))}
       </Row>
-
       <ModalChotDon
         isModalOpen={isModalOpen}
         handleCancel={handleCancel}

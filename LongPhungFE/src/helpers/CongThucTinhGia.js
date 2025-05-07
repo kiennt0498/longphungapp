@@ -24,6 +24,8 @@ export const giaCongDoan = (list, chieuDai, chieuRong) => {
   };
   
   export const tinhGiaBan = (product, chieuDai, chieuRong) => {
+    console.log(product);
+    
     return (
       giaCongDoan(product.quyTrinh?.congDoans || [], chieuDai, chieuRong) +
       giaNguyenLieu(product.nguyenVatLieus || [], chieuDai, chieuRong)

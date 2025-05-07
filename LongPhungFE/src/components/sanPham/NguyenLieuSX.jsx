@@ -5,17 +5,27 @@ import ModalPhuLieu from "./ModalPhuLieu";
 import { FaBinoculars } from "react-icons/fa6";
 import { ImBin2 } from "react-icons/im";
 
-const NguyenLieuSX = ({ data,nguyenLieuSX,setNguyenLieuSX }) => {
+const NguyenLieuSX = ({ data, nguyenLieuSX, setNguyenLieuSX }) => {
   const [form] = Form.useForm();
   const [openDraw, setOpenDraw] = useState(false);
- 
+
   const columns = [
     { title: "id", dataIndex: "id", key: "id" },
     { title: "Tên", dataIndex: "ten", key: "ten" },
     { title: "Giá", dataIndex: "giaNhap", key: "giaNhap" },
-    { title: "", dataIndex: "action", key: "action", render: (_,record) => <>
-      <Button icon={<ImBin2 />} onClick={()=>onDelete(record.id)}></Button>
-    </> },
+    {
+      title: "",
+      dataIndex: "action",
+      key: "action",
+      render: (_, record) => (
+        <>
+          <Button
+            icon={<ImBin2 />}
+            onClick={() => onDelete(record.id)}
+          ></Button>
+        </>
+      ),
+    },
   ];
 
   const onOpen = () => {
@@ -34,7 +44,7 @@ const NguyenLieuSX = ({ data,nguyenLieuSX,setNguyenLieuSX }) => {
   const onDelete = (id) => {
     setNguyenLieuSX(nguyenLieuSX.filter((i) => i.id !== id));
   };
-  
+
   return (
     <>
       <Row>

@@ -22,11 +22,11 @@ public class QuyTrinhController {
 
     @PostMapping("save")
     public ResponseEntity save(@RequestBody QuyTrinhDto dto){
-        return ResponseEntity.status(201).body(service.save(dto));
+        return ResponseEntity.status(201).body(service.saveOrUpdateQuyTrinh(dto));
     }
     @PutMapping("update")
     public ResponseEntity update(@RequestBody QuyTrinhDto dto){
-        return ResponseEntity.ok(service.update(dto));
+        return ResponseEntity.ok(service.saveOrUpdateQuyTrinh(dto));
     }
 
     @DeleteMapping("delete/{id}")

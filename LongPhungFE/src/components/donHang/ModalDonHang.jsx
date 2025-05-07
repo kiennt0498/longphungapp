@@ -57,6 +57,8 @@ const ModalDonHang = ({ open, handleOk, handleCancel, addSp, products }) => {
   }, [products, sanPhams, searchText, selectedLoai, selectedChatLieu]);
 
   const filteSP = (data) => {
+    console.log(data);
+    
     addSp(data);
   };
 
@@ -75,8 +77,7 @@ const ModalDonHang = ({ open, handleOk, handleCancel, addSp, products }) => {
       key: "chatLieu",
       render: (data) => (data ? `${data.ten}` : "N/A"),
     },
-    { title: "Màu nền", dataIndex: "mauSP", key: "mauSP" },
-    { title: "Kiểu màu nền", dataIndex: "kieuMau", key: "kieuMau" },
+    
     { title: "Giá", dataIndex: "gia", key: "gia" },
   ];
 

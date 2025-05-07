@@ -4,20 +4,15 @@ import {
   Input,
   Button,
   Card,
-  Select,
   Space,
-  Typography,
   Table,
   Modal,
   Tooltip,
-  Popconfirm,
   Row,
   Col,
 } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import FormQuyTrinh from "./QTChiTiet";
 import { toast } from "react-toastify";
-import QuyTrinhService from "../../services/QuyTrinhService";
 import { FaCartPlus } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -26,21 +21,27 @@ import {
   setList,
   updateQT,
 } from "../../redux/slide/QuyTrinhSlice";
+import QuyTrinhService from "../../services/QuyTrinhService";
+import NhanVienService from "../../services/NhanVienService";
+import QTChiTiet from "./QTChiTiet";
 
 const QuyTrinhList = () => {
   const service = new QuyTrinhService();
+  const nvService = new NhanVienService();
 
-  const [form] = Form.useForm();
+
 
   const quyTrinhs = useSelector((state) => state.QuyTrinh.quyTrinhs);
   const dispatch = useDispatch();
 
-  const [currentStep, setCurrentStep] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentProcess, setCurrentProcess] = useState(null);
-  const [formData, setFormData] = useState({});
+
   const [listCongDoan, setListCongDoan] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [listNV, setListNV] = useState([]);
+  const [selectedNhanVienQL, setSelectedNhanVienQL] = useState(null)
+  const [quyTrinh, setQuyTrinh] = useState({})
+
 
   const processColumns = [
     {
@@ -50,53 +51,46 @@ const QuyTrinhList = () => {
     },
     {
       title: "Số công đoạn",
-      dataIndex: "congDoans",
-      key: "congDoans",
-      render: (congDoans) => `${congDoans?.length || 0} công đoạn`,
+      dataIndex: "quyTrinhCongDoans",
+      key: "quyTrinhCongDoans",
+      render: (quyTrinhCongDoans) => `${quyTrinhCongDoans?.length || 0} công đoạn`,
     },
 
     {
       title: "Người quản lý",
       dataIndex: "nhanNienQL",
       key: "nhanVienQL",
-      render: (_, record) => `${record.nhanVienQL?.hoTen}`,
+      render: (_, record) => `${record.nhanVienQL?.hoTen || "N/A"}`,
     },
 
-    // {
-    //   title: "Hành động",
-    //   key: "actions",
-    //   align: "center",
+    {
+      title: "Hành động",
+      key: "actions",
+      align: "center",
 
-    //   render: (_, record) => (
-    //     <Space>
-    //       <Tooltip title="Cập nhật" color="blue">
-    //         <Button
-    //           color="blue"
-    //           variant="outlined"
-    //           icon={<EditOutlined />}
-    //           onClick={() => editProcess(record)}
-    //         />
-    //       </Tooltip>
-    //       <Tooltip title="Xóa" color="red">
-    //         <Popconfirm
-    //           title="Xóa khách hàng này?"
-    //           onConfirm={() => handleDelete(record.id)}
-    //         >
-    //           <Button icon={<DeleteOutlined />} danger />
-    //         </Popconfirm>
-    //       </Tooltip>
-    //     </Space>
-    //   ),
-    // },
+      render: (_, record) => (
+        <Space>
+          <Tooltip title="Cập nhật" color="blue">
+            <Button
+              color="blue"
+              variant="outlined"
+              icon={<EditOutlined />}
+              onClick={() => editProcess(record)}
+            />
+          </Tooltip>
+        </Space>
+      ),
+    },
   ];
 
   // Edit process
   const editProcess = (data) => {
-    setCurrentProcess(data);
+ 
     setIsModalVisible(true);
-    const newData = { ...data, nhanVienQL: data.nhanVienQL?.id };
-    setListCongDoan(data.congDoans);
-    form.setFieldsValue(newData);
+    setQuyTrinh(data)
+    setSelectedNhanVienQL(data.nhanVienQL?.id || null)
+   
+  
   };
 
   const handleDelete = async (id) => {
@@ -116,76 +110,46 @@ const QuyTrinhList = () => {
     }
   };
 
-  const onNext = async () => {
-    try {
-      const values = await form.validateFields();
-      setFormData(values);
-      setCurrentStep(currentStep + 1);
-    } catch (error) {
-      console.log("Validation failed:", error);
-    }
-  };
 
-  const onSubmit = async () => {
-    if (listCongDoan.length === 0) {
-      toast.error("Vui lòng thêm ít nhất 1 công đoạn", {
-        position: "top-center",
-      });
-      return;
-    }
+  const onSubmit = () => {
+
+    const nv = listNV.find((item) => item.id === selectedNhanVienQL);
 
     const data = {
-      ...formData,
-      congDoans: listCongDoan,
-      nhanVienQL: { id: formData.nhanVienQL },
+      ...quyTrinh,
+      nhanVienQL: nv
     };
+    console.log(data)
+    dispatch(updateQT(data));
 
-    if (!data.id) {
-      try {
-        const res = await service.insterQT(data);
-        if (res.status === 201) {
-          dispatch(addQT(res.data));
-          toast.success("Thêm mới thành công", {
-            position: "top-center",
-          });
-        }
-      } catch (error) {
-        toast.error("Thêm mới thất bại", {
-          position: "top-center",
-        });
-        console.log(error);
-      }
-    } else {
-      try {
-        const res = await service.updateQT(data);
-        if (res.status === 200) {
-          dispatch(updateQT(res.data));
-          toast.success("Cập nhật thành công", {
-            position: "top-center",
-          });
-        }
-      } catch (error) {
-        toast.error("Cập nhật thất bại", {
-          position: "top-center",
-        });
-        console.log(error);
-      }
-    }
-
-    form.resetFields();
-    setCurrentStep(0);
-    setListCongDoan([]);
+    
+   
   };
 
   const getDataList = async () => {
     try {
       const res = await service.getListQT();
+      const nvRes = await nvService.getListEmp();
+
       if (res.status === 200) {
         dispatch(setList(res.data));
+      }
+      if (nvRes.status === 200) {
+        const newData = nvRes.data.map((item) => {
+          return {
+            id: item.id,
+            hoTen: item.hoTen,
+          };
+        });
+        setListNV(newData);
       }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleNhanVienSelect = (nhanVienId) => {
+    setSelectedNhanVienQL(nhanVienId);
   };
 
   useEffect(() => {
@@ -198,26 +162,18 @@ const QuyTrinhList = () => {
 
   const processModal = (
     <Modal
-      title={currentProcess ? "Chỉnh sửa quy trình" : "Tạo quy trình mới"}
+      title={"Cập nhật nhân viên quản lý"}
       open={isModalVisible}
       onCancel={() => {
         setIsModalVisible(false);
-        setCurrentProcess(null);
-        form.resetFields();
       }}
-      footer={null}
-      width={800}
+      onOk={() => {
+    
+        onSubmit()
+        setIsModalVisible(false);
+      }}
     >
-      <FormQuyTrinh
-        quytrinh={currentProcess}
-        form={form}
-        listCongDoan={listCongDoan}
-        setListCongDoan={setListCongDoan}
-        currentStep={currentStep}
-        setCurrentStep={setCurrentStep}
-        onNext={onNext}
-        onSubmit={onSubmit}
-      />
+      <QTChiTiet data={listNV}  onSelectChange={handleNhanVienSelect}/>
     </Modal>
   );
 
@@ -225,7 +181,6 @@ const QuyTrinhList = () => {
     <div >
       <Card
       title="Danh sách quy trình"
-      
     >
       <Space direction="vertical" style={{ width: "100%", marginTop: 10 }}>
         <Row>

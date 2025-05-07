@@ -18,7 +18,4 @@ public class ThuocTinhSP {
     @Column(name = "ten", length = 50)
     private String ten;
 
-    @Column(name = "gia", precision = 19, scale = 2)
-    private BigDecimal gia;
-
 }

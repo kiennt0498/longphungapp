@@ -4,6 +4,7 @@ import com.example.longphungapp.Exception.BadReqException;
 import com.example.longphungapp.Interface.MapperInterface;
 import com.example.longphungapp.dto.*;
 import com.example.longphungapp.entity.*;
+import com.example.longphungapp.fileEnum.TacVu;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.repository.*;
 import org.springframework.beans.BeanUtils;
@@ -115,6 +116,7 @@ public class DonHangService {
             var cv = new CongViecCT();
             cv.setDonHangCT(i);
             cv.setTrangThai(TrangThai.CHO_NHAN_DON);
+            cv.setTacVu(TacVu.THIET_KE);
             cvDao.save(cv);
             return cv;
         }).toList();
@@ -144,7 +146,7 @@ public class DonHangService {
         var list = listLS.stream().map(i->i.getDonHang()).toList();
         return list;
     }
-
+    @Transactional(rollbackFor = Exception.class)
     public void huyDon(DonHuyDto dto){
         var found = dao.findById(dto.getId()).orElseThrow(()-> new BadReqException("Không tìm thấy đơn hàng"));
         found.setTrangThai(TrangThai.HUY);
@@ -172,7 +174,7 @@ public class DonHangService {
             cvDao.save(i);
         });
     }
-
+    @Transactional(rollbackFor = Exception.class)
     public void chotDon(String maDonHang) {
         var found = dao.findByMaDonHang(maDonHang);
         if(found == null){
@@ -186,14 +188,44 @@ public class DonHangService {
         ls.setNhanVien(found.getNhanVien());
         ls.setTrangThai(TrangThai.DA_GIAO);
         lichDao.save(ls);
+
+        var listDonCT = ctDao.findByDonHang_Id(found.getId());
+        listDonCT.forEach(i->{
+            i.setTrangThai(TrangThai.DANG_SAN_XUAT);
+            ctDao.save(i);
+        });
+
+        listDonCT.forEach(i->{
+            var cdOpt = i.getSanPham()
+                    .getQuyTrinh()
+                    .getQuyTrinhCongDoans()
+                    .stream()
+                    .filter(j -> j.getThuTu() != null && j.getThuTu() == 1)
+                    .findFirst();
+
+            if (cdOpt.isEmpty()) {
+                System.out.println("❌ Không tìm thấy công đoạn thứ tự 1 cho sản phẩm: " + i.getSanPham().getTenSP());
+                i.getSanPham().getQuyTrinh().getQuyTrinhCongDoans().forEach(cd ->
+                        System.out.println("----> ThuTu: " + cd.getThuTu())
+                );
+                throw new BadReqException("Không có công đoạn bắt đầu cho sản phẩm");
+            }
+            var cv = new CongViecCT();
+            cv.setDonHangCT(i);
+            cv.setCongDoan(cdOpt.get().getCongDoan());
+            cv.setTrangThai(TrangThai.CHO_NHAN_DON);
+            cv.setTacVu(cdOpt.get().getCongDoan().getTacVu());
+            cvDao.save(cv);
+        });
     }
 
     public void setImage(Long id,ImagesDto dto){
-        var found = ctDao.findById(id).orElseThrow(()-> new BadReqException("không tìm thấy"));
+        var found = cvDao.findById(id).orElseThrow(()-> new BadReqException("không tìm thấy"));
+        DonHangCT ct = found.getDonHangCT();
         var image = new Images();
-        BeanUtils.copyProperties(dto,image);
-        found.setImages(image);
-        ctDao.save(found);
+        image.setId(dto.getId());
+        ct.setImages(image);
+        ctDao.save(ct);
     }
     public void deleteImg(String name){
         var found = ctDao.findByImages_TenTep(name);

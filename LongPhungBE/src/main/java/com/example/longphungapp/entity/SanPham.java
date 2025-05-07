@@ -39,6 +39,10 @@ public class  SanPham {
     private HinhDang hinhDang;
 
     @ManyToOne
+    @JoinColumn(name = "do_vi_tinh_id")
+    private DoViTinh doViTinh;
+
+    @ManyToOne
     @JoinColumn(name = "quy_trinh_id")
     private QuyTrinh quyTrinh;
 
@@ -50,10 +54,14 @@ public class  SanPham {
     @JsonIgnore
     private List<LoiNhuan> loiNhuan;
 
+
+
     @ManyToMany
-    @JoinTable(name = "san_pham_nguyenVatLieus",
+    @JoinTable(name = "san_pham_vat_tus",
             joinColumns = @JoinColumn(name = "sanPham_id"),
-            inverseJoinColumns = @JoinColumn(name = "nguyenVatLieus_id"))
-    private List<NguyenVatLieu> nguyenVatLieus = new ArrayList<>();
+            inverseJoinColumns = @JoinColumn(name = "vatTu_id"))
+    private List<VatTu> nguyenVatLieus = new ArrayList<>();
+
+
 
 }

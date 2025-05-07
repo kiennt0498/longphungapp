@@ -120,8 +120,8 @@ const NhanVienForm = () => {
               <Input maxLength={13} minLength={10}/>
             </Form.Item>
 
-            <Row>
-              <Col span={7}>
+            <Row gutter={82} >
+              <Col>
                 <Form.Item
                   label="Bộ Phận"
                   name="boPhan"
@@ -140,7 +140,7 @@ const NhanVienForm = () => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={7} style={{ marginLeft: 35 }}>
+              <Col>
                 <Form.Item
                   label="Chức vụ"
                   name="chucVu"
@@ -159,7 +159,7 @@ const NhanVienForm = () => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={7} style={{ marginLeft: 35 }}>
+              <Col>
                 <Form.Item
                   label="Tác vụ"
                   name="tacVu"

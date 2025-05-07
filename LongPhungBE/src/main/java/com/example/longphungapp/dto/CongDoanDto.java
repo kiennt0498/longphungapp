@@ -2,6 +2,7 @@ package com.example.longphungapp.dto;
 
 import com.example.longphungapp.entity.CongDoan;
 import com.example.longphungapp.fileEnum.BoPhan;
+import com.example.longphungapp.fileEnum.TacVu;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -21,7 +22,7 @@ public class CongDoanDto implements Serializable {
     private Double heSoThuMua;
     private Double heSoTienCong;
     private BoPhan boPhan;
-
+    private TacVu tacVu;
 
 
 }

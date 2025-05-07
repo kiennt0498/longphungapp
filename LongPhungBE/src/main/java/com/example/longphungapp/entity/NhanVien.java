@@ -4,12 +4,16 @@ import com.example.longphungapp.fileEnum.BoPhan;
 import com.example.longphungapp.fileEnum.ChucVu;
 import com.example.longphungapp.fileEnum.TacVu;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "nhan_vien")
 public class NhanVien {
     @Id
@@ -37,7 +41,5 @@ public class NhanVien {
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "tai_khoan_sdt")
     private TaiKhoan taiKhoan;
-
-
 
 }

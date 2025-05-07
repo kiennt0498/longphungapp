@@ -1,0 +1,65 @@
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    background: #fff;
+  }
+  
+  .chat-header {
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    background: #15e077;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 530px; /* hoặc 500px tùy bạn muốn khung cao bao nhiêu */
+    padding: 16px;
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+  }
+  
+  .chat-footer {
+    display: flex;
+    padding: 16px;
+    border-top: 1px solid #eee;
+    background: #fff;
+  }
+  
+  .date-header {
+    text-align: center;
+    font-size: 14px;
+    color: gray;
+    margin: 16px 0 8px;
+  }
+  
+  .message-row {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+  
+  .message-row.mine {
+    justify-content: flex-end;
+  }
+  
+  .message-row.theirs {
+    justify-content: flex-start;
+  }
+  
+  .message-content {
+    background: #f1f1f1;
+    padding: 8px 12px;
+    border-radius: 16px;
+    max-width: 60%;
+    word-break: break-word;
+  }
+  
+  .message-row.mine .message-content {
+    background: #d4f0fc;
+  }
+  

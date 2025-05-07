@@ -22,8 +22,6 @@ public class DonHangCTDto implements Serializable {
     DonHangDto donHang;
     private ImagesDto images;
     private BigDecimal donGia;
-
-
     private QuyTrinhDto quyTrinh;
 
 }

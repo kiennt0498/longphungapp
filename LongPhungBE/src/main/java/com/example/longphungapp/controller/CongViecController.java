@@ -1,55 +1,55 @@
 package com.example.longphungapp.controller;
 
 import com.example.longphungapp.dto.CongViecCTDto;
+import com.example.longphungapp.dto.NhanViecReq;
 import com.example.longphungapp.entity.CongViecCT;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.service.CongViecService;
 import com.example.longphungapp.service.ThongBaoDonHangService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @CrossOrigin
 public class CongViecController {
-    @Autowired
-    CongViecService service;
-    @Autowired
-    ThongBaoDonHangService tbService;
-    @Autowired
-    SimpMessagingTemplate messagingTemplate;
+    private final CongViecService service;
+    private final ThongBaoDonHangService tbService;
+    private final SimpMessagingTemplate messagingTemplate;
 
+    public CongViecController(CongViecService service, ThongBaoDonHangService tbService, SimpMessagingTemplate messagingTemplate) {
+        this.service = service;
+        this.tbService = tbService;
+        this.messagingTemplate = messagingTemplate;
+    }
 
     @MessageMapping("/getJobs")
-    public void getJobs() {
-        List<CongViecCT> jobs = service.findByTrangThai(TrangThai.CHO_NHAN_DON);
-        messagingTemplate.convertAndSend("/topic/jobs", jobs);
+    public void getJobs(String tacVu) {
+        sendJobsToTopic("/topic/jobs/"+ tacVu, service.findByTrangThaiAndTacVu(TrangThai.CHO_NHAN_DON, tacVu));
     }
 
     @MessageMapping("/nhan")
-    public void acceptJob(Long id) {
+    public void acceptJob(NhanViecReq req) {
+        Long id = req.getId();
+        String tacVu = req.getTacVu();
+
         service.setViec(id, TrangThai.DANG_SAN_XUAT);
 
-        List<CongViecCT> updatedJobs = service.findByTrangThai(TrangThai.CHO_NHAN_DON);
-        messagingTemplate.convertAndSend("/topic/jobs", updatedJobs);
+        getJobs(tacVu);
 
         var nv = service.getNhanVienTK(id);
 
-        List<CongViecCT> jobs = service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT);
-        messagingTemplate.convertAndSend("/topic/jobsNhan/" + nv, jobs);
+        sendJobsToTopic("/topic/jobsNhan/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT));
     }
 
     @MessageMapping("/getJobsNhan")
     public void getJobsNhan(@Payload String id) {
-        id = id.replace("\"", ""); // Loại bỏ dấu ngoặc kép nếu bị lỗi JSON.stringify
-        List<CongViecCT> jobs = service.findByNhanVien_IdAndTrangThai(id, TrangThai.DANG_SAN_XUAT);
-        messagingTemplate.convertAndSend("/topic/jobsNhan/" + id, jobs);
+        id = cleanId(id);
+        sendJobsToTopic("/topic/jobsNhan/" + id, service.findByNhanVien_IdAndTrangThai(id, TrangThai.DANG_SAN_XUAT));
     }
 
     @MessageMapping("noptk")
@@ -57,57 +57,62 @@ public class CongViecController {
         service.setViec(id, TrangThai.CHO_DUYET);
         var nv = service.getNhanVienTK(id);
 
-        List<CongViecCT> jobs = service.findByNhanVien_IdAndTrangThai(nv,TrangThai.DANG_SAN_XUAT);
-        List<CongViecCT> jobsUpdate = service.findByNhanVien_IdAndTrangThai(nv,TrangThai.CHO_DUYET);
+        sendJobsToTopic("/topic/jobsNhan/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT));
+        sendJobsToTopic("/topic/jobsduyet/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET));
+    }
 
-        messagingTemplate.convertAndSend("/topic/jobsNhan/" + nv, jobs);
-        messagingTemplate.convertAndSend("/topic/jobsduyet/" + nv, jobsUpdate);
-
+    @MessageMapping("nopcv")
+    public void nopcv(Long id) {
+        service.setViec(id, TrangThai.DA_GIAO);
+        String tv = service.createCVCT(id);
+        var nv = service.getNhanVienTK(id);
+        sendJobsToTopic("/topic/jobshoanthanhtk/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DA_GIAO));
+        getJobsNhan(nv);
+        getJobs(tv);
     }
 
     @MessageMapping("/getJobsDuyet")
     public void getJobsDuyet(@Payload String id) {
-        id = id.replace("\"", ""); // Loại bỏ dấu ngoặc kép nếu bị lỗi JSON.stringify
-        List<CongViecCT> jobs = service.findByNhanVien_IdAndTrangThai(id, TrangThai.CHO_DUYET);
-        messagingTemplate.convertAndSend("/topic/jobsduyet/" + id, jobs);
+        id = cleanId(id);
+        sendJobsToTopic("/topic/jobsduyet/" + id, service.findByNhanVien_IdAndTrangThai(id, TrangThai.CHO_DUYET));
     }
-
-
 
     @MessageMapping("/duyet")
     public void duyetSP(Long id) {
         service.setViec(id, TrangThai.DA_GIAO);
         service.setDonHangCT(id);
+
         var nv = service.getNhanVienTK(id);
 
         tbService.thongBaoDonDuyet(nv);
-
-        List<CongViecCT> updatedJobs = service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET);
-        messagingTemplate.convertAndSend("/topic/jobsduyet/" + nv, updatedJobs);
-
-        List<CongViecCT> jobs = service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DA_GIAO);
-        messagingTemplate.convertAndSend("/topic/jobshoanthanhtk/" + nv, jobs);
-
+        updateJobsAfterApproval(nv);
     }
+
     @MessageMapping("/lamlai")
     public void lamLaiSP(Long id) {
         service.setViec(id, TrangThai.DANG_SAN_XUAT);
         var nv = service.getNhanVienTK(id);
 
-        List<CongViecCT> jobs = service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT);
-        messagingTemplate.convertAndSend("/topic/jobsNhan/" + nv, jobs);
-
-        List<CongViecCT> jobsDuyet = service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET);
-        messagingTemplate.convertAndSend("/topic/jobsduyet/" + nv, jobsDuyet);
+        sendJobsToTopic("/topic/jobsNhan/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT));
+        sendJobsToTopic("/topic/jobsduyet/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET));
     }
 
     @MessageMapping("/getJobsTKHoanThanh")
     public void getJobsTKHoanThanh(@Payload String id) {
-        id = id.replace("\"", ""); // Loại bỏ dấu ngoặc kép nếu bị lỗi JSON.stringify
-        List<CongViecCT> jobs = service.findCongViecHoanThanh(id);
-        messagingTemplate.convertAndSend("/topic/jobshoanthanhtk/" + id, jobs);
+        id = cleanId(id);
+        sendJobsToTopic("/topic/jobshoanthanhtk/" + id, service.findCongViecHoanThanh(id));
     }
 
+    private void sendJobsToTopic(String destination, List<CongViecCT> jobs) {
+        messagingTemplate.convertAndSend(destination, jobs);
+    }
 
+    private String cleanId(String id) {
+        return id.replace("\"", "");
+    }
 
+    private void updateJobsAfterApproval(String nv) {
+        sendJobsToTopic("/topic/jobsduyet/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET));
+        sendJobsToTopic("/topic/jobshoanthanhtk/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DA_GIAO));
+    }
 }

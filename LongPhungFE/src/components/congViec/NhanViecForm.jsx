@@ -13,7 +13,7 @@ import { Client } from "@stomp/stompjs";
 import { toast } from "react-toastify";
 import DonHangService from "../../services/DonHangService";
 
-const NhanViecForm = () => {
+const NhanViecForm = ({tacVu}) => {
   const stompClient = useRef(null);
   const service = new DonHangService();
 
@@ -31,11 +31,14 @@ const NhanViecForm = () => {
   const [newTaskNhan, setNewTaskNhan] = useState(0);
   const [newTaskDuyet, setNewTaskDuyet] = useState(0);
 
-  const [fileUp,setFileUp] = useState({})
-  const [idDon, setIdDon] = useState()
+  const [fileUp, setFileUp] = useState({});
+  const [idDon, setIdDon] = useState();
+
+  const id = "NV00001"; // ID động
+
+  
 
   useEffect(() => {
-    const id = "NV00001"; // ID động
     const socket = new SockJS(API_SOCKET);
     stompClient.current = new Client({
       webSocketFactory: () => socket,
@@ -43,7 +46,7 @@ const NhanViecForm = () => {
         console.log("STOMP Connected");
 
         // Nhận danh sách công việc có thể nhận
-        stompClient.current.subscribe("/topic/jobs", (message) => {
+        stompClient.current.subscribe("/topic/jobs/"+ tacVu, (message) => {
           const newJobs = JSON.parse(message.body);
           setListNhan((prevJobs) => {
             if (JSON.stringify(prevJobs) !== JSON.stringify(newJobs)) {
@@ -66,9 +69,6 @@ const NhanViecForm = () => {
           });
         });
 
-    
-      
-
         // Nhận danh sách công việc đang duyệt
         stompClient.current.subscribe("/topic/jobsduyet/" + id, (message) => {
           const newJobs = JSON.parse(message.body);
@@ -79,34 +79,32 @@ const NhanViecForm = () => {
             }
             return prevJobs; // Không cập nhật nếu dữ liệu không đổi
           });
-
         });
 
         // Nhận danh sách công việc đã hoàn thành
-        stompClient.current.subscribe("/topic/jobshoanthanhtk/" + id, (message) => {
-          const newData = JSON.parse(message.body);
-        
-          setListHoanThanh((prevList) => {
-            const newItems = newData.filter((newItem) =>
-              !prevList.some((item) => item.id === newItem.id)
-            );
-        
-            if (newItems.length > 0) {
-              setNewTaskCompleted((prev) => prev + newItems.length);
-              return [...newItems, ...prevList]; // Dữ liệu mới lên đầu
-            }
-        
-            return prevList;
-          });
-        });
+        stompClient.current.subscribe(
+          "/topic/jobshoanthanhtk/" + id,
+          (message) => {
+            const newData = JSON.parse(message.body);
+
+            setListHoanThanh((prevList) => {
+              const newItems = newData.filter(
+                (newItem) => !prevList.some((item) => item.id === newItem.id)
+              );
+
+              if (newItems.length > 0) {
+                setNewTaskCompleted((prev) => prev + newItems.length);
+                return [...newItems, ...prevList]; // Dữ liệu mới lên đầu
+              }
+
+              return prevList;
+            });
+          }
+        );
 
         // Yêu cầu dữ liệu ban đầu từ server
-        if (stompClient.current.connected) {
-          stompClient.current.publish({ destination: "/app/getJobs" });
-          stompClient.current.publish({ destination: "/app/getJobsNhan", body: id });
-          stompClient.current.publish({ destination: "/app/getJobsDuyet", body: id });
-          stompClient.current.publish({ destination: "/app/getJobsTKHoanThanh", body: id });
-        }
+       
+        sendTacVuData()
       },
     });
 
@@ -116,6 +114,32 @@ const NhanViecForm = () => {
       stompClient.current.deactivate();
     };
   }, []);
+
+  useEffect(() => {
+    sendTacVuData();
+  }, [tacVu]);
+  
+  // 3. Hàm gửi dữ liệu theo tacVu
+  const sendTacVuData = () => {
+    if (stompClient.current && stompClient.current.connected && tacVu) {
+      stompClient.current.publish({
+        destination: "/app/getJobs",
+        body: tacVu,
+      });
+      stompClient.current.publish({
+        destination: "/app/getJobsNhan",
+        body: id,
+      });
+      stompClient.current.publish({
+        destination: "/app/getJobsDuyet",
+        body: id,
+      });
+      stompClient.current.publish({
+        destination: "/app/getJobsTKHoanThanh",
+        body: id,
+      });
+    }
+  };
 
   const handleTabClick = (key) => {
     if (key === "4") {
@@ -135,7 +159,7 @@ const NhanViecForm = () => {
     if (stompClient.current) {
       stompClient.current.publish({
         destination: "/app/nhan",
-        body: JSON.stringify(id),
+        body: JSON.stringify({ id, tacVu }),
       });
       toast.success("Bạn đã nhận việc thành công!");
     }
@@ -148,29 +172,38 @@ const NhanViecForm = () => {
   }, [isUpload, fileUp, idDon]);
 
   const handleNopViec = (id) => {
-    setIdDon(id)
-    
-   if(!fileUp || Object.keys(fileUp).length === 0){
-    toast.warning("Gửi file để nộp", {position: "top-center"})
-    showModal()
-    return
-   }
-
+    setIdDon(id);
+    if(tacVu === "THIET_KE"){
+      if (!fileUp || Object.keys(fileUp).length === 0) {
+        toast.warning("Gửi file để nộp", { position: "top-center" });
+        showModal();
+        return;
+      }
   
-      service.updateDonCT(id, fileUp)
+      service.updateDonCT(id, fileUp);
+      
       if (stompClient.current) {
         stompClient.current.publish({
           destination: "/app/noptk",
           body: JSON.stringify(id),
         });
-        handleCancel()
+        handleCancel();
       }
-      setIsUpload(false)
-      setIdDon()
-      setFileUp({})
-  
+      setIsUpload(false);
+      setIdDon();
+      setFileUp({});
+      return
     }
-  
+
+    if (stompClient.current) {
+      stompClient.current.publish({
+        destination: "/app/nopcv",
+        body: JSON.stringify(id),
+      });
+      handleCancel();
+    }
+  };
+
 
   const items = [
     {
@@ -210,7 +243,7 @@ const NhanViecForm = () => {
         />
       ),
     },
-    {
+    tacVu === "THIET_KE" &&{
       key: "3",
       closable: false,
       icon: <CiClock2 />,
@@ -237,7 +270,6 @@ const NhanViecForm = () => {
       children: <HoanThanhCV listHoanThanh={listHoanThanh} />,
     },
   ];
-  
 
   return (
     <Tabs

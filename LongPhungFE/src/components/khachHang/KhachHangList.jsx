@@ -28,6 +28,8 @@ import {
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { API_FILE } from "../../services/constans";
+import {useFilters} from "../../contexts/FilterContext"
+import { filterData } from "../../contexts/filterUtils";
 
 const KhachHangList = () => {
   const service = new KhachHangSerivce();
@@ -45,6 +47,17 @@ const KhachHangList = () => {
   const [open, setOpen] = useState(false);
   const API = API_FILE+"/upload/cus"
   const nhanVien = {id: "NV00001"}
+
+
+  const fieldMapping = {
+    search: "tenKhachHang"
+  }
+
+  const {filters} = useFilters()
+  const filtersData = filterData(khachHangs,filters,fieldMapping,[])
+ 
+  
+
 
   const columns = [
     { title: "Mã khách hàng", dataIndex: "id", key: "id" },
@@ -95,7 +108,7 @@ const KhachHangList = () => {
 
   const createBill = (record) => {
     dispatch(setKhachHang(record));
-    navigate("/donhang/taodon");
+    navigate("/donhang/tao-don");
     
   }
 
@@ -111,17 +124,6 @@ const KhachHangList = () => {
     window.location.href = API_FILE+"/download/cus"
   }
 
-  const onSearch = async (choose, valuse) => {
-      try {
-        setLoading(true)
-        const res = await service.onSearch(choose, valuse);
-        dispatch(setListKH(res.data));
-      } catch (error) {
-        console.log(error);
-      }finally{
-        setLoading(false)
-      }
-    };
 
   const showModal = (data) => {
     if (data) {
@@ -240,12 +242,9 @@ const KhachHangList = () => {
             Xuất excel
           </Button>
         </Col>
-        <Col span={12}>
-          <SearchForm onSearch={onSearch} />
-        </Col>
       </Row>
       <Table
-        dataSource={khachHangs}
+        dataSource={filtersData}
         columns={columns}
         rowKey="id"
         style={{ marginTop: 20 }}

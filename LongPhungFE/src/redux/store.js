@@ -5,6 +5,7 @@ import sanPhamReducer from "./slide/SanPhamSlice"
 import donHangReducer from "./slide/DonHangSlice"
 import quyTrinhreducer from "./slide/QuyTrinhSlice"
 import congDoanReducer from "./slide/CongDoanSlice"
+import taiKhoanReducer from "./slide/TaiKhoanSlice"
 
 
 
@@ -17,6 +18,7 @@ const store = configureStore({
     DonHang: donHangReducer,
     QuyTrinh: quyTrinhreducer,
     CongDoan: congDoanReducer,
+    TaiKhoan: taiKhoanReducer,
   },
 });
 

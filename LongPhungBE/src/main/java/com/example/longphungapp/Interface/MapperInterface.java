@@ -49,4 +49,27 @@ public interface MapperInterface {
     DonHangCT toEntity(DonHangCTDto dto);
     DonHangCTDto toDto(DonHangCT entity);
 
+    DonThuMua toEntity(DonThuMuaDto dto);
+    DonThuMuaDto toDto(DonThuMua entity);
+
+    @Mapping(target = "nguoiTao", ignore = true)
+    Phieu toEntity(PhieuDto dto);
+    @Mapping(target = "nguoiTao", ignore = true)
+    PhieuDto toDto(Phieu entity);
+
+    PhieuChiTiet toEntity(PhieuChiTietDto dto);
+    PhieuChiTietDto toDto(PhieuChiTiet entity);
+
+    Kho toEntity(KhoDto dto);
+    KhoDto toDto(Kho entity);
+
+    TonKho toEntity(TonKhoDto dto);
+    TonKhoDto toDto(TonKho entity);
+
+    VatTu toEntity(VatTuDto dto);
+    VatTuDto toDto(VatTu entity);
+
+    ThongBao toEntity(ThongBaoDto dto);
+    ThongBaoDto toDto(ThongBao entity);
+
 }

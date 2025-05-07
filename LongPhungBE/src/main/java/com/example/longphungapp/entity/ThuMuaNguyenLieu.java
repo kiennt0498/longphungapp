@@ -11,16 +11,14 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "thu_mua_nguyen_lieu")
+@Table(name = "thu_mua_vat_tu")
 public class ThuMuaNguyenLieu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "nguyen_vat_lieu_id")
-    private NguyenVatLieu nguyenVatLieu;
+
 
     @ManyToOne
     @JoinColumn(name = "nhan_vien_id")
@@ -35,5 +33,9 @@ public class ThuMuaNguyenLieu {
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
     private TrangThai trangThai;
+
+    @ManyToOne
+    @JoinColumn(name = "vat_tu_id")
+    private VatTu vatTu;
 
 }
