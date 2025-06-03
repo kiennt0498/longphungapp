@@ -3,12 +3,16 @@ package com.example.longphungapp.service;
 import com.example.longphungapp.Exception.BadReqException;
 import com.example.longphungapp.Interface.MapperInterface;
 import com.example.longphungapp.dto.NhanVienDto;
+import com.example.longphungapp.dto.ResLichSuDto;
+import com.example.longphungapp.entity.LichSuCV;
 import com.example.longphungapp.entity.NhanVien;
 import com.example.longphungapp.entity.TaiKhoan;
 import com.example.longphungapp.fileEnum.BoPhan;
 import com.example.longphungapp.fileEnum.ChucVu;
+import com.example.longphungapp.repository.LichSuCVRepository;
 import com.example.longphungapp.repository.NhanVienRepository;
 import com.example.longphungapp.repository.TaiKhoanRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 public class NhanVienService {
 
 
@@ -31,12 +36,15 @@ public class NhanVienService {
     @Autowired
     TaiKhoanRepository TKDao;
 
+    private final LichSuCVRepository lichSuCVRepository;
+
 
     public List<NhanVien> findAll() {
         return dao.findAll();
     }
 
     public NhanVienDto findById(String aLong) {
+
         var found = dao.findById(aLong).orElseThrow(()-> new BadReqException("Không tìm thấy nhân viên"));
         var dto = MapperInterface.MAPPER.toDto(found);
         var tkDto = MapperInterface.MAPPER.toDto(found.getTaiKhoan());
@@ -44,6 +52,15 @@ public class NhanVienService {
 
         return dto;
     }
+
+    public NhanVien findByTaiKhoan_Sdt(String sdt) {
+        var found = dao.findByTaiKhoan_Sdt(sdt);
+        if(found == null){
+            throw new BadReqException("Không tìm thấy nhân viên");
+        }
+        return found;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public void delete(String id) {
         var entity = dao.findById(id).orElseThrow(()->new BadReqException("Không tìm thấy nhân viên"));
@@ -154,5 +171,12 @@ public class NhanVienService {
 
     public List<NhanVien> findByBoPhan(BoPhan bp) {
         return dao.findByBoPhan(bp);
+    }
+
+    public List<LichSuCV> getLichSu(ResLichSuDto dto){
+        var list =lichSuCVRepository.findByNhanVien_IdAndNgayHoanThanhBetween(dto.getMaNV(),dto.getStart(),dto.getEnd());
+        var newList = list.reversed();
+        System.out.println(newList.size());
+        return newList;
     }
 }

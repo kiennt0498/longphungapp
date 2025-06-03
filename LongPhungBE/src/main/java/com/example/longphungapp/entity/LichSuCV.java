@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -32,6 +33,8 @@ public class LichSuCV {
     @Column(name = "trang_thai")
     private TrangThai trangThai;
 
+    @Column(name = "kpi", precision = 19, scale = 2)
+    private BigDecimal kpi;
 
     @PrePersist
     public void prePersist() {

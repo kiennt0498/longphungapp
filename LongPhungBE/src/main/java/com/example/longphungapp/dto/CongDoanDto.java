@@ -23,6 +23,8 @@ public class CongDoanDto implements Serializable {
     private Double heSoTienCong;
     private BoPhan boPhan;
     private TacVu tacVu;
+    private Double dieuChinh;
+    private BigDecimal kpiGoc;
 
 
 }

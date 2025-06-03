@@ -2,6 +2,12 @@
 import dayjs from "dayjs";
 
 export function filterData(data, filters, fieldMapping = {}, dynamicKeys = []) {
+  const filterMonth = filters.month
+    ? dayjs(filters.month).format("YYYY-MM")
+    : null;
+  const filterDay = filters.day
+    ? dayjs(filters.day).format("DD-MM-YYYY")
+    : null;
   return data.filter((item) => {
     const getField = (key, fallback) =>
       item[fieldMapping[key] || fallback || key];
@@ -20,14 +26,12 @@ export function filterData(data, filters, fieldMapping = {}, dynamicKeys = []) {
       !filters.tacVu?.length || filters.tacVu.includes(getField("tacVu"));
 
     const matchMonth =
-      !filters.month ||
-      dayjs(getField("ngayTao", "ngayTao")).format("YYYY-MM") ===
-        dayjs(filters.month).format("YYYY-MM");
+      !filterMonth ||
+      dayjs(getField("ngayTao", "ngayTao")).format("YYYY-MM") === filterMonth;
 
     const matchDay =
-      !filters.day ||
-      dayjs(getField("ngayTao", "ngayTao")).format("DD-MM-YYYY") ===
-        dayjs(filters.day).format("DD-MM-YYYY");
+      !filterDay ||
+      dayjs(getField("ngayTao", "ngayTao")).format("DD-MM-YYYY") === filterDay;
 
     const matchDynamic = dynamicKeys.every((key) => {
       const values = filters[key];

@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
-  Form,
-  Input,
   Button,
   Card,
   Space,
   Table,
   Modal,
   Tooltip,
-  Row,
-  Col,
 } from "antd";
-import { PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { FaCartPlus } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addQT,
   deleteQT,
   setList,
   updateQT,
@@ -24,6 +19,8 @@ import {
 import QuyTrinhService from "../../services/QuyTrinhService";
 import NhanVienService from "../../services/NhanVienService";
 import QTChiTiet from "./QTChiTiet";
+import { useFilters } from "../../contexts/FilterContext";
+import { filterData } from "../../contexts/filterUtils";
 
 const QuyTrinhList = () => {
   const service = new QuyTrinhService();
@@ -36,11 +33,16 @@ const QuyTrinhList = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const [listCongDoan, setListCongDoan] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState("");
   const [listNV, setListNV] = useState([]);
   const [selectedNhanVienQL, setSelectedNhanVienQL] = useState(null)
   const [quyTrinh, setQuyTrinh] = useState({})
+
+  const fieldMapping = {
+    search: "tenQuyTrinh"
+  }
+
+  const {filters} = useFilters()
+  const filtersData = filterData(quyTrinhs,filters,fieldMapping,[])
 
 
   const processColumns = [
@@ -156,9 +158,6 @@ const QuyTrinhList = () => {
     getDataList();
   }, []);
 
-  const filteredQuyTrinhs = quyTrinhs.filter((quyTrinh) =>
-    (quyTrinh.tenQuyTrinh || "").toLowerCase().includes(searchKeyword.toLowerCase())
-  );
 
   const processModal = (
     <Modal
@@ -183,16 +182,8 @@ const QuyTrinhList = () => {
       title="Danh sách quy trình"
     >
       <Space direction="vertical" style={{ width: "100%", marginTop: 10 }}>
-        <Row>
-          <Col span={11} style={{ marginLeft:"2%" }}>
-            <Input
-              placeholder="Tìm kiếm"
-              onChange={(e) => setSearchKeyword(e.target.value)}
-            />
-          </Col>
-        </Row>
         <Table
-          dataSource={filteredQuyTrinhs}
+          dataSource={filtersData}
           columns={processColumns}
           rowKey="id"
           pagination={{ pageSize: 5 }}

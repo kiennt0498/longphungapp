@@ -47,9 +47,11 @@ const DonHangForm = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const idNV = "NV00001";
+  const idNV = localStorage.getItem("maNV");
 
- 
+  console.log(idNV);
+  
+
   const createDon = async (sanPham,gia) =>{
      const newData = {
         don: {
@@ -63,7 +65,8 @@ const DonHangForm = () => {
             chieuDai: i.chieuDai,
             chieuRong: i.chieuRong,
             soLuong: i.soLuong,
-            donGia: i.donGia
+            donGia: i.donGia,
+            giaGoc: i.giaGoc
           };
         })
       }

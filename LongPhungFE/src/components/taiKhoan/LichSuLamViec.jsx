@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import AccService from "../../services/AccService";
 import { Card, Col, Divider, Row, Statistic, Table } from "antd";
-import { formatDate } from "../../helpers/formatData";
+import { formatCurrency, formatDate } from "../../helpers/formatData";
+import { useSelector } from "react-redux";
+import { useFilters } from "../../contexts/FilterContext";
+import { filterData } from "../../contexts/filterUtils";
 
 function LichSuLamViec() {
   const [lichSuLamViec, setLichSuLamViec] = useState([]);
@@ -9,41 +12,26 @@ function LichSuLamViec() {
   const [congViecHoanThanh, setCongViecHoanThanh] = useState(0);
   const [congViecBiHuy, setCongViecBiHuy] = useState(0);
   const [tongKPI, setTongKPI] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const service = new AccService();
+  const maNV = localStorage.getItem("maNV");
 
-  const sampleData = [
-    {
-      stt: 1,
-      congViec: "Lập kế hoạch dự án",
-      ngayLam: "2025-04-25",
-      ngayHT: "2025-04-26",
-      tinhTrang: "Hoàn thành",
-      KPI: 8.5,
-    },
-    {
-      stt: 2,
-      congViec: "Nghiên cứu thị trường",
-      ngayLam: "2025-04-24",
-      ngayHT: "2025-04-24",
-      tinhTrang: "Đã nhận",
-      KPI: 7.0,
-    },
-    {
-      stt: 3,
-      congViec: "Tạo báo cáo tài chính",
-      ngayLam: "2025-04-20",
-      ngayHT: "2025-04-22",
-      tinhTrang: "Hoàn thành",
-      KPI: 9.0,
-    },
-    {
-      stt: 4,
-      congViec: "Phân tích dữ liệu khách hàng",
-      ngayLam: "2025-04-18",
-      ngayHT: "2025-04-19",
-      tinhTrang: "Bị hủy",
-      KPI: 0.0,
-    },
-  ];
+  const getData = async () => {
+    const data = {
+      maNV: maNV,
+      start: "2025-05-01",
+      end: "2025-05-31",
+    };
+
+    try {
+      const res = await service.getListCV(data);
+      setLichSuLamViec(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log(lichSuLamViec);
 
   const columns = [
     {
@@ -54,113 +42,141 @@ function LichSuLamViec() {
     },
     {
       title: "Công việc",
-      dataIndex: "congViec",
-      key: "congViec",
-    },
-    {
-      title: "Ngày làm",
-      dataIndex: "ngayLam",
-      key: "ngayLam",
-      render: (_, record) => formatDate(record.ngayLam)
+      dataIndex: "congViecCT",
+      key: "congViecCT",
+      render: (_, record) => {
+        const congViec = record.congViecCT;
+        const congDoan = !congViec
+          ? "Lên"
+          : congViec.congDoan
+          ? congViec.congDoan.tenCongDoan
+          : "Thiết kế";
+
+        const maDon = congViec?.donHangCT?.donHang?.maDonHang || "";
+
+        return (
+          <label>
+            {congDoan} đơn {maDon}
+          </label>
+        );
+      },
     },
     {
       title: "Ngày hoàn thành",
       dataIndex: "ngayHT",
       key: "ngayHT",
-      render: (_, record) => formatDate(record.ngayHT)
+      render: (_, record) => formatDate(record.ngayHoanThanh),
     },
     {
       title: "Tình trạng",
-      dataIndex: "tinhTrang",
-      key: "tinhTrang",
-      render: (text) => {
+      dataIndex: "trangThai",
+      key: "trangThai",
+      render: (value) => {
+        let newText = "";
         let color = "";
         let fontWeight = "normal";
-        if (text === "Hoàn thành") {
+
+        if (value === "DA_GIAO") {
+          newText = "Đã giao";
           color = "green";
           fontWeight = "bold";
-        } else if (text === "Đã nhận") {
+        } else if (value === "DANG_SAN_XUAT") {
+          newText = "Đang sản xuất";
           color = "orange";
-        } else if (text === "Bị hủy") {
+        } else if (value === "HUY") {
+          newText = "Bị hủy";
           color = "red";
           fontWeight = "bold";
+        } else {
+          newText = value;
         }
 
-        return <span style={{ color, fontWeight }}>{text}</span>;
+        return <span style={{ color, fontWeight }}>{newText}</span>;
       },
     },
     {
       title: "KPI",
-      dataIndex: "KPI",
-      key: "KPI",
-      render: (text) => (
-        <span style={{ color: text >= 8 ? "green" : "red" }}>{text}</span>
-      ),
+      dataIndex: "kpi",
+      key: "kpi",
+      render: (_, record) => <span>{formatCurrency(record.kpi)}</span>,
     },
   ];
 
   useEffect(() => {
-    // Sử dụng dữ liệu mẫu trong khi phát triển
-    const res = sampleData;
-    setLichSuLamViec(res);
+    const daNhan = lichSuLamViec.length;
 
-    // Cập nhật các chỉ số thống kê từ dữ liệu mẫu
-    const congViecDaNhan = res.filter(item => item.tinhTrang === 'Đã nhận').length;
-    const congViecHoanThanh = res.filter(item => item.tinhTrang === 'Hoàn thành').length;
-    const congViecBiHuy = res.filter(item => item.tinhTrang === 'Bị hủy').length;
-    const tongKPI = res
-      .filter(item => item.tinhTrang === "Hoàn thành")
-      .reduce((sum, item) => sum + (item.KPI || 0), 0);
+    const hoanThanhList = lichSuLamViec.filter(
+      (item) => item.trangThai === "DA_GIAO"
+    );
 
-    setCongViecDaNhan(congViecDaNhan);
-    setCongViecHoanThanh(congViecHoanThanh);
-    setCongViecBiHuy(congViecBiHuy);
+    const biHuy = lichSuLamViec.filter(
+      (item) => item.trangThai === "HUY"
+    ).length;
+
+    const tongKPI = hoanThanhList.reduce((sum, item) => {
+      return sum + (item.kpi || 0); // phòng khi item.kpi bị null hoặc undefined
+    }, 0);
+
+    setCongViecDaNhan(daNhan);
+    setCongViecHoanThanh(hoanThanhList.length);
+    setCongViecBiHuy(biHuy);
     setTongKPI(tongKPI.toFixed(2));
+  }, [lichSuLamViec]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    getData();
+    setIsLoading(false);
   }, []);
 
   return (
     <>
       <Row gutter={16} style={{ textAlign: "center" }}>
         <Col span={6}>
-          <Card >
+          <Card>
             <Statistic
               title={<strong>Công việc đã nhận</strong>}
               value={congViecDaNhan}
-              
             />
           </Card>
         </Col>
         <Col span={6}>
-          <Card >
+          <Card>
             <Statistic
               title={<strong>Công việc hoàn thành</strong>}
               value={congViecHoanThanh}
-              valueStyle={{ color: 'green' }}
+              valueStyle={{ color: "green" }}
             />
           </Card>
         </Col>
         <Col span={6}>
-          <Card >
+          <Card>
             <Statistic
               title={<strong>Công việc bị hủy</strong>}
               value={congViecBiHuy}
-              valueStyle={{ color: 'red' }}
+              valueStyle={{ color: "red" }}
             />
           </Card>
         </Col>
         <Col span={6}>
-          <Card >
+          <Card>
             <Statistic
               title={<strong>Tổng KPI</strong>}
               value={tongKPI}
               precision={2}
+              formatter={(value) => formatCurrency(Number(value))}
               style={{ color: "#faad14", fontWeight: "bold" }}
             />
           </Card>
         </Col>
       </Row>
       <Divider />
-      <Table columns={columns} dataSource={lichSuLamViec} />
+      <Table
+        loading={isLoading}
+        columns={columns}
+        dataSource={lichSuLamViec}
+        rowKey={"id"}
+      />
     </>
   );
 }

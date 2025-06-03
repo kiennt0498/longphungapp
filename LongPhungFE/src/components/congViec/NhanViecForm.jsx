@@ -13,9 +13,11 @@ import { Client } from "@stomp/stompjs";
 import { toast } from "react-toastify";
 import DonHangService from "../../services/DonHangService";
 
-const NhanViecForm = ({tacVu}) => {
+const NhanViecForm = () => {
   const stompClient = useRef(null);
   const service = new DonHangService();
+
+  const tacVu = localStorage.getItem("tacVu");
 
   const [check, setCheck] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
@@ -34,7 +36,7 @@ const NhanViecForm = ({tacVu}) => {
   const [fileUp, setFileUp] = useState({});
   const [idDon, setIdDon] = useState();
 
-  const id = "NV00001"; // ID động
+  const maNV =  localStorage.getItem("maNV")
 
   
 
@@ -58,7 +60,7 @@ const NhanViecForm = ({tacVu}) => {
         });
 
         // Nhận danh sách công việc đã nhận
-        stompClient.current.subscribe("/topic/jobsNhan/" + id, (message) => {
+        stompClient.current.subscribe("/topic/jobsNhan/" + maNV, (message) => {
           const newJobs = JSON.parse(message.body);
           setListDaNhan((prevJobs) => {
             if (JSON.stringify(prevJobs) !== JSON.stringify(newJobs)) {
@@ -70,7 +72,7 @@ const NhanViecForm = ({tacVu}) => {
         });
 
         // Nhận danh sách công việc đang duyệt
-        stompClient.current.subscribe("/topic/jobsduyet/" + id, (message) => {
+        stompClient.current.subscribe("/topic/jobsduyet/" + maNV, (message) => {
           const newJobs = JSON.parse(message.body);
           setListDuyet((prevJobs) => {
             if (JSON.stringify(prevJobs) !== JSON.stringify(newJobs)) {
@@ -83,7 +85,7 @@ const NhanViecForm = ({tacVu}) => {
 
         // Nhận danh sách công việc đã hoàn thành
         stompClient.current.subscribe(
-          "/topic/jobshoanthanhtk/" + id,
+          "/topic/jobshoanthanhtk/" + maNV,
           (message) => {
             const newData = JSON.parse(message.body);
 
@@ -118,6 +120,12 @@ const NhanViecForm = ({tacVu}) => {
   useEffect(() => {
     sendTacVuData();
   }, [tacVu]);
+
+  console.log(listNhan);
+  console.log(listDaNhan);
+  console.log(listDuyet);
+  console.log(listHoanThanh);
+  
   
   // 3. Hàm gửi dữ liệu theo tacVu
   const sendTacVuData = () => {
@@ -128,15 +136,15 @@ const NhanViecForm = ({tacVu}) => {
       });
       stompClient.current.publish({
         destination: "/app/getJobsNhan",
-        body: id,
+        body: maNV,
       });
       stompClient.current.publish({
         destination: "/app/getJobsDuyet",
-        body: id,
+        body: maNV,
       });
       stompClient.current.publish({
         destination: "/app/getJobsTKHoanThanh",
-        body: id,
+        body: maNV,
       });
     }
   };
@@ -159,7 +167,7 @@ const NhanViecForm = ({tacVu}) => {
     if (stompClient.current) {
       stompClient.current.publish({
         destination: "/app/nhan",
-        body: JSON.stringify({ id, tacVu }),
+        body: JSON.stringify({ id, maNV, tacVu }),
       });
       toast.success("Bạn đã nhận việc thành công!");
     }
@@ -185,7 +193,7 @@ const NhanViecForm = ({tacVu}) => {
       if (stompClient.current) {
         stompClient.current.publish({
           destination: "/app/noptk",
-          body: JSON.stringify(id),
+          body: JSON.stringify({id, maNV, tacVu}),
         });
         handleCancel();
       }
@@ -198,7 +206,7 @@ const NhanViecForm = ({tacVu}) => {
     if (stompClient.current) {
       stompClient.current.publish({
         destination: "/app/nopcv",
-        body: JSON.stringify(id),
+        body: JSON.stringify({id, maNV, tacVu}),
       });
       handleCancel();
     }

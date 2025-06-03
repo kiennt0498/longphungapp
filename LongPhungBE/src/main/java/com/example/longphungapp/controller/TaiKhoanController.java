@@ -1,10 +1,10 @@
 package com.example.longphungapp.controller;
 
 import com.example.longphungapp.dto.TaiKhoanDto;
+import com.example.longphungapp.dto.ResLichSuDto;
 import com.example.longphungapp.service.NhanVienService;
 import com.example.longphungapp.service.TaiKhoanService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,6 +29,11 @@ public class TaiKhoanController {
     }
     @GetMapping("/getdata/{id}")
     public ResponseEntity getData(@PathVariable String id){
-        return new ResponseEntity<>(nhanVienService.findById(id),HttpStatus.OK);
+        return new ResponseEntity<>(nhanVienService.findByTaiKhoan_Sdt(id),HttpStatus.OK);
+    }
+
+    @PostMapping("listcv")
+    public ResponseEntity lichSuLamViec(@RequestBody ResLichSuDto dto){
+        return ResponseEntity.ok(nhanVienService.getLichSu(dto));
     }
 }

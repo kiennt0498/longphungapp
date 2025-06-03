@@ -60,8 +60,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-05-07T08:07:58+0700",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.42.0.z20250331-1358, environment: Java 21.0.6 (Eclipse Adoptium)"
+    date = "2025-06-03T08:11:06+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.42.0.v20250514-1000, environment: Java 21.0.7 (Eclipse Adoptium)"
 )
 public class MapperInterfaceImpl implements MapperInterface {
 
@@ -336,11 +336,13 @@ public class MapperInterfaceImpl implements MapperInterface {
         CongDoan congDoan = new CongDoan();
 
         congDoan.setCongNV( dto.getCongNV() );
+        congDoan.setDieuChinh( dto.getDieuChinh() );
         congDoan.setGiaMuaNguyenLieu( dto.getGiaMuaNguyenLieu() );
         congDoan.setHeSoThuMua( dto.getHeSoThuMua() );
         congDoan.setHeSoTienCong( dto.getHeSoTienCong() );
         congDoan.setId( dto.getId() );
         congDoan.setKhauHaoMay( dto.getKhauHaoMay() );
+        congDoan.setKpiGoc( dto.getKpiGoc() );
         congDoan.setTacVu( dto.getTacVu() );
         congDoan.setTenCongDoan( dto.getTenCongDoan() );
 
@@ -356,11 +358,13 @@ public class MapperInterfaceImpl implements MapperInterface {
         CongDoanDto congDoanDto = new CongDoanDto();
 
         congDoanDto.setCongNV( entity.getCongNV() );
+        congDoanDto.setDieuChinh( entity.getDieuChinh() );
         congDoanDto.setGiaMuaNguyenLieu( entity.getGiaMuaNguyenLieu() );
         congDoanDto.setHeSoThuMua( entity.getHeSoThuMua() );
         congDoanDto.setHeSoTienCong( entity.getHeSoTienCong() );
         congDoanDto.setId( entity.getId() );
         congDoanDto.setKhauHaoMay( entity.getKhauHaoMay() );
+        congDoanDto.setKpiGoc( entity.getKpiGoc() );
         congDoanDto.setTacVu( entity.getTacVu() );
         congDoanDto.setTenCongDoan( entity.getTenCongDoan() );
 
@@ -380,6 +384,7 @@ public class MapperInterfaceImpl implements MapperInterface {
         donHangCT.setDonGia( dto.getDonGia() );
         donHangCT.setDonHang( donHangDtoToDonHang( dto.getDonHang() ) );
         donHangCT.setGhiChu( dto.getGhiChu() );
+        donHangCT.setGiaGoc( dto.getGiaGoc() );
         donHangCT.setId( dto.getId() );
         donHangCT.setImages( imagesDtoToImages( dto.getImages() ) );
         donHangCT.setQuyTrinh( quyTrinhDtoToQuyTrinh( dto.getQuyTrinh() ) );
@@ -403,6 +408,7 @@ public class MapperInterfaceImpl implements MapperInterface {
         donHangCTDto.setDonGia( entity.getDonGia() );
         donHangCTDto.setDonHang( donHangToDonHangDto( entity.getDonHang() ) );
         donHangCTDto.setGhiChu( entity.getGhiChu() );
+        donHangCTDto.setGiaGoc( entity.getGiaGoc() );
         donHangCTDto.setId( entity.getId() );
         donHangCTDto.setImages( imagesToImagesDto( entity.getImages() ) );
         donHangCTDto.setQuyTrinh( quyTrinhToQuyTrinhDto( entity.getQuyTrinh() ) );

@@ -11,3 +11,4 @@ export const API_SOCKET = `${API_BASE}/api/ws`;
 export const API_NGUYEN_LIEU = `${API_BASE}/api/v1/nguyenlieu`;
 export const API_KHO = `${API_BASE}/api/v1/kho`;
 export const API_ACC = `${API_BASE}/api/v1/acc`;
+export const API_AUTH = `${API_BASE}/api/v1/auth`;

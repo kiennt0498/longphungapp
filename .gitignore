@@ -1,3 +1,5 @@
 LongPhungBE/tager/
 LongPhungFE/node_modules/
 LongPhungFE/.cache/
+docker-compose.yml
+nginx/

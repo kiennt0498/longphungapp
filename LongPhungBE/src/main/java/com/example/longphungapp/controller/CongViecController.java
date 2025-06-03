@@ -29,21 +29,22 @@ public class CongViecController {
 
     @MessageMapping("/getJobs")
     public void getJobs(String tacVu) {
-        sendJobsToTopic("/topic/jobs/"+ tacVu, service.findByTrangThaiAndTacVu(TrangThai.CHO_NHAN_DON, tacVu));
+        var jobs = service.findByTrangThaiAndTacVu(TrangThai.CHO_NHAN_DON, tacVu);
+        System.out.println(jobs.size());
+        sendJobsToTopic("/topic/jobs/"+ tacVu, jobs);
     }
 
     @MessageMapping("/nhan")
     public void acceptJob(NhanViecReq req) {
         Long id = req.getId();
         String tacVu = req.getTacVu();
+        String maNV = req.getMaNV();
 
-        service.setViec(id, TrangThai.DANG_SAN_XUAT);
+        service.setViec(id,maNV, TrangThai.DANG_SAN_XUAT);
 
         getJobs(tacVu);
 
-        var nv = service.getNhanVienTK(id);
-
-        sendJobsToTopic("/topic/jobsNhan/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT));
+        sendJobsToTopic("/topic/jobsNhan/" + maNV, service.findByNhanVien_IdAndTrangThai(maNV, TrangThai.DANG_SAN_XUAT));
     }
 
     @MessageMapping("/getJobsNhan")
@@ -53,17 +54,20 @@ public class CongViecController {
     }
 
     @MessageMapping("noptk")
-    public void nop(Long id) {
-        service.setViec(id, TrangThai.CHO_DUYET);
-        var nv = service.getNhanVienTK(id);
+    public void nop(NhanViecReq req) {
+        service.setViec(req.getId(), req.getMaNV(), TrangThai.CHO_DUYET);
 
-        sendJobsToTopic("/topic/jobsNhan/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT));
-        sendJobsToTopic("/topic/jobsduyet/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET));
+
+        sendJobsToTopic("/topic/jobsNhan/" + req.getMaNV(), service.findByNhanVien_IdAndTrangThai(req.getMaNV(), TrangThai.DANG_SAN_XUAT));
+        sendJobsToTopic("/topic/jobsduyet/" + req.getMaNV(), service.findByNhanVien_IdAndTrangThai(req.getMaNV(), TrangThai.CHO_DUYET));
     }
 
     @MessageMapping("nopcv")
-    public void nopcv(Long id) {
-        service.setViec(id, TrangThai.DA_GIAO);
+    public void nopcv(NhanViecReq req) {
+        Long id = req.getId();
+        String maNV = req.getMaNV();
+
+        service.setViec(id, maNV,TrangThai.DA_GIAO);
         String tv = service.createCVCT(id);
         var nv = service.getNhanVienTK(id);
         sendJobsToTopic("/topic/jobshoanthanhtk/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DA_GIAO));
@@ -74,27 +78,35 @@ public class CongViecController {
     @MessageMapping("/getJobsDuyet")
     public void getJobsDuyet(@Payload String id) {
         id = cleanId(id);
-        sendJobsToTopic("/topic/jobsduyet/" + id, service.findByNhanVien_IdAndTrangThai(id, TrangThai.CHO_DUYET));
+        var jobs = service.findByNhanVien_IdAndTrangThai(id, TrangThai.CHO_DUYET);
+        System.out.println("jobs duyet: " + id + " " + jobs.size());
+        sendJobsToTopic("/topic/jobsduyet/" + id, jobs);
     }
 
     @MessageMapping("/duyet")
-    public void duyetSP(Long id) {
-        service.setViec(id, TrangThai.DA_GIAO);
+    public void duyetSP(NhanViecReq req) {
+        Long id = req.getId();
+        String maNV = req.getMaNV();
+        System.out.println("id đơnz: "+id);
+        service.setViec(id,maNV, TrangThai.DA_GIAO);
         service.setDonHangCT(id);
+        service.createFistJobs(id);
 
-        var nv = service.getNhanVienTK(id);
 
-        tbService.thongBaoDonDuyet(nv);
-        updateJobsAfterApproval(nv);
+        tbService.thongBaoDonDuyet(maNV);
+        updateJobsAfterApproval(maNV);
     }
 
     @MessageMapping("/lamlai")
-    public void lamLaiSP(Long id) {
-        service.setViec(id, TrangThai.DANG_SAN_XUAT);
-        var nv = service.getNhanVienTK(id);
+    public void lamLaiSP(NhanViecReq req) {
+        Long id = req.getId();
+        String maNV = req.getMaNV();
 
-        sendJobsToTopic("/topic/jobsNhan/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.DANG_SAN_XUAT));
-        sendJobsToTopic("/topic/jobsduyet/" + nv, service.findByNhanVien_IdAndTrangThai(nv, TrangThai.CHO_DUYET));
+        service.setViec(id,maNV, TrangThai.DANG_SAN_XUAT);
+
+
+        sendJobsToTopic("/topic/jobsNhan/" + maNV, service.findByNhanVien_IdAndTrangThai(maNV, TrangThai.DANG_SAN_XUAT));
+        sendJobsToTopic("/topic/jobsduyet/" + maNV, service.findByNhanVien_IdAndTrangThai(maNV, TrangThai.CHO_DUYET));
     }
 
     @MessageMapping("/getJobsTKHoanThanh")

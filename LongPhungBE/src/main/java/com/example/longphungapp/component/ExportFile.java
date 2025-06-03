@@ -46,8 +46,7 @@ public class ExportFile {
             row.createCell(2).setCellValue(nv.getTaiKhoan().getSdt());
             row.createCell(3).setCellValue(nv.getDiaChi());
             row.createCell(4).setCellValue(nv.getBoPhan().name());
-            row.createCell(5).setCellValue(nv.getChucVu().name());
-            row.createCell(6).setCellValue(nv.getTacVu().name());
+            row.createCell(5).setCellValue(nv.getTacVu().name());
         }
 
         // Ghi dữ liệu vào output stream

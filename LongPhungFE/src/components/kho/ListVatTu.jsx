@@ -120,6 +120,9 @@ const ListVatTu = () => {
     return matchLoai && matchSearch;
   });
 
+  console.log(filteredData);
+  
+
   const columns = [
     {
       title: "Số hiệu kho",

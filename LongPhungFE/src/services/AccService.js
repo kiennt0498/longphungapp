@@ -1,24 +1,20 @@
-import axios from "axios"
+
+import axiosClient from "../redux/axiosClient"
 import { API_ACC } from "./constans"
 
 export default class AccService  {
-    login = async (data) =>{
-        return await axios.post(API_ACC+"/login", data)
-    }
-    logout = async () =>{
-        return await axios.post(API_ACC+"/logout")
-    }
+  
     getAcc = async (data) =>{
-        return await axios.get(API_ACC+"/getdata/"+data)
+        return await axiosClient.get(API_ACC+"/getdata/"+data)
     }
     updateAcc = async (data) =>{
-        return await axios.put(API_ACC+"/update", data)
+        return await axiosClient.put(API_ACC+"/update", data)
     }
     changePass = async (data) =>{
-        return await axios.put(API_ACC+"/changepass", data)
+        return await axiosClient.put(API_ACC+"/changepass", data)
     }
-    getListCV = async () =>{
-        return await axios.get(API_ACC+"/listcv")
+    getListCV = async (data) =>{
+        return await axiosClient.post(API_ACC+"/listcv",data)
     }
     
 

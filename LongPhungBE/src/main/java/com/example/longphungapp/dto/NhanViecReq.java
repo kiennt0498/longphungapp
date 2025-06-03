@@ -6,5 +6,5 @@ import lombok.Data;
 public class NhanViecReq {
     private Long id;
     private String tacVu;
-
+    private String maNV;
 }

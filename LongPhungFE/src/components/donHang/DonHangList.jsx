@@ -1,6 +1,5 @@
 import { Badge, Form, Tabs } from "antd";
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import DonHangTabsTK from "./DonHangTabsTK";
 import DonHangTabsCD from "./DonHangTabsCD";
 import DonHangtabsHT from "./DonHangtabsHT";
@@ -13,6 +12,15 @@ import { toast } from "react-toastify";
 import DonHangService from "../../services/DonHangService";
 import ModalHuyDon from "./ModalHuyDon";
 import ImageService from "../../services/ImageService";
+
+const isEqual = (a, b) => {
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  return keysA.every(key => isEqual(a[key], b[key]));
+};
 
 const DonHangList = () => {
   const [listTK, setListTK] = useState([]);
@@ -28,256 +36,113 @@ const DonHangList = () => {
   const [idHuy, setIdHuy] = useState("");
   const [form] = Form.useForm();
   const [openHuy, setOpenHuy] = useState(false);
-
-  const service = new DonHangService();
-  const imgService = new ImageService();
+  const maNV = localStorage.getItem("maNV");
 
   const stompClient = useRef(null);
+  const service = useMemo(() => new DonHangService(), []);
+  const imgService = useMemo(() => new ImageService(), []);
 
-  const handleEdit = (data) => {
-    console.log(data);
-  };
-  const showModalHuy = (id) => {
-    setIdHuy(id);
-    setOpenHuy(true);
-  };
-
-  const closeModalHuy = () => {
-    setOpenHuy(false);
-  };
+  const updateStateSafely = useCallback((setter, newData, countSetter) => {
+    setter(prev => {
+      if (isEqual(prev, newData)) return prev;
+      countSetter(newData.length);
+      return newData;
+    });
+  }, []);
 
   useEffect(() => {
-    const id = "NV00001";
     const socket = new SockJS(API_SOCKET);
     stompClient.current = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
-        const updateStateSafely = (setter, newData, countSetter) => {
-          setter((prevData) => {
-            if (JSON.stringify(prevData) !== JSON.stringify(newData)) {
-              countSetter(newData.length);
-              return newData;
-            }
-            return prevData;
-          });
-        };
-
-        stompClient.current.subscribe("/topic/donhang/" + id, (message) => {
-          const data = JSON.parse(message.body);
-          updateStateSafely(setListTK, data, setCountTK);
+        stompClient.current.subscribe(`/topic/donhang`, (msg) => {
+          updateStateSafely(setListTK, JSON.parse(msg.body), setCountTK);
+        });
+        stompClient.current.subscribe(`/topic/jobsduyet/${maNV}`, (msg) => {
+          updateStateSafely(setListCD, JSON.parse(msg.body), setCountCD);
+        });
+        stompClient.current.subscribe(`/topic/donduyet/${maNV}`, (msg) => {
+          updateStateSafely(setListXN, JSON.parse(msg.body), setCountXN);
+        });
+        stompClient.current.subscribe(`/topic/donhoanthanh/${maNV}`, (msg) => {
+          updateStateSafely(setListHT, JSON.parse(msg.body), setCountHT);
+        });
+        stompClient.current.subscribe(`/topic/donhuy/${maNV}`, (msg) => {
+          updateStateSafely(setListHuy, JSON.parse(msg.body), setCountHuy);
         });
 
-        stompClient.current.subscribe("/topic/jobsduyet/" + id, (message) => {
-          const data = JSON.parse(message.body);
-          updateStateSafely(setListCD, data, setCountCD);
+        ['getDonHang','getJobsDuyet','getDonDuyet','getDonHT','getDonHuy'].forEach(dest => {
+          stompClient.current.publish({ destination: `/app/${dest}`, body: maNV });
         });
-
-        stompClient.current.subscribe("/topic/donduyet/" + id, (message) => {
-          const data = JSON.parse(message.body);
-          updateStateSafely(setListXN, data, setCountXN);
-        });
-
-        stompClient.current.subscribe(
-          "/topic/donhoanthanh/" + id,
-          (message) => {
-            const data = JSON.parse(message.body);
-            updateStateSafely(setListHT, data, setCountHT);
-          }
-        );
-
-        stompClient.current.subscribe("/topic/donhuy/" + id, (message) => {
-          const data = JSON.parse(message.body);
-          updateStateSafely(setListHuy, data, setCountHuy);
-        });
-
-        if (stompClient.current.connected) {
-          stompClient.current.publish({
-            destination: "/app/getDonHang",
-            body: id,
-          });
-          stompClient.current.publish({
-            destination: "/app/getJobsDuyet",
-            body: id,
-          });
-          stompClient.current.publish({
-            destination: "/app/getDonDuyet",
-            body: id,
-          });
-          stompClient.current.publish({
-            destination: "/app/getDonHT",
-            body: id,
-          });
-          stompClient.current.publish({
-            destination: "/app/getDonHuy",
-            body: id,
-          });
-        }
       },
     });
 
     stompClient.current.activate();
+    return () => stompClient.current?.deactivate();
+  }, [maNV, updateStateSafely]);
 
-    return () => {
-      if (stompClient.current) {
-        stompClient.current.deactivate();
-      }
-    };
-  }, []);
+  const handleEdit = useCallback((data) => console.log(data), []);
+  const showModalHuy = useCallback((id) => { setIdHuy(id); setOpenHuy(true); }, []);
+  const closeModalHuy = useCallback(() => setOpenHuy(false), []);
 
-  const handleDuyetSP = (id) => {
-    if (stompClient.current) {
-      stompClient.current.publish({
-        destination: "/app/duyet",
-        body: JSON.stringify(id),
-      });
-      toast.success("Bạn đã duyệt đơn thành công!");
-    }
-  };
+  const handleDuyetSP = useCallback((id) => {
+    stompClient.current?.publish({ destination: "/app/duyet", body: JSON.stringify({ id, maNV }) });
+    toast.success("Bạn đã duyệt đơn thành công!");
+  }, [maNV]);
 
-  const handleLamLai = (data) => {
+  const handleLamLai = useCallback((data) => {
     imgService.deleteImage(data.donHangCT.images.tenTep);
-    if (stompClient.current) {
-      stompClient.current.publish({
-        destination: "/app/lamlai",
-        body: JSON.stringify(data.id),
-      });
-    }
-  };
+    stompClient.current?.publish({ destination: "/app/lamlai", body: JSON.stringify({ id: data.id, maNV }) });
+  }, [imgService, maNV]);
 
-  const handleHuyDon = async () => {
-    const lyDo = await form.getFieldValue();
-    const newData = {
-      id: idHuy,
-      lyDo: lyDo.lyDo,
-    };
-
+  const handleHuyDon = useCallback(async () => {
+    const lyDo = form.getFieldValue();
+    const newData = { id: idHuy, lyDo: lyDo.lyDo };
     try {
       const res = await service.huyDonHang(newData);
-      if (res.status === 200) {
-        toast.success("Hủy đơn hàng thành công");
-      }
+      toast[res.status === 200 ? 'success' : 'error'](
+        res.status === 200 ? 'Hủy đơn hàng thành công' : 'Hủy đơn hàng thất bại'
+      );
     } catch (error) {
-      console.log(error);
       toast.error("Hủy đơn hàng thất bại");
     }
     closeModalHuy();
-  };
+  }, [form, idHuy, service, closeModalHuy]);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(amount);
-  };
+  const formatCurrency = useCallback((amount) => 
+    new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount),
+  []);
 
-  const items = [
-    {
-      key: "1",
-      label: (
-        <span>
-          Đơn chờ thiết kế{" "}
-          {countTK > 0 && (
-            <Badge count={countTK} overflowCount={99} status="default" />
-          )}
-        </span>
-      ),
-      children: (
-        <DonHangTabsTK
-          listTK={listTK}
-          format={formatCurrency}
-          edit={handleEdit}
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <span>
-          Đơn chờ duyệt{" "}
-          {countCD > 0 && (
-            <Badge count={countCD} overflowCount={99} status="processing" />
-          )}
-        </span>
-      ),
-      children: (
-        <DonHangTabsCD
-          listCD={listCD}
-          format={formatCurrency}
-          edit={handleEdit}
-          handleLamLai={handleLamLai}
-          handleDuyetSP={handleDuyetSP}
-        />
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <span>
-          Đơn chờ xử lý{" "}
-          {countXN > 0 && (
-            <Badge count={countXN} overflowCount={99} status="warning" />
-          )}
-        </span>
-      ),
-      children: (
-        <DonHangTabsXN
-          listXN={listXN}
-          format={formatCurrency}
-          edit={handleEdit}
-          showModalHuy={showModalHuy}
-        />
-      ),
-    },
-    {
-      key: "4",
-      label: (
-        <span>
-          Đơn hoàn thành{" "}
-          {countHT > 0 && (
-            <Badge count={countHT} overflowCount={99} status="success" />
-          )}
-        </span>
-      ),
-      children: (
-        <DonHangtabsHT
-          listHT={listHT}
-          format={formatCurrency}
-          edit={handleEdit}
-          showModalHuy={showModalHuy}
-        />
-      ),
-    },
-    {
-      key: "5",
-      label: (
-        <span>
-          Đơn bị hủy{" "}
-          {countHuy > 0 && (
-            <Badge count={countHuy} overflowCount={99} status="error" />
-          )}
-        </span>
-      ),
-      children: (
-        <DonHangTabsHuy
-          listHuy={listHuy}
-          format={formatCurrency}
-          edit={handleEdit}
-        />
-      ),
-    },
-  ];
+  // Memoize lists để tránh re-render không cần thiết
+  const memoizedListTK = useMemo(() => listTK, [JSON.stringify(listTK)]);
+  const memoizedListCD = useMemo(() => listCD, [JSON.stringify(listCD)]);
+  const memoizedListXN = useMemo(() => listXN, [JSON.stringify(listXN)]);
+  const memoizedListHT = useMemo(() => listHT, [JSON.stringify(listHT)]);
+  const memoizedListHuy = useMemo(() => listHuy, [JSON.stringify(listHuy)]);
+
+  // Tách riêng phần label để tránh re-render toàn bộ tabs
+  const tabLabels = useMemo(() => ({
+    tk: <span>Đơn chờ thiết kế {countTK > 0 && <Badge count={countTK} overflowCount={99} />}</span>,
+    cd: <span>Đơn chờ duyệt {countCD > 0 && <Badge count={countCD} overflowCount={99} />}</span>,
+    xn: <span>Đơn chờ thanh toán {countXN > 0 && <Badge count={countXN} overflowCount={99} />}</span>,
+    ht: <span>Đơn hoàn thành {countHT > 0 && <Badge count={countHT} overflowCount={99} />}</span>,
+    huy: <span>Đơn bị hủy {countHuy > 0 && <Badge count={countHuy} overflowCount={99} />}</span>,
+  }), [countTK, countCD, countXN, countHT, countHuy]);
+
+  const tabsItems = useMemo(() => [
+    { key: "1", label: tabLabels.tk, children: <DonHangTabsTK listTK={memoizedListTK} format={formatCurrency} /> },
+    { key: "2", label: tabLabels.cd, children: <DonHangTabsCD listCD={memoizedListCD} format={formatCurrency} handleLamLai={handleLamLai} handleDuyetSP={handleDuyetSP} /> },
+    { key: "3", label: tabLabels.xn, children: <DonHangTabsXN listXN={memoizedListXN} format={formatCurrency} showModalHuy={showModalHuy} /> },
+    { key: "4", label: tabLabels.ht, children: <DonHangtabsHT listHT={memoizedListHT} format={formatCurrency} showModalHuy={showModalHuy} /> },
+    { key: "5", label: tabLabels.huy, children: <DonHangTabsHuy listHuy={memoizedListHuy} format={formatCurrency} /> }
+  ], [tabLabels, memoizedListTK, memoizedListCD, memoizedListXN, memoizedListHT, memoizedListHuy, formatCurrency, handleLamLai, handleDuyetSP, showModalHuy]);
 
   return (
     <>
-      <Tabs type="card" defaultActiveKey="1" items={items} />
-      <ModalHuyDon
-        openHuy={openHuy}
-        onCancel={closeModalHuy}
-        onComfirm={handleHuyDon}
-        form={form}
-      />
+      <Tabs type="card" defaultActiveKey="1" items={tabsItems} />
+      <ModalHuyDon openHuy={openHuy} onCancel={closeModalHuy} onComfirm={handleHuyDon} form={form} />
     </>
   );
 };
 
-export default DonHangList;
+export default React.memo(DonHangList);

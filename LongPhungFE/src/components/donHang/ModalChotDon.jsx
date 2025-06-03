@@ -7,11 +7,13 @@ import { toast } from 'react-toastify'
 
 const ModalChotDon = ({handleCancel,isModalOpen,data,products}) => {
     const service = new DonHangService()
-    const {form} = Form.useForm()
     const {  Text } = Typography;
-    const [isVisible,setisVisible] = useState(false)
 
+   console.log(data)
+   console.log(products)
    
+
+
     const formatCurrency = (amount) => {
       return new Intl.NumberFormat("vi-VN", {
         style: "currency",
@@ -21,7 +23,7 @@ const ModalChotDon = ({handleCancel,isModalOpen,data,products}) => {
   
     const calculateSubtotal = () => {
       return products.reduce(
-        (sum, product) => sum + product.sanPham.gia * product.soLuong,
+        (sum, product) => sum + product.donGia * product.soLuong,
         0
       );
     };
@@ -41,9 +43,9 @@ const ModalChotDon = ({handleCancel,isModalOpen,data,products}) => {
   
   
     const subtotal = calculateSubtotal();
-    const tax = subtotal * 0.1;
-    const discount = subtotal * (5 / 100);
-    const total = subtotal + tax - discount;
+    const tax = subtotal * 0.08;
+    
+    const total = subtotal + tax;
 
   return (
     <>
@@ -80,7 +82,7 @@ const ModalChotDon = ({handleCancel,isModalOpen,data,products}) => {
                 </Col>
                 <Col span={6} offset={12} style={{ textAlign: "right" }}>
                   <Text>
-                    {formatCurrency(product.sanPham.gia * product.soLuong)}
+                    {formatCurrency(product.donGia * product.soLuong)}
                   </Text>
                 </Col>
               </Row>
@@ -111,18 +113,6 @@ const ModalChotDon = ({handleCancel,isModalOpen,data,products}) => {
           </Row>
         </div>
 
-        {discount > 0 && (
-          <div className="flex justify-between text-green-600">
-            <Row>
-              <Col span={6}>
-                <Text>Chiết khấu:</Text>
-              </Col>
-              <Col span={6} offset={12} style={{ textAlign: "right" }}>
-                <Text>- {formatCurrency(discount)}</Text>
-              </Col>
-            </Row>
-          </div>
-        )}
 
         <Divider/>
 
@@ -140,7 +130,7 @@ const ModalChotDon = ({handleCancel,isModalOpen,data,products}) => {
       <Divider/>
       <Form.Item style={{ display: "flex", justifyContent: "flex-end" }}>
         <Row gutter={[16]}>
-            <Col><Button type="primary" onClick={() => handleChotDon(data.maDonHang)}>Chốt đơn</Button></Col>
+            <Col><Button type="primary" onClick={() => handleChotDon(data.maDonHang)}>Xác nhận thanh toán</Button></Col>
         </Row>
       </Form.Item>
 

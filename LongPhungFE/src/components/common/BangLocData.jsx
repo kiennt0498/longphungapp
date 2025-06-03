@@ -19,7 +19,6 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 dayjs.locale("vi");
 
-const { Panel } = Collapse;
 const { RangePicker } = DatePicker;
 
 const BangLocData = ({ dynamicKeys = [] }) => {
@@ -36,6 +35,117 @@ const BangLocData = ({ dynamicKeys = [] }) => {
   const showBoPhan = dynamicKeys.includes("boPhan");
   const showChucVu = dynamicKeys.includes("chucVu");
   const showTacVu = dynamicKeys.includes("tacVu");
+
+  const items = [
+    showBoPhan && {
+      key: "boPhan",
+      label: "Bộ phận",
+      children: (
+        <Checkbox.Group
+          value={filters.boPhan}
+          onChange={(vals) => updateFilters({ boPhan: vals })}
+        >
+          {boPhans.map((bp) => (
+            <Checkbox key={bp.name} value={bp.name}>
+              {bp.description || bp.name}
+            </Checkbox>
+          ))}
+        </Checkbox.Group>
+      ),
+    },
+    showChucVu && {
+      key: "chucVu",
+      label: "Chức vụ",
+      children: (
+        <Checkbox.Group
+          value={filters.chucVu}
+          onChange={(vals) => updateFilters({ chucVu: vals })}
+        >
+          {chucVus.map((cv) => (
+            <Checkbox key={cv.name} value={cv.name}>
+              {cv.description || cv.name}
+            </Checkbox>
+          ))}
+        </Checkbox.Group>
+      ),
+    },
+    showTacVu && {
+      key: "tacVu",
+      label: "Tác vụ",
+      children: (
+        <Checkbox.Group
+          value={filters.tacVu}
+          onChange={(vals) => updateFilters({ tacVu: vals })}
+        >
+          {tacVus.map((tv) => (
+            <Checkbox key={tv.name} value={tv.name}>
+              {tv.description || tv.name}
+            </Checkbox>
+          ))}
+        </Checkbox.Group>
+      ),
+    },
+    showStatus && {
+      key: "status",
+      label: "Trạng thái",
+      children: (
+        <Checkbox.Group
+          value={filters.status}
+          onChange={(vals) => updateFilters({ status: vals })}
+        >
+          <Checkbox value="hoanThanh">Hoàn thành</Checkbox>
+          <Checkbox value="daNhan">Đã nhận</Checkbox>
+          <Checkbox value="huy">Hủy</Checkbox>
+        </Checkbox.Group>
+      ),
+    },
+    showCategory && {
+      key: "category",
+      label: "Mặt hàng",
+      children: (
+        <Checkbox.Group
+          value={filters.category}
+          onChange={(vals) => updateFilters({ category: vals })}
+        >
+          <Checkbox value="mocKhoa">Móc khóa</Checkbox>
+          <Checkbox value="bangTen">Bảng tên</Checkbox>
+          <Checkbox value="bienSo">Biển số</Checkbox>
+          <Checkbox value="binhGiuNhiet">Bình giữ nhiệt</Checkbox>
+        </Checkbox.Group>
+      ),
+    },
+    showTime && {
+      key: "time",
+      label: "Thời gian",
+      children: (
+        <>
+          <label style={{ display: "block", marginTop: 8 }}>
+            Lọc theo ngày:
+          </label>
+          <DatePicker
+            format="DD/MM/YYYY"
+            style={{ width: "100%" }}
+            value={filters.day ? dayjs(filters.day) : null}
+            onChange={(val) =>
+              updateFilters({ day: val ? val.format("YYYY-MM-DD") : null })
+            }
+          />
+          <label style={{ display: "block", marginTop: 8 }}>
+            Lọc theo tháng:
+          </label>
+          <DatePicker
+            picker="month"
+            format="MM/YYYY"
+            style={{ width: "100%" }}
+            value={filters.month ? dayjs(filters.month) : null}
+            onChange={(val) =>
+              updateFilters({ month: val ? val.format("YYYY-MM") : null })
+            }
+          />
+        </>
+      ),
+    },
+  ].filter(Boolean);
 
   return (
     <ConfigProvider locale={viVN}>
@@ -64,101 +174,7 @@ const BangLocData = ({ dynamicKeys = [] }) => {
 
         <Divider />
 
-        <Collapse bordered={false} ghost>
-          {showBoPhan && (
-            <Panel header="Bộ phận" key="boPhan">
-              <Checkbox.Group
-                value={filters.boPhan}
-                onChange={(vals) => updateFilters({ boPhan: vals })}
-              >
-                {boPhans.map((bp) => (
-                  <Checkbox key={bp.name} value={bp.name}>
-                    {bp.description || bp.name}
-                  </Checkbox>
-                ))}
-              </Checkbox.Group>
-            </Panel>
-          )}
-
-          {showChucVu && (
-            <Panel header="Chức vụ" key="chucVu">
-              <Checkbox.Group
-                value={filters.chucVu}
-                onChange={(vals) => updateFilters({ chucVu: vals })}
-              >
-                {chucVus.map((cv) => (
-                  <Checkbox key={cv.name} value={cv.name}>
-                    {cv.description || cv.name}
-                  </Checkbox>
-                ))}
-              </Checkbox.Group>
-            </Panel>
-          )}
-
-          {showTacVu && (
-            <Panel header="Tác vụ" key="tacVu">
-              <Checkbox.Group
-                value={filters.tacVu}
-                onChange={(vals) => updateFilters({ tacVu: vals })}
-              >
-                {tacVus.map((tv) => (
-                  <Checkbox key={tv.name} value={tv.name}>
-                    {tv.description || tv.name}
-                  </Checkbox>
-                ))}
-              </Checkbox.Group>
-            </Panel>
-          )}
-
-          {showStatus && (
-            <Panel header="Trạng thái" key="status">
-              <Checkbox.Group
-                value={filters.status}
-                onChange={(vals) => updateFilters({ status: vals })}
-              >
-                <Checkbox value="hoanThanh">Hoàn thành</Checkbox>
-                <Checkbox value="daNhan">Đã nhận</Checkbox>
-                <Checkbox value="huy">Hủy</Checkbox>
-              </Checkbox.Group>
-            </Panel>
-          )}
-
-          {showCategory && (
-            <Panel header="Mặt hàng" key="category">
-              <Checkbox.Group
-                value={filters.category}
-                onChange={(vals) => updateFilters({ category: vals })}
-              >
-                <Checkbox value="mocKhoa">Móc khóa</Checkbox>
-                <Checkbox value="bangTen">Bảng tên</Checkbox>
-                <Checkbox value="bienSo">Biển số</Checkbox>
-                <Checkbox value="binhGiuNhiet">Bình giữ nhiệt</Checkbox>
-              </Checkbox.Group>
-            </Panel>
-          )}
-
-          {showTime && (
-            <Panel header="Thời gian" key="time">
-              <label style={{ display: "block", marginTop: 8 }}>
-                Lọc theo ngày:
-              </label>
-              <DatePicker
-                format="DD/MM/YYYY"
-                style={{ width: "100%" }}
-                onChange={(val) => updateFilters({ day: val })}
-              />
-              <label style={{ display: "block", marginTop: 8 }}>
-                Lọc theo tháng:
-              </label>
-              <DatePicker
-                picker="month"
-                format="MM/YYYY"
-                style={{ width: "100%" }}
-                onChange={(val) => updateFilters({ month: val })}
-              />
-            </Panel>
-          )}
-        </Collapse>
+        <Collapse bordered={false} ghost items={items} />
       </div>
     </ConfigProvider>
   );

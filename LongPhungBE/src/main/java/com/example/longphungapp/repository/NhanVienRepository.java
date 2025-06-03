@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
+
     NhanVien findByTaiKhoan_Sdt(String sdt);
+
     @Query("SELECT MAX(n.id) FROM NhanVien n WHERE n.id LIKE :prefix%")
     String findMaxIdByChucVu(@Param("prefix") String prefix);
 

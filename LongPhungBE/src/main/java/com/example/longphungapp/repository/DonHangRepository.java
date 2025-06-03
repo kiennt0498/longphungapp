@@ -11,4 +11,6 @@ public interface DonHangRepository extends JpaRepository<DonHang, Long> {
     DonHang findByMaDonHang(String maDonHang);
 
     List<DonHang> findByNhanVien_IdAndTrangThai(String id, TrangThai trangThai);
+
+    List<DonHang> findByTrangThai(TrangThai trangThai);
 }

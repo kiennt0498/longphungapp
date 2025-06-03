@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 const FilterContext = createContext();
 
@@ -15,15 +15,16 @@ export const FilterProvider = ({ children }) => {
     day: null,
   });
 
-  const updateFilters = (newValues) => {
-    setFilters((prev) => ({ ...prev, ...newValues }));
-  };
+  const updateFilters = useCallback((newValues) => {
+    setFilters((prev) => {
+      const next = { ...prev, ...newValues };
+      return JSON.stringify(prev) === JSON.stringify(next) ? prev : next;
+    });
+  }, []);
 
-  return (
-    <FilterContext.Provider value={{ filters, updateFilters }}>
-      {children}
-    </FilterContext.Provider>
-  );
+  const value = useMemo(() => ({ filters, updateFilters }), [filters, updateFilters]);
+
+  return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>;
 };
 
 export const useFilters = () => useContext(FilterContext);

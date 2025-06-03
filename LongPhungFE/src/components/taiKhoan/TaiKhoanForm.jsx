@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Button, Checkbox, Col, Form, Input, Row } from "antd";
 import { FaUserCircle } from "react-icons/fa";
 import DoiMatKhauModai from "./DoiMatKhauModai";
@@ -9,7 +9,7 @@ import { setTaiKhoan } from "../../redux/slide/TaiKhoanSlice";
 const TaiKhoanForm = () => {
   const [disabledForm, setDisabledForm] = useState(false);
   const [modalShow, setModalShow] = useState(false);
-  const userName = "NV00001";
+  const userName = localStorage.getItem("username");
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const acc = useSelector((state) => state.TaiKhoan.taiKhoan);
@@ -26,7 +26,18 @@ const TaiKhoanForm = () => {
   const getData = async () => {
     try {
       const res = await service.getAcc(userName);
-      dispatch(setTaiKhoan(res.data));
+      console.log(res);
+      
+
+      const cleanData = {...res.data, taiKhoan:{sdt :res.data.taiKhoan.sdt}}   
+      
+      console.log(cleanData);
+      
+
+      localStorage.setItem("maNV", cleanData.id);
+      localStorage.setItem("name", cleanData.hoTen);
+
+      dispatch(setTaiKhoan(cleanData));
     } catch (error) {
       console.log(error);
     }

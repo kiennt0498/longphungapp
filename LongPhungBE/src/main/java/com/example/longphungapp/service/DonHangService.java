@@ -7,17 +7,20 @@ import com.example.longphungapp.entity.*;
 import com.example.longphungapp.fileEnum.TacVu;
 import com.example.longphungapp.fileEnum.TrangThai;
 import com.example.longphungapp.repository.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DonHangService {
 
 
@@ -36,6 +39,11 @@ public class DonHangService {
     DonHuyRepository dhDao;
     @Autowired
     NhanVienRepository nvDao;
+
+    private final LichSuCVRepository lichCvDao;
+
+    private Double kpiThietKe = 0.06;
+    private BigDecimal kpiKinhDoanh = BigDecimal.valueOf(0.2);
 
 
     public List<DonHangDto> findAll() {
@@ -76,9 +84,7 @@ public class DonHangService {
         if(dto.getDon().getKhachHang().getId() == null){
            var newDTO = khDao.create(dto.getDon().getKhachHang());
            BeanUtils.copyProperties(newDTO, kh);
-            System.out.println("dung");
         }else{
-            System.out.println("sai");
             var found = khDao.findByIdLike(dto.getDon().getKhachHang().getId());
             if(found.isEmpty()){
                 throw new BadReqException("Không tìm thấy khách hàng");
@@ -88,7 +94,9 @@ public class DonHangService {
         var nv = nvDao.findById(dto.getDon().getNhanVien().getId()).get();
         var donHang = new DonHang();
         var countD = dao.count();
-        String maDH = String.valueOf(countD)+"."+kh.getId()+"."+"NV00001"+"."+kh.getSdt();
+        String maNV = dto.getDon().getNhanVien().getId();
+        System.out.println(maNV);
+        String maDH = String.valueOf(countD)+"."+kh.getId()+"."+maNV+"."+kh.getSdt();
 
         donHang.setNhanVien(nv);
         donHang.setKhachHang(kh);
@@ -107,6 +115,9 @@ public class DonHangService {
             sp.setTenSP(i.getSanPham().getTenSP());
             donCT.setSanPham(sp);
             donCT.setDonHang(donHang);
+            donCT.setSoLuong(i.getSoLuong());
+            donCT.setDonGia(i.getDonGia());
+            donCT.setGiaGoc(i.getGiaGoc());
             donCT.setTrangThai(TrangThai.CHO_NHAN_DON);
             ctDao.save(donCT);
             return donCT;
@@ -114,7 +125,12 @@ public class DonHangService {
 
         var listCV = listDonCT.stream().map(i->{
             var cv = new CongViecCT();
+            var kpi = (i.getDonGia()
+                    .subtract(i.getGiaGoc())
+                    .multiply(BigDecimal.valueOf(i.getSoLuong()))
+                    .multiply(BigDecimal.valueOf(kpiThietKe)));
             cv.setDonHangCT(i);
+            cv.setKpi(kpi);
             cv.setTrangThai(TrangThai.CHO_NHAN_DON);
             cv.setTacVu(TacVu.THIET_KE);
             cvDao.save(cv);
@@ -181,42 +197,26 @@ public class DonHangService {
             throw new BadReqException("Không tìm thấy đơn hàng");
         }
         found.setNgayChotDon(new Date());
-        found.setTrangThai(TrangThai.DANG_SAN_XUAT);
+        found.setTrangThai(TrangThai.DA_GIAO);
         dao.save(found);
+
         var ls = new LichSuDonHang();
         ls.setDonHang(found);
         ls.setNhanVien(found.getNhanVien());
         ls.setTrangThai(TrangThai.DA_GIAO);
         lichDao.save(ls);
 
-        var listDonCT = ctDao.findByDonHang_Id(found.getId());
-        listDonCT.forEach(i->{
-            i.setTrangThai(TrangThai.DANG_SAN_XUAT);
-            ctDao.save(i);
-        });
-
-        listDonCT.forEach(i->{
-            var cdOpt = i.getSanPham()
-                    .getQuyTrinh()
-                    .getQuyTrinhCongDoans()
-                    .stream()
-                    .filter(j -> j.getThuTu() != null && j.getThuTu() == 1)
-                    .findFirst();
-
-            if (cdOpt.isEmpty()) {
-                System.out.println("❌ Không tìm thấy công đoạn thứ tự 1 cho sản phẩm: " + i.getSanPham().getTenSP());
-                i.getSanPham().getQuyTrinh().getQuyTrinhCongDoans().forEach(cd ->
-                        System.out.println("----> ThuTu: " + cd.getThuTu())
-                );
-                throw new BadReqException("Không có công đoạn bắt đầu cho sản phẩm");
-            }
-            var cv = new CongViecCT();
-            cv.setDonHangCT(i);
-            cv.setCongDoan(cdOpt.get().getCongDoan());
-            cv.setTrangThai(TrangThai.CHO_NHAN_DON);
-            cv.setTacVu(cdOpt.get().getCongDoan().getTacVu());
-            cvDao.save(cv);
-        });
+        var lsCV = new LichSuCV();
+        var listDon = ctDao.findByDonHang_MaDonHang(maDonHang);
+        var tongLoiNhuan = listDon.stream().map(i->i.getDonGia()
+                .subtract(i.getGiaGoc()).multiply(BigDecimal.valueOf(i.getSoLuong())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        var kpi = tongLoiNhuan.multiply(kpiKinhDoanh);
+        lsCV.setKpi(kpi);
+        lsCV.setNgayHoanThanh(new Date());
+        lsCV.setNhanVien(found.getNhanVien());
+        lsCV.setTrangThai(TrangThai.DA_GIAO);
+        lichCvDao.save(lsCV);
     }
 
     public void setImage(Long id,ImagesDto dto){
@@ -235,5 +235,9 @@ public class DonHangService {
 
     public String getLyDoHuy(Long id){
         return dhDao.findByDonHang_Id(id).getLydo();
+    }
+
+    public List<DonHang> findByTrangThai(TrangThai trangThai) {
+        return dao.findByTrangThai(trangThai);
     }
 }

@@ -40,10 +40,7 @@ public class KhachHangService {
         BeanUtils.copyProperties(dto, entity,"nhanViens");
 
         var nv = nvDao.findById(dto.getNhanVien().getId()).get();
-        String ma = Arrays.stream(nv.getHoTen().split(" "))  // Tách từ
-                .filter(word -> !word.isEmpty())             // Lọc từ rỗng
-                .map(word -> word.substring(0, 1).toUpperCase()) // Lấy chữ cái đầu và in hoa
-                .collect(Collectors.joining(""));
+        String ma = "KH";
         Long stt = dao.countByIdLike(ma+"%");
         String maKH = ma+stt;
         entity.setNhanVien(nv);

@@ -2,9 +2,7 @@ package com.example.longphungapp.fileEnum;
 
 public enum ChucVu {
     NHAN_VIEN("Nhân viên"),
-    TRUONG_PHONG("Trưởng phòng"),
-    QUAN_LY("Quản lý"),
-    ADMIN("admin");
+    QUAN_LY("Quản lý");
 
     private final String description;
 

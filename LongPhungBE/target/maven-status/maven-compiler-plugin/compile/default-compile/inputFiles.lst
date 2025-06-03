@@ -1,10 +1,15 @@
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\component\CustomHandshakeHandler.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\component\ExportFile.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\component\GiaThuMuaScheduler.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\component\ParseFile.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\component\SessionUtils.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\confi\CorsConfig.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\confi\CorsProperties.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\confi\FileStorageProperties.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\confi\SchedulerConfig.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\confi\SecurityConfig.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\confi\WebSocketConfig.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\controller\AuthController.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\controller\CongDoanController.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\controller\CongViecController.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\controller\DonHangController.java
@@ -17,6 +22,7 @@ E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\cont
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\controller\SanPhamController.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\controller\TaiKhoanController.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\controller\ThongBaoController.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\AuthDto.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\ChamCongDto.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\ChatLieuDto.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\CongDoanDto.java
@@ -45,6 +51,7 @@ E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\PhieuDto.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\QuyTrinhCongDoanDto.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\QuyTrinhDto.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\ResLichSuDto.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\SanPhamDto.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\SetImageReq.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\dto\TaiKhoanDto.java
@@ -125,9 +132,11 @@ E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\repo
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\repository\ThuMuaNguyenLieuRepository.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\repository\TonKhoRepository.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\repository\VatTuRepository.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\AuthService.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\ChamCongService.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\CongDoanService.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\CongViecService.java
+E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\CustomUserDetailsService.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\DonHangService.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\ImageService.java
 E:\CongViec\LongPhungApp\LongPhungBE\src\main\java\com\example\longphungapp\service\KhachHangService.java

@@ -20,12 +20,13 @@ public class ThongBaoDonHangService {
     public void thongBaoDonDuyet(String nhanVienId) {
         var list = donHangService.findByNhanVien_IdAndTrangThai(nhanVienId, TrangThai.CHO_DUYET);
         messagingTemplate.convertAndSend("/topic/donduyet/" + nhanVienId, list);
-        thongBaoDonHang(nhanVienId);
+        thongBaoDonHang();
     }
 
-    public void thongBaoDonHang(String nhanVienId) {
-        var list = donHangService.findByNhanVien_IdAndTrangThai(nhanVienId, TrangThai.CHO_THIET_KE);
-        messagingTemplate.convertAndSend("/topic/donhang/" + nhanVienId, list);
+    public void thongBaoDonHang() {
+        var list = donHangService.findByTrangThai(TrangThai.CHO_THIET_KE);
+        System.out.println(list.size());
+        messagingTemplate.convertAndSend("/topic/donhang", list);
     }
 
     public void thongBaoDonHoanThanh(String nhanVienId) {

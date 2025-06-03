@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,9 @@ public class CongDoanService {
     public CongDoanDto save(CongDoanDto dto) {
 
         var entity = MapperInterface.MAPPER.toEntity(dto);
+        entity.setCongNV(entity.getKpiGoc().multiply(BigDecimal.valueOf(entity.getDieuChinh()/100)));
+        var giaThuMua = entity.getCongNV().add(entity.getKhauHaoMay());
+        entity.setGiaMuaNguyenLieu(giaThuMua);
         dao.save(entity);
         dto.setId(entity.getId());
 
@@ -42,8 +46,9 @@ public class CongDoanService {
     @Transactional(rollbackFor = Exception.class)
     public CongDoanDto update(CongDoanDto dto) {
         var found = dao.findById(dto.getId()).orElseThrow(()-> new BadReqException("Không tìm thấy id"));
+        var giaThuMua = found.getCongNV().add(found.getKhauHaoMay());
         BeanUtils.copyProperties(dto, found);
-
+        found.setGiaMuaNguyenLieu(giaThuMua);
          dao.save(found);
 
          return dto;
@@ -52,5 +57,21 @@ public class CongDoanService {
     public void delete(Integer id) {
         var entity = dao.findById(id).orElseThrow(()-> new BadReqException("Không tìm thấy id"));
         dao.delete(entity);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCong(Double cong) {
+        var list = dao.findAll();
+        if(!list.isEmpty()){
+           var newList =  list.stream().map(i -> {
+                i.setDieuChinh(cong);
+                var congNV = i.getKpiGoc().multiply(BigDecimal.valueOf(cong/100));
+                i.setCongNV(congNV);
+                var giaNL = congNV.add(i.getKhauHaoMay());
+                i.setGiaMuaNguyenLieu(giaNL);
+                return i;
+            }).toList();
+            dao.saveAll(newList);
+        }
     }
 }

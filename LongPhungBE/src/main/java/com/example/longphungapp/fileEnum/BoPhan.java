@@ -1,9 +1,8 @@
 package com.example.longphungapp.fileEnum;
 
 public enum BoPhan {
-    HANG_CHINH("Hành chính"),
-    SAN_XUAT("Sản xuất"),
-    KINH_DOANH("Kinh doanh");
+    VAN_PHONG("Văn phòng"),
+    SAN_XUAT("Sản xuất");
 
 
     private final String description;

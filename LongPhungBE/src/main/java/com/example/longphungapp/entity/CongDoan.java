@@ -41,6 +41,12 @@ public class CongDoan {
   @Column(name = "tac_vu")
   private TacVu tacVu;
 
+  @Column(name = "kpi_goc", precision = 19, scale = 2)
+  private BigDecimal kpiGoc;
+
+  @Column(name = "dieu_chinh")
+  private Double dieuChinh;
+
   @Override
   public final boolean equals(Object o) {
     if (this == o) return true;

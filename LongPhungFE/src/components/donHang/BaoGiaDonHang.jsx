@@ -24,7 +24,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import MoalExcel from "../common/ModalExcel";
 import { API_FILE } from "../../services/constans";
 import SanPhamService from "../../services/SanPhamService";
-import { capNhatGia } from "../../helpers/CongThucTinhGia";
+import { capNhatGia, tinhGiaBan } from "../../helpers/CongThucTinhGia";
 import ExportPDF from "../common/ExportPDF";
 import { formatCurrency } from "../../helpers/formatData";
 
@@ -40,7 +40,7 @@ const BaoGiaDonHang = ({ getData }) => {
   const [check, setCheck] = useState(true);
   const API = API_FILE + "/upload/image";
   const service = new SanPhamService();
-  const TAX_RATE = 0.1;
+  const TAX_RATE = 0.08;
 
   const onOpenFile = () => {
     setOpenFile(true);
@@ -84,83 +84,78 @@ const BaoGiaDonHang = ({ getData }) => {
   };
 
   const addSp = async (data) => {
-    let loiNhuan = [];
-    const res = await service.getLoiNhuan(data.id);
-    if (res && res.data) {
-      loiNhuan = res.data;
-    }
+  const res = await service.getLoiNhuan(data.id);
+  const loiNhuan = res?.data || [];
 
-    console.log(data);
-    
-    const congDoans = data.quyTrinh?.quyTrinhCongDoans.map((item) => item.congDoan)
+  const congDoans = data.quyTrinh?.quyTrinhCongDoans?.map((item) => item.congDoan) || [];
 
-    console.log(congDoans);
-    
-
-    const newData = {
-      id: data.id,
-      tenSP: data.tenSP,
-      ghiChu: "",
-      chieuDai: 1,
-      chieuRong: 1,
-      gia: capNhatGia({
-        quyTrinh: {congDoans: congDoans},
-        nguyenVatLieus: data.nguyenVatLieus,
-        loiNhuan: loiNhuan,
-        chieuDai: 1,
-        chieuRong: 1,
-        soLuong: 1,
-      }),
-      donGia: capNhatGia({
-        quyTrinh: {congDoans: congDoans},
-        nguyenVatLieus: data.nguyenVatLieus,
-        loiNhuan: loiNhuan,
-        chieuDai: 1,
-        chieuRong: 1,
-        soLuong: 1,
-      }),
-      soLuong: 1,
-      loiNhuan: loiNhuan,
-      quyTrinh: {...data.quyTrinh ,congDoans: congDoans},
-      nguyenVatLieus: data.nguyenVatLieus,
-    };
-
-    setProducts((prev) => [...prev, newData]);
+  const inputGia = {
+    quyTrinh: { congDoans },
+    nguyenVatLieus: data.nguyenVatLieus,
+    loiNhuan,
+    chieuDai: 1,
+    chieuRong: 1,
+    soLuong: 1,
   };
 
-  
+  const newData = {
+    id: data.id,
+    tenSP: data.tenSP,
+    ghiChu: "",
+    chieuDai: 1,
+    chieuRong: 1,
+    gia: capNhatGia(inputGia),
+    donGia: capNhatGia(inputGia),
+    soLuong: 1,
+    giaGoc: tinhGiaBan(inputGia, 1, 1),
+    loiNhuan,
+    quyTrinh: { ...data.quyTrinh, congDoans },
+    nguyenVatLieus: data.nguyenVatLieus,
+  };
+
+  setProducts((prev) => [...prev, newData]);
+};
+
+  console.log(products);
   
 
   const updateDai = (key, value) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === key
-          ? {
-              ...product,
-              chieuDai: value || 1,
-              gia: capNhatGia(product, { chieuDai: value || 1 }),
-              donGia: capNhatGia(product, { chieuDai: value || 1 }),
-              
-            }
-          : product
-      )
-    );
-  };
+  setProducts((prevProducts) =>
+    prevProducts.map((product) => {
+      if (product.id !== key) return product;
 
-  const updateRong = (key, value) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === key
-          ? {
-              ...product,
-              chieuRong: value || 1,
-              gia: capNhatGia(product, { chieuRong: value || 1 }),
-              donGia: capNhatGia(product, { chieuRong: value || 1 }),
-            }
-          : product
-      )
-    );
-  };
+      const chieuDai = value || 1;
+      const chieuRong = product.chieuRong || 1;
+
+      return {
+        ...product,
+        chieuDai,
+        gia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
+        donGia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
+        giaGoc: tinhGiaBan(product, chieuDai, chieuRong),
+      };
+    })
+  );
+};
+
+const updateRong = (key, value) => {
+  setProducts((prevProducts) =>
+    prevProducts.map((product) => {
+      if (product.id !== key) return product;
+
+      const chieuRong = value || 1;
+      const chieuDai = product.chieuDai || 1;
+
+      return {
+        ...product,
+        chieuRong,
+        gia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
+        donGia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
+        giaGoc: tinhGiaBan(product, chieuDai, chieuRong),
+      };
+    })
+  );
+};
 
   const updateQuantity = (key, quantity) => {
     setProducts((prevProducts) =>
@@ -214,8 +209,11 @@ const BaoGiaDonHang = ({ getData }) => {
 
   const finalyData = () =>{
     const newData = products.map((item)=>{
-      return {...item, donGia:item.gia-item.gia*discount/100}
+      return {...item, donGia:item.gia-item.gia*discount/100, giaGoc:item.giaGoc}
     })
+    
+    console.log(newData);
+    
     getData(newData,total)
   }
 
@@ -430,7 +428,7 @@ const BaoGiaDonHang = ({ getData }) => {
           </Row>
           <Row style={{ marginBottom: "3%" }}>
             <Col span={6}>
-              <Text>Thuế VAT(10%)</Text>
+              <Text>Thuế VAT({TAX_RATE * 100} %)</Text>
             </Col>
             <Col span={6} offset={12} style={{ textAlign: "right" }}>
               <Text>{formatCurrency(tax)}</Text>

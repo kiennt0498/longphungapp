@@ -34,6 +34,9 @@ import { filterData } from "../../contexts/filterUtils";
 const KhachHangList = () => {
   const service = new KhachHangSerivce();
 
+  const maNV = localStorage.getItem("maNV");
+  const name = localStorage.getItem("name");
+
   const khachHangs = useSelector((state) => state.KhachHang.khachHangs);
   const khachHang = useSelector((state) => state.KhachHang.khachHang);
   const dispatch = useDispatch();
@@ -42,11 +45,10 @@ const KhachHangList = () => {
 
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [nv, setNV] = useState({ id: "NV00001", hoTen: "qwerty", });
+  const [nv, setNV] = useState({ id: maNV, hoTen: name, });
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
   const API = API_FILE+"/upload/cus"
-  const nhanVien = {id: "NV00001"}
 
 
   const fieldMapping = {
@@ -55,9 +57,6 @@ const KhachHangList = () => {
 
   const {filters} = useFilters()
   const filtersData = filterData(khachHangs,filters,fieldMapping,[])
- 
-  
-
 
   const columns = [
     { title: "Mã khách hàng", dataIndex: "id", key: "id" },
@@ -96,6 +95,9 @@ const KhachHangList = () => {
           <Tooltip title="Xóa" color="red">
           <Popconfirm
             title="Xóa khách hàng này?"
+            description="Chú ý! một khi xóa sẽ xóa toàn bộ dữ liệu liên quan đến khách hàng này"
+            okText="Đồng ý"
+            cancelText="Không"
             onConfirm={() => handleDelete(record.id)}
           >
             <Button icon={<DeleteOutlined />} danger />

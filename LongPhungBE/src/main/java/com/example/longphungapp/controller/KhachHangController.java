@@ -2,6 +2,7 @@ package com.example.longphungapp.controller;
 
 import com.example.longphungapp.dto.KhachHangDto;
 import com.example.longphungapp.service.KhachHangService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,8 @@ public class KhachHangController {
     KhachHangService service;
 
     @GetMapping
-    public ResponseEntity getList(){
+    public ResponseEntity getList(HttpServletRequest request){
+        System.out.println("Session ID: " + request.getSession(false).getId());
         return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
     }
 

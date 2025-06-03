@@ -61,6 +61,9 @@ public class DonHangCT {
     @Column(name = "don_gia", precision = 19, scale = 2)
     private BigDecimal donGia;
 
+    @Column(name = "gia_goc", precision = 19, scale = 2)
+    private BigDecimal giaGoc;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

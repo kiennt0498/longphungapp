@@ -6,40 +6,12 @@ import React, { use, useState } from "react";
 import axios from "axios";
 import { API_FILE } from "../../services/constans";
 import { toast } from "react-toastify";
+import { formatCurrency, formatDate } from "../../helpers/formatData";
 
 const DonHangTabsCD = ({ listCD, handleDuyetSP, handleLamLai }) => {
   const { Text } = Typography;
   const [check, setCheck] = useState(true);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "available":
-        return "green";
-      case "pending":
-        return "orange";
-      case "accepted":
-        return "blue";
-      case "completed":
-        return "purple";
-      default:
-        return "default";
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "available":
-        return <IoBriefcaseOutline size={16} />;
-      case "pending":
-        return <CiClock2 size={16} />;
-      case "accepted":
-        return <CiInboxIn size={16} />;
-      case "completed":
-        return <FiCheckCircle size={16} />;
-      default:
-        return null;
-    }
-  };
 
   const downFile = async (data) => {
     try {
@@ -80,11 +52,9 @@ const DonHangTabsCD = ({ listCD, handleDuyetSP, handleLamLai }) => {
                 <Row>
                   <Text>Số lượng: {i.donHangCT.soLuong} </Text>
                 </Row>
-                <Row>
-                  <Col span={12}>Hạn: {i.ngaGiao}</Col>
-                  <Col span={6} offset={6}>
-                    KPI: {i.kpi}
-                  </Col>
+                <Row justify="space-between">
+                  <Col>Hạn: {formatDate(i.ngayGiao)}</Col>
+                  <Col>KPI: {formatCurrency(i.kpi)}</Col>
                 </Row>
               </div>
               <div style={{ marginTop: "auto", marginLeft: "5%" }}>

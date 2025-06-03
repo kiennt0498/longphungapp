@@ -1,4 +1,3 @@
-
 services:
   mysql:
     image: mysql:8
@@ -15,9 +14,9 @@ services:
       - longphung-network
 
   backend:
-    restart: always
     build: ./LongPhungBE
     container_name: longphungbe
+    restart: always
     depends_on:
       - mysql
     environment:
@@ -25,29 +24,44 @@ services:
       DB_PORT: 3306
       DB_USER: root
       DB_PASSWORD: Kien@123
-      CORS_ALLOWED_ORIGINS: http://192.168.1.9:3000
+      CORS_ALLOWED_ORIGINS: https://192.168.1.4
+      COOKIE_SECURE: true
+      COOKIE_SAMESITE: none
     ports:
-      - "0.0.0.0:8080:8080"
-    expose:
-      - "8080"
+      - "8080:8080"
     networks:
       - longphung-network
 
   frontend:
-    restart: always
-    build: 
+    build:
       context: ./LongPhungFE
       args:
-        - REACT_APP_BASE_URL=http://192.168.1.9:8080
+        - REACT_APP_BASE_URL=https://192.168.1.4
     container_name: longphungfe
+    restart: always
     depends_on:
       - backend
     ports:
-      - "3000:80"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./LongPhungFE/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
+      - ./LongPhungFE/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro
+      - ./certbot/www:/usr/share/nginx/html
     networks:
       - longphung-network
-    env_file:
-      - ./LongPhungFE/.env.docker
+
+  # certbot:
+  #   image: certbot/certbot
+  #   container_name: certbot
+  #   volumes:
+  #     - ./certbot/conf:/etc/letsencrypt
+  #     - ./certbot/www:/var/www/certbot
+  #     - ./certbot/copy-certs.sh:/copy-certs.sh:ro
+  #     - ./LongPhungFE/certs:/app-certs
+  #   entrypoint: /bin/sh -c "trap exit TERM; while :; do sleep 12h & wait $${!}; certbot renew --webroot -w /var/www/certbot --quiet && /copy-certs.sh; done"
+  #   networks:
+  #     - longphung-network
 
 volumes:
   mysql_data:
@@ -55,4 +69,3 @@ volumes:
 networks:
   longphung-network:
     driver: bridge
-

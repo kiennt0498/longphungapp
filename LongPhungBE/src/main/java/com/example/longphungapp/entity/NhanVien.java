@@ -42,4 +42,6 @@ public class NhanVien {
     @JoinColumn(name = "tai_khoan_sdt")
     private TaiKhoan taiKhoan;
 
+
+
 }

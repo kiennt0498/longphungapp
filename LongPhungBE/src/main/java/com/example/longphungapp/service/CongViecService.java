@@ -1,5 +1,8 @@
 package com.example.longphungapp.service;
 
+
+import com.example.longphungapp.Exception.BadReqException;
+import com.example.longphungapp.component.SessionUtils;
 import com.example.longphungapp.entity.CongViecCT;
 import com.example.longphungapp.entity.LichSuCV;
 import com.example.longphungapp.entity.NhanVien;
@@ -10,11 +13,14 @@ import com.example.longphungapp.repository.DonHangCTRepository;
 import com.example.longphungapp.repository.DonHangRepository;
 import com.example.longphungapp.repository.LichSuCVRepository;
 import com.example.longphungapp.repository.QuyTrinhCongDoanRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.session.Session;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -30,6 +36,7 @@ public class CongViecService {
     private LichSuCVRepository lichSuCVRepo;
     @Autowired
     private QuyTrinhCongDoanRepository quyTrinhCongDoanRepo;
+
 
     public List<CongViecCT> findAll() {
         return congViecCTRepo.findAll();
@@ -56,12 +63,12 @@ public class CongViecService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void setViec(Long id, TrangThai trangThai) {
+    public void setViec(Long id,String maNV, TrangThai trangThai) {
         var congViec = congViecCTRepo.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy công việc"));
         congViec.setTrangThai(trangThai);
 
         var nhanVien = new NhanVien();
-        nhanVien.setId("NV00001");
+        nhanVien.setId(maNV);
         congViec.setNhanVien(nhanVien);
 
         if (trangThai == TrangThai.DA_GIAO) {
@@ -69,6 +76,9 @@ public class CongViecService {
             lichSu.setCongViecCT(congViec);
             lichSu.setNhanVien(nhanVien);
             lichSu.setTrangThai(trangThai);
+            BigDecimal kpi = congViec.getKpi();
+            if(congViec.getTacVu() != TacVu.THIET_KE) kpi = kpi.multiply(BigDecimal.valueOf(congViec.getDonHangCT().getSoLuong()));
+            lichSu.setKpi(kpi);
             lichSuCVRepo.save(lichSu);
 
             congViec.setNgayGiao(new java.util.Date());
@@ -116,14 +126,17 @@ public class CongViecService {
         if (nextCD.isPresent()) {
             newCV.setCongDoan(nextCD.get().getCongDoan());
             newCV.setTacVu(nextCD.get().getCongDoan().getTacVu());
-
+            newCV.setKpi(nextCD.get().getCongDoan().getCongNV()
+                    .multiply(BigDecimal.valueOf(nextCD.get().getCongDoan().getHeSoTienCong())));
             congViecCTRepo.save(newCV);
         } else {
-            var ls = new LichSuCV();
-            ls.setCongViecCT(congViec);
-            ls.setNhanVien(congViec.getNhanVien());
-            ls.setTrangThai(TrangThai.DA_GIAO);
-            lichSuCVRepo.save(ls);
+//            var ls = new LichSuCV();
+//            var sl = congViec.getDonHangCT().getSoLuong();
+//            ls.setCongViecCT(congViec);
+//            ls.setKpi(congViec.getKpi().multiply(BigDecimal.valueOf(congViec.getDonHangCT().getSoLuong())));
+//            ls.setNhanVien(congViec.getNhanVien());
+//            ls.setTrangThai(TrangThai.DA_GIAO);
+//            lichSuCVRepo.save(ls);
 
             var donHangCT = congViec.getDonHangCT();
             donHangCT.setTrangThai(TrangThai.CHO_VAN_CHUYEN);
@@ -133,6 +146,36 @@ public class CongViecService {
         updateTrangThaiDonHang(congViec.getDonHangCT().getDonHang().getMaDonHang());
         return  newCV.getTacVu().toString();
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void createFistJobs(Long id){
+        var congViecCT = congViecCTRepo.findById(id).orElseThrow(()-> new BadReqException("Không tìm thấy công việc"));
+        var found = congViecCT.getDonHangCT();
+
+            var cdOpt = found.getSanPham()
+                    .getQuyTrinh()
+                    .getQuyTrinhCongDoans()
+                    .stream()
+                    .filter(j -> j.getThuTu() != null && j.getThuTu() == 1)
+                    .findFirst();
+
+            if (cdOpt.isEmpty()) {
+                System.out.println("❌ Không tìm thấy công đoạn thứ tự 1 cho sản phẩm: " + found.getSanPham().getTenSP());
+                cdOpt.get().getQuyTrinh().getQuyTrinhCongDoans().forEach(cd ->
+                        System.out.println("----> ThuTu: " + cd.getThuTu())
+                );
+                throw new BadReqException("Không có công đoạn bắt đầu cho sản phẩm");
+            }
+            var cv = new CongViecCT();
+            var kpi = cdOpt.get().getCongDoan().getCongNV()
+                    .multiply(BigDecimal.valueOf(cdOpt.get().getCongDoan().getHeSoTienCong()));
+            cv.setDonHangCT(found);
+            cv.setCongDoan(cdOpt.get().getCongDoan());
+            cv.setKpi(kpi);
+            cv.setTrangThai(TrangThai.CHO_NHAN_DON);
+            cv.setTacVu(cdOpt.get().getCongDoan().getTacVu());
+            congViecCTRepo.save(cv);
+    };
 
     // --- PRIVATE METHODS ---
 

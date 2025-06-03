@@ -33,4 +33,9 @@ public class CongDoanController {
         service.delete(id);
         return ResponseEntity.ok("Xóa thành công");
     }
+    @GetMapping("updatecong")
+    public ResponseEntity updateCongNhanVien(@RequestParam Double cong){
+        service.updateCong(cong);
+        return ResponseEntity.ok("Cập nhật thành công");
+    }
 }

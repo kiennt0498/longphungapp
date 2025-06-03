@@ -1,17 +1,21 @@
-import axios from "axios";
+
+import axiosClient from "../redux/axiosClient";
 import { API_CONG_DOAN } from "./constans";
 
 export default class CongDoanService {
   getListCD = async () => {
-    return await axios.get(API_CONG_DOAN);
+    return await axiosClient.get(API_CONG_DOAN);
   };
   insterCD = async (data) => {
-    return await axios.post(API_CONG_DOAN + "/save", data);
+    return await axiosClient.post(API_CONG_DOAN + "/save", data);
   };
   updateCD = async (data) => {
-    return await axios.put(API_CONG_DOAN + "/update", data);
+    return await axiosClient.put(API_CONG_DOAN + "/update", data);
   };
   deleteCD = async (id) => {
-    return await axios.delete(API_CONG_DOAN + "/delete/" + id);
+    return await axiosClient.delete(API_CONG_DOAN + "/delete/" + id);
   };
+  updateCongNV = async (data) => {
+    return await axiosClient.get(API_CONG_DOAN + "/updatecong", { params: { cong: data } });
+  }
 }
