@@ -28,7 +28,8 @@ public class DonThuMuaDto implements Serializable {
     Boolean done;
     String ghiChu;
     private BigDecimal phiVanChuyen;
-
     private NhanVienDto nguoiLenDon;
+    private NhanVienDto nhanVienThuMua;
+
 
 }

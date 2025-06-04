@@ -24,11 +24,13 @@ public class TonKho {
     @JoinColumn(name = "vat_tu_id")
     private VatTu vatTu;
 
+
     @Column(name = "so_luong")
     private Long soLuong;
 
 
     @Column(name = "gia_tri_ton_kho", precision = 19, scale = 2)
     private BigDecimal giaTriTonKho;
+
 
 }

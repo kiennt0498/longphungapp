@@ -11,6 +11,9 @@ function LichSuLamViec() {
   const [congViecDaNhan, setCongViecDaNhan] = useState(0);
   const [congViecHoanThanh, setCongViecHoanThanh] = useState(0);
   const [congViecBiHuy, setCongViecBiHuy] = useState(0);
+  const [kpiDaNhan, setKPIDaNhan] = useState(0);
+  const [kpiNhanThem, setKPINhanThem] = useState(0);
+  const [kpiBiTru, setKPIBiTru] = useState(0);
   const [tongKPI, setTongKPI] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const service = new AccService();
@@ -113,13 +116,18 @@ function LichSuLamViec() {
       (item) => item.trangThai === "HUY"
     ).length;
 
-    const tongKPI = hoanThanhList.reduce((sum, item) => {
+    const kpiNhan = hoanThanhList.reduce((sum, item) => {
       return sum + (item.kpi || 0); // phòng khi item.kpi bị null hoặc undefined
     }, 0);
+
+    const tongKPI = kpiNhan + kpiNhanThem - kpiBiTru;
 
     setCongViecDaNhan(daNhan);
     setCongViecHoanThanh(hoanThanhList.length);
     setCongViecBiHuy(biHuy);
+    setKPIDaNhan(kpiNhan);
+    setKPINhanThem(kpiNhanThem);
+    setKPIBiTru(kpiBiTru);
     setTongKPI(tongKPI.toFixed(2));
   }, [lichSuLamViec]);
 
@@ -131,7 +139,8 @@ function LichSuLamViec() {
 
   return (
     <>
-      <Row gutter={16} style={{ textAlign: "center" }}>
+      <Row gutter={[16,16]} style={{ textAlign: "center" }}>
+
         <Col span={6}>
           <Card>
             <Statistic
@@ -158,17 +167,67 @@ function LichSuLamViec() {
             />
           </Card>
         </Col>
+
         <Col span={6}>
           <Card>
             <Statistic
-              title={<strong>Tổng KPI</strong>}
-              value={tongKPI}
+              title={<strong>KPI yêu cầu</strong>}
+              value={congViecBiHuy}
+              valueStyle={{ color: "yellowgreen" }}
               precision={2}
               formatter={(value) => formatCurrency(Number(value))}
-              style={{ color: "#faad14", fontWeight: "bold" }}
             />
           </Card>
         </Col>
+
+         <Col span={6}>
+          <Card>
+            <Statistic
+              title={<strong>KPI nhận được</strong>}
+              value={kpiDaNhan}
+              precision={2}
+              formatter={(value) => formatCurrency(Number(value))}
+            />
+          </Card>
+        </Col>
+
+         <Col span={6}>
+          <Card>
+            <Statistic
+              title={<strong>KPI nhận thêm</strong>}
+              value={kpiNhanThem}
+              precision={2}
+              formatter={(value) => formatCurrency(Number(value))}
+              valueStyle={{ color: "blue" }}
+            />
+          </Card>
+        </Col>
+
+         <Col span={6}>
+          <Card>
+            <Statistic
+              title={<strong>KPI bị trừ</strong>}
+              value={kpiBiTru}
+              precision={2}
+              formatter={(value) => formatCurrency(Number(value))}
+              valueStyle={{ color: "#FFFF00" }}
+            />
+          </Card>
+        </Col>
+        
+        <Col span={6}>
+          <Card>
+            <Statistic
+              title={<strong>Tổng đã nhận</strong>}
+              value={tongKPI}
+              precision={2}
+              formatter={(value) => formatCurrency(Number(value))}
+              valueStyle={{ color: "green" }}
+            />
+          </Card>
+        </Col>
+
+        
       </Row>
       <Divider />
       <Table

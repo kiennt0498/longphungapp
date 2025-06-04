@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
-  Button,
   Modal,
   Form,
   Input,
   Select,
   message,
-  Tooltip,
   Space,
   Row,
   Col,
-  Popconfirm,
 } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -29,7 +26,6 @@ const ListVatTu = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
-  const [editingRecord, setEditingRecord] = useState(null);
   const [filter, setFilter] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [data, setData] = useState([]);
@@ -145,7 +141,7 @@ const ListVatTu = () => {
       dataIndex: "vatTu",
       key: "donViTinh",
       render: (_, record) => {
-        return record.vatTu.doViTinh.ten;
+        return record.vatTu?.doViTinh?.ten || "NAN"
       },
     },
 

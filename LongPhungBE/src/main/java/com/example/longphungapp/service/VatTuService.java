@@ -73,6 +73,9 @@ public class VatTuService {
             dv.setId(dto.getDoViTinh().getId());
             found.setChatLieu(cl);
             found.setDoViTinh(dv);
+            var nvTM = new NhanVien();
+            nvTM.setId(dto.getNhanVienThuMua().getId());
+            found.setNhanVienThuMua(nvTM);
             tmDao.save(found);
             var vatTu = new VatTu();
             vatTu.setDoViTinh(dv);

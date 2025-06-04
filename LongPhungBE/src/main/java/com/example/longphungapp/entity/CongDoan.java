@@ -47,6 +47,10 @@ public class CongDoan {
   @Column(name = "dieu_chinh")
   private Double dieuChinh;
 
+  @ManyToOne
+  @JoinColumn(name = "nhan_vien_ql_id")
+  private NhanVien nhanVienQL;
+
   @Override
   public final boolean equals(Object o) {
     if (this == o) return true;

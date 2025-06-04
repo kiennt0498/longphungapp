@@ -256,7 +256,7 @@ const CongDoanList = () => {
             label="Giá phụ liệu"
             rules={[{ required: true, message: "Vui lòng nhập giá" }]}
           >
-            <InputNumber min={1} style={{ width: "100%" }} />
+            <InputNumber min={0} style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
@@ -264,7 +264,7 @@ const CongDoanList = () => {
             label="Khấu hao máy"
             rules={[{ required: true, message: "Vui lòng nhập giá" }]}
           >
-            <InputNumber min={1} style={{ width: "100%" }} />
+            <InputNumber min={0} style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
@@ -280,7 +280,7 @@ const CongDoanList = () => {
             label="KPI gốc"
             rules={[{ required: true, message: "Vui lòng kpi cho nhân viên" }]}
           >
-            <InputNumber min={1} style={{ width: "100%" }} />
+            <InputNumber min={0} style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item
