@@ -10,8 +10,8 @@ const ThongBaoTK = ({donMoi}) => {
   return (
     <Result
     status="success"
-    title="Lên đơn hàng nháp thành công"
-    subTitle="Có thể tạo đơn mới hoặc vào phần đơn hàng duyệt đơnđơn"
+    title="Lên đơn hàng thành công"
+    subTitle="Có thể tạo đơn mới hoặc vào phần đơn hàng duyệt đơn"
     extra={[
       <Button type="primary" onClick={donMoi}>
         Tạo đơn mới

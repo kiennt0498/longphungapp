@@ -1,8 +1,6 @@
 package com.example.longphungapp.repository;
 
 import com.example.longphungapp.entity.NhanVien;
-import com.example.longphungapp.fileEnum.BoPhan;
-import com.example.longphungapp.fileEnum.ChucVu;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,6 +24,15 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
 
     List<NhanVien> findByTaiKhoan_SdtContains(String sdt);
 
-    List<NhanVien> findByBoPhan(BoPhan boPhan);
+    List<NhanVien> findByBoPhan_Id(Integer id);
+
+    @Query("select n from NhanVien n where n.chucVu.id = ?1 and n.xuong.id = ?2 and n.khu.id = ?3")
+    NhanVien findByChucVu_IdAndXuong_IdAndKhu_Id(Integer id, Integer id1, Integer id2);
+
+    @Query("select n from NhanVien n where n.chucVu.id = ?1 and n.xuong.id = ?2")
+    NhanVien findByChucVu_IdAndXuong_Id(Integer id, Integer id1);
+
+    NhanVien findByXuong_IdAndKhu_IdAndBoPhan_Id(Integer id, Integer id1, Integer id2);
+
 
 }

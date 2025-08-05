@@ -43,7 +43,7 @@ const ModalPhuLieu = ({
   return (
     <Modal
       width="80%"
-      title="Chọn sản phẩm"
+      title="Chọn nguyên liệu"
       open={open}
       onOk={() => handleOk()}
       onCancel={() => handleCancel()}
@@ -52,7 +52,7 @@ const ModalPhuLieu = ({
         <Col>
           <Input
             style={{ width: "30vh" }}
-            placeholder="Nhập tên sản phẩm"
+            placeholder="Nhập tên nguyên liệu"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />

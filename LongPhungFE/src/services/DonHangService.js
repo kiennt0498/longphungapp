@@ -29,4 +29,7 @@ export default class DonHangService {
   getDonHuy = async (id) =>{
     return await axiosClient.get(API_HOA_DON + "/donhuy/"+id);
   }
+  createDonAo = async (data) => {
+    return await axiosClient.post(API_HOA_DON + "/createDonAo",data);
+  };
 }

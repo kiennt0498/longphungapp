@@ -27,5 +27,14 @@ export default class NguyenLieuService {
   getListLoaiVatTu = async () => {
     return await axiosClient.get(API_NGUYEN_LIEU + "/loaivattu");
   };
+  getListChatLieu = async () => {
+    return await axiosClient.get(API_NGUYEN_LIEU + "/chatlieu");
+  };
+  updateVatTu = async (data) => {
+    return await axiosClient.put(API_NGUYEN_LIEU + "/updatevt", data);
+  };
+  getDonThuMuaByVT = async (id) => {
+    return await axiosClient.get(API_NGUYEN_LIEU + "/lsthumua/" + id);
+  }
 
 }

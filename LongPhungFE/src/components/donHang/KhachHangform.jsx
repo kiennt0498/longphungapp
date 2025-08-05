@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 const KhachHangform = ({ khachHangs, form }) => {
   const [data, setData] = useState([]);
   const khachHang = useSelector((state) => state.KhachHang.khachHang);
+  const maNV = localStorage.getItem("maNV");
 
   console.log(khachHang);
 
@@ -28,6 +29,7 @@ const KhachHangform = ({ khachHangs, form }) => {
         sdt: khachHang.sdt,
         tenKhachHang: khachHang.tenKhachHang,
         diaChi: khachHang.diaChi,
+        nhanVien: maNV,
       });
     }
   }, []);

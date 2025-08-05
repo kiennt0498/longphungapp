@@ -11,7 +11,7 @@ const DuyetCV = ({ listDuyet }) => {
       dataSource={listDuyet}
       renderItem={(i) => (
         <List.Item key={i.id}>
-          <JobCard item={i} showButton={false} />
+          <JobCard item={i} showButton={false}  showButton2={false}/>
         </List.Item>
       )}
     />

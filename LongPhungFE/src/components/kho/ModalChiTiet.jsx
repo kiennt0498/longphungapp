@@ -3,7 +3,7 @@ import React from 'react'
 import { formatCurrency } from '../../helpers/formatData'
 
 function ModalChiTiet({ open, onClose, item }) {
-
+  
   const data = item?.phieuChiTiets?.map((ct) => ({
     key: ct.id,
     name: ct.vatTu.ten,
@@ -15,9 +15,6 @@ function ModalChiTiet({ open, onClose, item }) {
 
   const total = data.reduce((sum, row) => sum + row.total, 0);
   const totalDonGia = data.reduce((sum, row) => sum + row.price, 0);
-
-  console.log(data);
-  
 
   const columns = [
     {

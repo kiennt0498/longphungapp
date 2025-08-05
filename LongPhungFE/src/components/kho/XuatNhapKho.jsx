@@ -197,7 +197,7 @@ const XuatNhapKho = ({ open, onClose }) => {
                   <div style={{ display: "flex", gap: "8px" }}>
                     <InputNumber
                       style={{ flex: 1 }}
-                      placeholder={`Nhập số lượng ${item.vatTu.doViTinh.ten}`}
+                      placeholder={`Nhập số lượng`}
                       value={quantities[item.id]}
                       max={active === "xuat" ? item.soLuong :  undefined}
                       min={1}

@@ -47,9 +47,9 @@ const NguyenLieuSX = ({ data, nguyenLieuSX, setNguyenLieuSX }) => {
 
   return (
     <>
-      <Row>
+      {/* <Row>
         <Button type="primary">Thu mua nguyên liệu</Button>
-      </Row>
+      </Row> */}
 
       <Form form={form} layout="vertical">
         <Card style={{ marginTop: "1%" }} title="Nguyên liệu">
@@ -66,6 +66,7 @@ const NguyenLieuSX = ({ data, nguyenLieuSX, setNguyenLieuSX }) => {
             />
           </Card>
         </Card>
+        
       </Form>
       <ModalPhuLieu
         open={openDraw}

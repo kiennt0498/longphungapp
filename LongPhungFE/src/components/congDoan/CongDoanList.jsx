@@ -136,21 +136,8 @@ const CongDoanList = () => {
   const columns = [
     { title: "Mã công đoạn", dataIndex: "id", key: "id" },
     { title: "Tên công đoạn", dataIndex: "tenCongDoan", key: "tenCongDoan" },
-    {
-      title: "Giá phụ liệu",
-      dataIndex: "giaMuaNguyenLieu",
-      key: "giaMuaNguyenLieu",
-    },
-    { title: "Khấu hao máy", dataIndex: "khauHaoMay", key: "khauHaoMay" },
-    { title: "Hệ số thu mua", dataIndex: "heSoThuMua", key: "heSoThuMua" },
     { title: "Công nhân viên", dataIndex: "congNV", key: "congNV" },
-    {
-      title: "Hệ số tiền công",
-      dataIndex: "heSoTienCong",
-      key: "heSoTienCong",
-    },
     { title: "KPI gốc", dataIndex: "kpiGoc", key: "kpiGoc" },
-    // { title: "Người quản lý", dataIndex: "nhanVien", render: (nhanVien) => nhanVien.hoTen },
     {
       title: "Hành động",
       render: (_, record) => (
@@ -252,43 +239,11 @@ const CongDoanList = () => {
           </Form.Item>
 
           <Form.Item
-            name="giaMuaNguyenLieu"
-            label="Giá phụ liệu"
-            rules={[{ required: true, message: "Vui lòng nhập giá" }]}
-          >
-            <InputNumber min={0} style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
-            name="khauHaoMay"
-            label="Khấu hao máy"
-            rules={[{ required: true, message: "Vui lòng nhập giá" }]}
-          >
-            <InputNumber min={0} style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
-            name="heSoThuMua"
-            label="Hệ số thu mua"
-            rules={[{ required: true, message: "Vui lòng nhập hệ số" }]}
-          >
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
             name="kpiGoc"
             label="KPI gốc"
             rules={[{ required: true, message: "Vui lòng kpi cho nhân viên" }]}
           >
             <InputNumber min={0} style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
-            name="heSoTienCong"
-            label="Hệ số tiền công nhân viên"
-            rules={[{ required: true, message: "Vui lòng nhập hệ số" }]}
-          >
-            <InputNumber style={{ width: "100%" }} />
           </Form.Item>
         </Form>
       </Modal>

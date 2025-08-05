@@ -1,13 +1,16 @@
 package com.example.longphungapp.entity;
 
-import com.example.longphungapp.fileEnum.BoPhan;
-import com.example.longphungapp.fileEnum.TacVu;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -37,21 +40,20 @@ public class CongDoan {
   @Column(name = "he_so_tien_cong")
   private Double heSoTienCong;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "tac_vu")
-  private TacVu tacVu;
-
   @Column(name = "kpi_goc", precision = 19, scale = 2)
   private BigDecimal kpiGoc;
 
   @Column(name = "dieu_chinh")
   private Double dieuChinh;
 
-  @ManyToOne
-  @JoinColumn(name = "nhan_vien_ql_id")
-  private NhanVien nhanVienQL;
+    @ManyToMany
+    @JoinTable(name = "cong_doan_nhanViens",
+            joinColumns = @JoinColumn(name = "congDoan_"),
+            inverseJoinColumns = @JoinColumn(name = "nhanViens_id"))
+    @JsonIgnore
+    private List<NhanVien> nhanViens = new ArrayList<>();
 
-  @Override
+    @Override
   public final boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;

@@ -1,164 +1,239 @@
 import React, { useEffect, useState } from "react";
-import NguyenLieuService from "../../services/NguyenLieuService";
-import { Button, Col, Popconfirm, Row, Space, Table, Tooltip } from "antd";
-import { FaCartPlus } from "react-icons/fa6";
 import {
-  EditOutlined,
-  DeleteOutlined,
-  PlusCircleFilled,
-} from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
-import NguyenLieuCT from "./NguyenLieuCT";
+  Button,
+  Col,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Select,
+  Space,
+  Table,
+  Tooltip,
+} from "antd";
+import { FaCartPlus } from "react-icons/fa6";
+import { EditOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
+import NguyenLieuService from "../../services/NguyenLieuService";
+import NguyenLieuCT from "./NguyenLieuCT";
 import { useFilters } from "../../contexts/FilterContext";
 import { filterData } from "../../contexts/filterUtils";
 
 const ListNguyenLieu = () => {
-  const maNV = "NV00001";
   const service = new NguyenLieuService();
-  const [isLoading, setIsLoading] = useState(false);
-  const [listNL, setListNL] = useState([]);
-  const [openMD, setOpenMD] = useState(false);
-  const [loai, setLoai] = useState([]);
-  const navigate = useNavigate();
+  const [form] = Form.useForm();
+  const maNV = localStorage.getItem("maNV");
 
-  const {filters} = useFilters()
-  const filtersData = filterData(listNL, filters,{search: "ten"},[])
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isCTModalOpen, setIsCTModalOpen] = useState(false);
+
+  const [listNL, setListNL] = useState([]);
+  const [loaiVatTu, setLoaiVatTu] = useState([]);
+  const [chatLieuOptions, setChatLieuOptions] = useState([]);
+  const [donThuMua, setDonThuMua] = useState(null);
+
+  const { filters } = useFilters();
+  const filteredData = filterData(listNL, filters, { search: "ten" }, []);
+
+  useEffect(() => {
+    fetchNguyenLieu();
+    fetchOptions();
+  }, []);
+
+  const fetchNguyenLieu = async () => {
+    try {
+      const res = await service.getListNL();
+      setListNL(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchOptions = async () => {
+    setIsLoading(true);
+    try {
+      const [resLoai, resChatLieu] = await Promise.all([
+        service.getListLoaiVatTu(),
+        service.getListChatLieu(),
+      ]);
+      if (resLoai.status === 200) setLoaiVatTu(resLoai.data);
+      if (resChatLieu.status === 200) setChatLieuOptions(resChatLieu.data);
+    } catch (error) {
+      toast.warning(`Lỗi: ${error.message}`);
+    }
+    setIsLoading(false);
+  };
+
+  const handleUpdateSubmit = async () => {
+    const values = form.getFieldsValue();
+    const updatedData = {
+      ...values,
+      ten: values.vatTu,
+      chatLieu: { id: values.chatLieu },
+      giaNhap: parseFloat(values.gia),
+      heSoBu: parseFloat(values.heSoBu),
+      heSoThuMua: parseFloat(values.heSoThuMua),
+    };
+    
+    try {
+      const res = await service.updateVatTu(updatedData);
+      if (res.status === 200) {
+        toast.success("Cập nhật thành công");
+        setIsEditModalOpen(false);
+        fetchNguyenLieu();
+      } else {
+        toast.error("Cập nhật thất bại");
+      }
+    } catch (err) {
+      toast.error("Lỗi khi cập nhật");
+      console.error(err);
+    }
+  };
+
+  const handleThuMua = async (record) => {
+    try {
+      const res = await service.getDonThuMuaByVT(record.id);
+      setDonThuMua(res.data);
+    } catch (error) {
+      if (error.response?.status === 400) {
+        setDonThuMua({
+          tenNguyenLieu: record.ten,
+          loai: record.loaiVatTu,
+          doVitinh: record.doViTinh,
+          chatLieu: record.chatLieu,
+          giaDuTinh: record.giaNhap,
+        });
+      } else {
+        toast.error(`Lỗi: ${error.message}`);
+      }
+    }
+    setIsCTModalOpen(true);
+  };
+
+  const handleCreateDTM = async (data) => {
+    const payload = {
+      ...data,
+      doViTinh: { id: data.doViTinh },
+      chatLieu: { id: data.chatLieu },
+      nguoiLenDon: { id: maNV },
+    };
+
+    try {
+      const res = await service.insterDTM(payload);
+      if (res.status === 201) {
+        toast.success("Thêm mới thành công");
+        setIsCTModalOpen(false);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const openEditModal = (record) => {
+    form.setFieldsValue({
+      id: record.id,
+      vatTu: record.ten,
+      gia: record.giaNhap,
+      heSoBu: record.heSoBu,
+      heSoThuMua: record.heSoThuMua,
+      chatLieu: record.chatLieu.id,
+    });
+    setIsEditModalOpen(true);
+  };
 
   const columns = [
-    { title: "Id", key: "id", dataIndex: "id" },
-    { title: "Tên", key: "ten", dataIndex: "ten" },
-    { title: "Giá nhập", key: "giaNhap", dataIndex: "giaNhap" },
-    { title: "Hệ số bù", key: "heSoBu", dataIndex: "heSoBu" },
-    { title: "Hệ số thu mua", key: "heSoThuMua", dataIndex: "heSoThuMua" },
-
+    { title: "Id", dataIndex: "id" },
+    { title: "Tên", dataIndex: "ten" },
+    { title: "Giá nhập", dataIndex: "giaNhap" },
+    { title: "Hệ số bù", dataIndex: "heSoBu" },
+    { title: "Hệ số thu mua", dataIndex: "heSoThuMua" },
     {
       title: "Chất liệu",
-      key: "chatLieu",
-      dataIndex: "chatLieu",
-      render: (_, record) => record.chatLieu.ten,
+      dataIndex: ["chatLieu", "ten"],
     },
     {
       title: "Hành động",
-      key: "actions",
       align: "center",
-
       render: (_, record) => (
         <Space>
           <Tooltip title="Mua nguyên liệu" color="green">
-            <Button
-              color="green"
-              variant="outlined"
-              icon={<FaCartPlus />}
-              onClick={() => thuMuaSanPham(record)}
-            />
+            <Button icon={<FaCartPlus />} color="green" variant="outlined" onClick={() => handleThuMua(record)} />
           </Tooltip>
           <Tooltip title="Cập nhật" color="blue">
-            <Button color="blue" variant="outlined" icon={<EditOutlined />} />
-          </Tooltip>
-          <Tooltip title="Xóa" color="red">
-            <Popconfirm
-              title="Xóa khách hàng này?"
-              onConfirm={() => handleDelete(record.id)}
-            >
-              <Button icon={<DeleteOutlined />} danger />
-            </Popconfirm>
+            <Button icon={<EditOutlined />} color="primary" variant="outlined" onClick={() => openEditModal(record)} />
           </Tooltip>
         </Space>
       ),
     },
   ];
 
-  const getLoai = async () => {
-    setIsLoading(true);
-    try {
-      const res = await service.getListLoaiVatTu();
-
-      setLoai(res.data);
-    } catch (error) {
-      toast.warning(`Lỗi: ${error.message}`);
-      console.log(error);
-    }
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    getLoai();
-  }, []);
-
-  const onChange = () => {
-    setOpenMD(true);
-  };
-
-  const handlCancel = () => {
-    setOpenMD(false);
-  };
-
-  const thuMuaSanPham = (record) => {
-    console.log(record);
-  };
-
-  const handleDelete = (id) => {
-    console.log(id);
-  };
-
-  const onSaveAndEdit = async (data) => {
-    setIsLoading(true);
-    try {
-      const newData = {
-        ...data,
-        doViTinh: { id: data.doVitinh },
-        chatLieu: { id: data.chatLieu },
-        nguoiLenDon: { id: maNV },
-      };
-
-      const res = await service.insterDTM(newData);
-      if (res.status === 201) {
-        toast.success("Thêm mới thành công");
-      }
-      setOpenMD(false);
-    } catch (error) {
-      console.log(error);
-    }
-    setIsLoading(false);
-  };
-
-  const getListNL = async () => {
-    try {
-      const res = await service.getListNL();
-      setListNL(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    getListNL();
-  }, []);
   return (
     <div>
-      <Row align="middle" justify="space-between">
+      <Row justify="space-between" align="middle">
         <Col>
           <h1>Danh sách vật tư</h1>
         </Col>
         <Col>
-          <Button type="primary" icon={<PlusCircleFilled />} onClick={onChange}>
+          <Button
+            type="primary"
+            icon={<PlusCircleFilled />}
+            onClick={() => setIsCTModalOpen(true)}
+          >
             Thêm nguyên liệu mới
           </Button>
         </Col>
       </Row>
+
       <Table
-        dataSource={filtersData}
+        dataSource={filteredData}
         columns={columns}
         rowKey="id"
         loading={isLoading}
       />
+
       <NguyenLieuCT
-        open={openMD}
-        handleCancel={handlCancel}
-        handleOK={onSaveAndEdit}
-        data={loai}
+        open={isCTModalOpen}
+        handleCancel={() => setIsCTModalOpen(false)}
+        handleOK={handleCreateDTM}
+        data={loaiVatTu}
+        donTM={donThuMua}
       />
+
+      <Modal
+        title="Sửa số liệu tồn kho"
+        open={isEditModalOpen}
+        onOk={handleUpdateSubmit}
+        onCancel={() => setIsEditModalOpen(false)}
+        confirmLoading={isLoading}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item name="id" hidden>
+            <Input />
+          </Form.Item>
+          <Form.Item name="vatTu" label="Tên vật tư" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="gia" label="Giá nhập" rules={[{ required: true }]}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item name="heSoBu" label="Hệ số bù" rules={[{ required: true }]}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item name="heSoThuMua" label="Hệ số thu mua" rules={[{ required: true }]}>
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item name="chatLieu" label="Chất liệu" rules={[{ required: true }]}>
+            <Select placeholder="Chọn chất liệu">
+              {chatLieuOptions.map((item) => (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.ten}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

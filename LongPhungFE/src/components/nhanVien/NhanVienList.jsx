@@ -30,9 +30,9 @@ const NhanVienList = () => {
 
   const data = useSelector((state) => state.NhanVien.nhanViens);
   const nv = useSelector((state) => state.NhanVien.nhanVien);
-  const boPhan = useSelector((state) => state.NhanVien.boPhans);
-  const chucVu = useSelector((state) => state.NhanVien.chucVus);
-  const tacVu = useSelector((state) => state.NhanVien.tacVus);
+  // const boPhan = useSelector((state) => state.NhanVien.boPhans);
+  // const chucVu = useSelector((state) => state.NhanVien.chucVus);
+  // const tacVu = useSelector((state) => state.NhanVien.tacVus);
 
   const dispatch = useDispatch();
 
@@ -94,10 +94,11 @@ const NhanVienList = () => {
 
   useEffect(() => {
     getData();
-    getBoPhan();
-    getChucVu();
-    getTacVu();
   }, [dispatch]);
+
+  const setFileUp = ( data) =>{
+    getData()
+  }
 
   const onOpen = (data) => {
     dispatch(setNhanvien(data));
@@ -232,7 +233,7 @@ const NhanVienList = () => {
           dataIndex="diaChi"
           align="center"
         ></Column>
-        <Column
+        {/* <Column
           title="Bộ phận"
           key="boPhan"
           dataIndex="boPhan"
@@ -241,9 +242,9 @@ const NhanVienList = () => {
             const bp = boPhan.find((bp) => record.boPhan === bp.name);
             return bp?.description || record.boPhan;
           }}
-        ></Column>
+        ></Column> */}
 
-        <Column
+        {/* <Column
           title="Chức vụ"
           key="chucVu"
           dataIndex="chucVu"
@@ -263,7 +264,7 @@ const NhanVienList = () => {
             const tv = tacVu.find((tv)=> record.tacVu === tv.name)
             return tv?.description || record.boPhan
           }}
-        ></Column>
+        ></Column> */}
 
         <Column
           title="Hành Động"
@@ -305,11 +306,11 @@ const NhanVienList = () => {
         onClose={onClose}
         onChange={onChange}
         open={check}
-        bp={boPhan}
-        cv={chucVu}
-        tv={tacVu}
+        // bp={boPhan}
+        // cv={chucVu}
+        // tv={tacVu}
       />
-      <ModalExcel open={open} onCloseM={onCloseM} API={API} />
+      <ModalExcel open={open} onCloseM={onCloseM} API={API} setFileUp={setFileUp}/>
     </div>
   );
 };

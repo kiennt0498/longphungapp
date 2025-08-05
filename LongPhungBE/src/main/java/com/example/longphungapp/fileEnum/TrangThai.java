@@ -13,6 +13,10 @@ public enum TrangThai {
      CHO_VAN_CHUYEN("Chờ vận chuyển"),
      NGUNG_SAN_XUAT("Ngừng sản xuất"),
      DA_GIAO("Đã giao"),
+     CHO_XAC_NHAN_CHIA("Chờ xác nhận chia nhỏ"), // đang chờ QL khu xác nhận chia nhỏ
+     CHO_TAO_CONG_VIEC("Chờ tạo công việc"),
+     DA_CHIA("Đã chia nhỏ đơn chi tiết"),
+     DA_TAO_CV("Đã tạo công việc"),
      HUY("Hủy");
 
      private final String description;

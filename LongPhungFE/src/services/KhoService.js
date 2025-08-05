@@ -15,5 +15,9 @@ export default class KhoService{
     deletePhieu = async (id) =>{
         return await axiosClient.delete(API_KHO+"/phieu/delete/"+id)
     }
+
+    getListTonKho = async (data) =>{
+        return await axiosClient.post(API_KHO+"/tonkho/list",data)
+    }
     
 }

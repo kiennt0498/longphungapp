@@ -1,8 +1,6 @@
 package com.example.longphungapp.entity;
 
-import com.example.longphungapp.fileEnum.BoPhan;
-import com.example.longphungapp.fileEnum.ChucVu;
-import com.example.longphungapp.fileEnum.TacVu;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,22 +24,24 @@ public class NhanVien {
     @Column(name = "dia_chi")
     private String diaChi;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "bo_phan")
-    private BoPhan boPhan;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "chuc_vu")
+    @ManyToOne
+    @JoinColumn(name = "chuc_vu_id")
     private ChucVu chucVu;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tac_vu")
-    private TacVu tacVu;
+    @ManyToOne
+    @JoinColumn(name = "bo_phan_id")
+    private BoPhan boPhan;
+
+    @ManyToOne
+    @JoinColumn(name = "khu_id")
+    private Khu khu;
+
+    @ManyToOne
+    @JoinColumn(name = "xuong_id")
+    private Xuong xuong;
 
     @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "tai_khoan_sdt")
     private TaiKhoan taiKhoan;
-
-
 
 }

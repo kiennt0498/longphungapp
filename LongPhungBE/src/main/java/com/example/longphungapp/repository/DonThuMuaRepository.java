@@ -12,4 +12,7 @@ public interface DonThuMuaRepository extends JpaRepository<DonThuMua, Long> {
 
     @Query("select d from DonThuMua d where d.done = false and d.hanThuMua = current_date ")
     List<DonThuMua> findDonThuMuaHetHanChuaChot();
+
+    List<DonThuMua> findByVatTu_Id(Long id);
+
 }

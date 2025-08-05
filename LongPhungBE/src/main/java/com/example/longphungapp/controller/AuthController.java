@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -38,22 +39,37 @@ public class AuthController {
                     return ResponseEntity.status(404).body("Không tìm thấy nhân viên");
                 }
 
+                var chucVu = nhanVien.getChucVu() != null ? nhanVien.getChucVu().getId() : null;
+                var xuongId = nhanVien.getXuong() != null ? nhanVien.getXuong().getId() : null;
+                var khuId = nhanVien.getKhu() != null ? nhanVien.getKhu().getId() : null;
+                var boPhanId = nhanVien.getBoPhan() != null ? nhanVien.getBoPhan().getId() : null;
+
+                System.out.println("chuc vu id: "+ chucVu);
+                System.out.println("xuong id: "+ xuongId);
+                System.out.println("khu id: "+ khuId);
+                System.out.println("bo phan id: "+ boPhanId);
+
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("username", dto.getUsername());
+                response.put("name", nhanVien.getHoTen());
+                response.put("maNV", nhanVien.getId());
+                response.put("chucVu", chucVu);
+                response.put("xuong", xuongId); // có thể null
+                response.put("khu", khuId);
+                response.put("boPhan", boPhanId);
                 return ResponseEntity.ok()
                         .header(HttpHeaders.SET_COOKIE, createSessionCookie(session))
-                        .body(Map.of(
-                                "username", dto.getUsername(),
-                                "maNV", nhanVien.getId(),
-                                "boPhan", nhanVien.getBoPhan(),
-                                "chucVu", nhanVien.getChucVu(),
-                                "tacVu",nhanVien.getTacVu()
-                        ));
+                        .body(response);
             } else {
                 // Trường hợp đăng nhập sai nhưng không throw exception
                 return ResponseEntity.status(401).body("Sai thông tin đăng nhập");
             }
         } catch (AuthenticationException e) {
+            e.printStackTrace();
             return ResponseEntity.status(401).body("Sai thông tin đăng nhập");
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Lỗi hệ thống: " + e.getMessage());
             return ResponseEntity.status(500).body("Lỗi hệ thống");
         }

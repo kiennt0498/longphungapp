@@ -14,7 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,4 +82,20 @@ public class KhoService {
         phieuRepository.delete(phieu);
     }
 
+    public Map getTonKho(List<Long> list) {
+        Map<Long, Double> listTK = new HashMap<>();
+        System.out.println("list size: "+ list.size());
+        list.forEach(i -> {
+            var tonKho = tonKhoRepository.findByVatTu_Id(i);
+            if(tonKho == null){
+                return;
+            }
+            if(tonKho.getVatTu().getDoViTinh().getId() == 4 || tonKho.getVatTu().getDoViTinh().getId() == 5){
+                listTK.put(tonKho.getVatTu().getId(), tonKho.getKichThuoc());
+            }else{
+                listTK.put(tonKho.getVatTu().getId(), tonKho.getSoLuong().doubleValue());
+            }
+        });
+        return listTK;
+    }
 }

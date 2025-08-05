@@ -24,7 +24,6 @@ public class KhachHangController {
 
     @PostMapping("create")
     public ResponseEntity createCus(@RequestBody KhachHangDto dto){
-        System.out.println(dto.getNhanVien().getId());
         var newDto = service.create(dto);
         return new ResponseEntity<>(newDto, HttpStatus.CREATED);
     }

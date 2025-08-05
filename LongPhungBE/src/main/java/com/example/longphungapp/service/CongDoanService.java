@@ -32,7 +32,7 @@ public class CongDoanService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public CongDoanDto save(CongDoanDto dto) {
+    public CongDoanDto saveCongDoan(CongDoanDto dto) {
 
         var entity = MapperInterface.MAPPER.toEntity(dto);
         entity.setCongNV(entity.getKpiGoc().multiply(BigDecimal.valueOf(entity.getDieuChinh()/100)));

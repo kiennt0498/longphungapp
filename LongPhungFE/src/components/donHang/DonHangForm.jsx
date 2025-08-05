@@ -49,15 +49,13 @@ const DonHangForm = () => {
 
   const idNV = localStorage.getItem("maNV");
 
-  console.log(idNV);
-  
-
-  const createDon = async (sanPham,gia) =>{
+  const createDon = async (sanPham,gia,thue) =>{
      const newData = {
         don: {
           khachHang : {...khachHang, nhanVien: {id: idNV}},
           gia:gia,
-          nhanVien: {id: idNV}
+          nhanVien: {id: idNV},
+          thue: thue,
         },
         donCT: sanPham.map((i) => {
           return {
@@ -69,10 +67,7 @@ const DonHangForm = () => {
             giaGoc: i.giaGoc
           };
         })
-      }
-
-      console.log(newData);
-      
+      }      
       if(sanPham.length === 0){
         toast.warning("Cần ít nhất 1 sản phẩm trong danh sách")
         return
@@ -80,7 +75,6 @@ const DonHangForm = () => {
       
       try {
         const res = await dhService.insterBill(newData);
-        console.log(res.data);
         
       if(res.status === 200 && res.data){
         dispatch(setDonCT(res.data))
@@ -100,6 +94,7 @@ const DonHangForm = () => {
   const onNext = async () => {
     try {
       const values = await form.validateFields();
+      console.log(values);
     if (currentStep === 0) {
       dispatch(setKhachHang(values))
     }
@@ -111,11 +106,6 @@ const DonHangForm = () => {
      
   }
   
-
-  const onSubmit = (data) => {
-    console.log(data);
-  };
-
 
   const processSteps = [
     {

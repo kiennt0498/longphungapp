@@ -16,11 +16,16 @@ import dayjs from "dayjs";
 
 dayjs.locale("vi");
 
-function NguyenLieuCT({ open, handleOK, handleCancel, data }) {
+function NguyenLieuCT({ open, handleOK, handleCancel, data, donTM}) {
   const [form] = Form.useForm();
   const [doViTinh, setDoViTinh] = useState([]);
   const [chatLieu, setChatLieu] = useState([]);
   const serviceSP = new SanPhamService();
+
+  if (!open) {
+    form.resetFields();
+  }
+
 
   const getData = async () => {
     const res = await serviceSP.getDonVi();
@@ -34,6 +39,19 @@ function NguyenLieuCT({ open, handleOK, handleCancel, data }) {
   useEffect(() => {
     getData();
   }, []);
+
+  useEffect(() => {
+    console.log("donTM", donTM);
+    
+    if(donTM) {
+      form.setFieldsValue({
+        ...donTM,
+        hanThuMua: dayjs(new Date()),
+        chatLieu: donTM.chatLieu ? donTM.chatLieu.id : null,
+        doViTinh: donTM.doViTinh ? donTM.doViTinh.id : null,
+      });
+    }
+  },[donTM])
 
   const optionLoai = data.map((item) => {
     return { value: item.name, label: item.description };
@@ -49,6 +67,8 @@ function NguyenLieuCT({ open, handleOK, handleCancel, data }) {
   const onOk = async () => {
     try {
       const data = await form.validateFields();
+      console.log("data", data);
+      
       handleOK(data);
     } catch (error) {
       toast.warning("Vui lòng nhập đầy đủ thông tin!");
@@ -76,14 +96,6 @@ function NguyenLieuCT({ open, handleOK, handleCancel, data }) {
           </Form.Item>
 
           <Form.Item
-            name="doVitinh"
-            label="Đơn vị tính"
-            rules={[{ required: true, message: "Vui lòng chọn đơn vị!" }]}
-          >
-            <Select options={optionDV} placeholder="VD: kg, mét, cuộn,..." />
-          </Form.Item>
-
-          <Form.Item
             name="soLuong"
             label="Số lượng cần mua"
             rules={[{ required: true }]}
@@ -93,6 +105,14 @@ function NguyenLieuCT({ open, handleOK, handleCancel, data }) {
 
           <Form.Item name="kichThuoc" label="Kích thước / Quy cách">
             <Input placeholder="VD: dài 10cm, dày 2mm" />
+          </Form.Item>
+
+          <Form.Item
+            name="doViTinh"
+            label="Đơn vị tính"
+            rules={[{ required: true, message: "Vui lòng chọn đơn vị!" }]}
+          >
+            <Select options={optionDV} placeholder="VD: kg, mét, cuộn,..." />
           </Form.Item>
 
           <Form.Item name="mauSac" label="Màu sắc">
@@ -119,7 +139,7 @@ function NguyenLieuCT({ open, handleOK, handleCancel, data }) {
             <DatePicker style={{ width: "100%" }} format={"DD/MM/YYYY"} />
           </Form.Item>
 
-          <Form.Item name="giaDuTinh" label="Giá tham khảo (VND)">
+          <Form.Item name="giaDuTinh" label="Đơn giá tham khảo (VND)">
             <InputNumber style={{ width: "100%" }} />
           </Form.Item>
 

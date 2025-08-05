@@ -1,0 +1,22 @@
+.stats-container {
+  margin-bottom: 24px;
+  padding-right: 8px; // tránh overflow dính scroll ngang
+
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start; // bạn có thể thử space-between nếu muốn chia đều
+  }
+
+  .stats-col {
+    flex: 1 0 20%;
+    min-width: 200px;
+
+    .stat-card {
+      height: 100%;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      padding: 5%;
+    }
+  }
+}

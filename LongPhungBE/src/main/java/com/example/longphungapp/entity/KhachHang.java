@@ -19,10 +19,6 @@ public class KhachHang {
     @Column(name = "sdt", unique = true, length = 11)
     private String sdt;
 
-    @ManyToOne
-    @JoinColumn(name = "nhan_vien_id")
-    private NhanVien nhanVien;
-
     @Column(name = "dia_chi")
     private String diaChi;
 

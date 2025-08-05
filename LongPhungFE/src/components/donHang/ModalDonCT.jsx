@@ -6,10 +6,11 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
   const service = new DonHangService();
   const [products, setProducts] = useState([]);
   const [checkHuy, setCheckHuy] = useState(true);
+  const thue = data ? data.thue : 0;
 
   const { Text } = Typography;
 
-  console.log(products);
+ 
   
 
   const formatCurrency = (amount) => {
@@ -30,8 +31,7 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
   };
 
   const subtotal = calculateSubtotal();
-  const tax = subtotal * 0.1;
-  // const discount = subtotal * (5 / 100);
+  const tax = subtotal * thue; 
   const total = subtotal + tax ;
 
   const getData = async () => {
@@ -131,7 +131,7 @@ const ModalDonCT = ({ isModalOpen, handleCancel, data, isHuy }) => {
           <div className="flex justify-between">
             <Row>
               <Col span={6}>
-                <Text>Thuế VAT(10%):</Text>
+                <Text>Thuế VAT({thue * 100} %):</Text>
               </Col>
               <Col span={6} offset={12} style={{ textAlign: "right" }}>
                 <Text>{formatCurrency(tax)}</Text>

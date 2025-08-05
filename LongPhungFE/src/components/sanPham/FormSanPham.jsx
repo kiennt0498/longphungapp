@@ -17,6 +17,7 @@ import NhanVienService from "../../services/NhanVienService";
 import { setSanPham } from "../../redux/slide/SanPhamSlice";
 import { giaCongDoan, giaNguyenLieu } from "../../helpers/CongThucTinhGia";
 
+
 const FormSanPham = () => {
   const [current, setCurrent] = useState(0);
   const [form] = Form.useForm();
@@ -64,6 +65,7 @@ const FormSanPham = () => {
     fetchData();
   }, []);
 
+
   useEffect(() => {
     if (!data || !data.id) return;
     const qt =
@@ -105,6 +107,7 @@ const FormSanPham = () => {
   };
 
   const next = async () => {
+  
     if (current === 2) {
       try {
         const values = await form.validateFields();
@@ -128,10 +131,10 @@ const FormSanPham = () => {
       tenSP: formData.tenSP,
       loaiSp: { id: formData.loaiSp },
       chatLieu: { id: formData.chatLieu },
-      hinhDang: { id: formData.hinhDang },
       doViTinh: { id: formData.doViTinh },
       gia,
       loiNhuan: loiNhuanSP,
+      heSoThuMua: formData.heSoThuMua,
       quyTrinh: {
         id: data.quyTrinh?.id || null,
         tenQuyTrinh: formData.tenSP,
@@ -191,6 +194,7 @@ const FormSanPham = () => {
           setQuyTrinh={setQuyTrinh}
         />
       )}
+      
       {current === 2 && <SanPhamForm form={form} quyTrinh={quyTrinh} listNV={nhanViens}/>}
       {current === 3 && (
         <LoiNhuanSP

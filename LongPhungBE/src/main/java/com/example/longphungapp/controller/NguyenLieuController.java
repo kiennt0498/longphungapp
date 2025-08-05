@@ -2,6 +2,7 @@ package com.example.longphungapp.controller;
 
 import com.example.longphungapp.dto.DonThuMuaDto;
 import com.example.longphungapp.dto.GiaThuMuaDto;
+import com.example.longphungapp.dto.VatTuDto;
 import com.example.longphungapp.service.VatTuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,14 +26,29 @@ public class NguyenLieuController {
         return  ResponseEntity.ok(service.findAll());
     }
 
+    @GetMapping("chatlieu")
+    public ResponseEntity getChatLieus(){
+        return ResponseEntity.ok(service.getChatLieus());
+    }
+
+    @PutMapping("updatevt")
+    public ResponseEntity updateVT(@RequestBody VatTuDto dto) {
+        return ResponseEntity.ok(service.updateVT(dto));
+    }
+
     @GetMapping("loaivattu")
     public ResponseEntity getLoaiVatTu(){
         return ResponseEntity.ok(service.getListLoai());
     }
 
+    @GetMapping("lsthumua/{id}")
+    public ResponseEntity getLSThuMua(@PathVariable Long id){
+        return ResponseEntity.ok(service.getDonByIdVT(id));
+    }
+
+
     @GetMapping("donthumua/{id}")
     public ResponseEntity getDonThuMua(@PathVariable Long id){
-        System.out.println(id);
         return ResponseEntity.ok(service.findDonThuMuaById(id));
     }
 
@@ -47,6 +63,12 @@ public class NguyenLieuController {
     public ResponseEntity huyDonThuMua(@PathVariable Long id){
         service.huyDon(id);
         return ResponseEntity.ok("Hủy đơn thành công");
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity deleteNL(@PathVariable Long id){
+        service.delete(id);
+        return ResponseEntity.ok("done");
     }
 
 

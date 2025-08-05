@@ -19,9 +19,8 @@ public interface MapperInterface {
     @Mapping(target = "taiKhoan", ignore = true)
     NhanVienDto toDto(NhanVien entity);
 
-    @Mapping(target = "nhanVien", ignore = true)
+
     KhachHangDto toDto(KhachHang entity);
-    @Mapping(target = "nhanVien", ignore = true)
     KhachHang toEntity(KhachHangDto dto);
 
     @Mapping(target = "quyTrinh", ignore = true)

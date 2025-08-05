@@ -2,12 +2,9 @@ package com.example.longphungapp.controller;
 
 import com.example.longphungapp.dto.EnumDto;
 import com.example.longphungapp.dto.NhanVienDto;
-import com.example.longphungapp.entity.NhanVien;
-import com.example.longphungapp.fileEnum.BoPhan;
-import com.example.longphungapp.fileEnum.ChucVu;
-import com.example.longphungapp.fileEnum.TacVu;
+
 import com.example.longphungapp.service.NhanVienService;
-import jakarta.persistence.GeneratedValue;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +29,8 @@ public class NhanVienController {
 
     @GetMapping("sanxuat")
     public ResponseEntity getSanXuat(){
-        return new ResponseEntity(service.findByBoPhan(BoPhan.SAN_XUAT), HttpStatus.OK);
+
+        return new ResponseEntity(service.findByBoPhan(1), HttpStatus.OK);
     }
 
     @PostMapping("create")
@@ -55,33 +53,12 @@ public class NhanVienController {
 
     @GetMapping("bophan")
     public ResponseEntity getBoPhan() {
-        List<EnumDto> list = Arrays.stream(BoPhan.values()).map(i->{
-            var dto = new EnumDto();
-            dto.setName(i.name());
-            dto.setDescription(i.getDescription());
-            return dto;
-        }).toList();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+
+        return new ResponseEntity<>(service.getBoPhanAll(), HttpStatus.OK);
     }
     @GetMapping("chucvu")
     public ResponseEntity getChucVu() {
-        List<EnumDto> list = Arrays.stream(ChucVu.values()).map(i->{
-            var dto = new EnumDto();
-            dto.setName(i.name());
-            dto.setDescription(i.getDescription());
-            return dto;
-        }).toList();
-        return new ResponseEntity<>(list, HttpStatus.OK);
-    }
-    @GetMapping("tacvu")
-    public ResponseEntity getTacVu() {
-        List<EnumDto> list = Arrays.stream(TacVu.values()).map(i->{
-            var dto = new EnumDto();
-            dto.setName(i.name());
-            dto.setDescription(i.getDescription());
-            return dto;
-        }).toList();
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return new ResponseEntity<>(service.getChucVuAll(), HttpStatus.OK);
     }
 
     @GetMapping("search")

@@ -30,8 +30,7 @@ public class VatTu {
     @Column(name = "he_so_bu")
     private Double heSoBu;
 
-    @Column(name = "he_so_thu_mua")
-    private Double heSoThuMua;
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "loai_vat_tu")
@@ -40,5 +39,6 @@ public class VatTu {
     @ManyToOne
     @JoinColumn(name = "do_vi_tinh_id")
     private DoViTinh doViTinh;
+    
 
 }

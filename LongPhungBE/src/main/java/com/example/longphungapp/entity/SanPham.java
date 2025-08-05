@@ -21,7 +21,7 @@ public class  SanPham {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "ten_sp", length = 50)
+    @Column(name = "ten_sp", length = 250)
     private String tenSP;
 
     @Column(name = "gia")
@@ -34,9 +34,6 @@ public class  SanPham {
     @JoinColumn(name = "loai_sp_id")
     private LoaiSp loaiSp;
 
-    @ManyToOne
-    @JoinColumn(name = "hinh_dang_id")
-    private HinhDang hinhDang;
 
     @ManyToOne
     @JoinColumn(name = "do_vi_tinh_id")
@@ -45,6 +42,8 @@ public class  SanPham {
     @ManyToOne
     @JoinColumn(name = "quy_trinh_id")
     private QuyTrinh quyTrinh;
+
+
 
     @ElementCollection
     @CollectionTable(
@@ -62,6 +61,7 @@ public class  SanPham {
             inverseJoinColumns = @JoinColumn(name = "vatTu_id"))
     private List<VatTu> nguyenVatLieus = new ArrayList<>();
 
-
+    @Column(name = "he_so_thu_mua")
+    private Double heSoThuMua;
 
 }

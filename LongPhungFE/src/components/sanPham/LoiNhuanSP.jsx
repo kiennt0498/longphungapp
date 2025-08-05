@@ -16,7 +16,21 @@ const { Title } = Typography;
 
 const LoiNhuanSP = ({loiNhuan,setLoiNhuan, gia}) => {
 
+  const defaultProfitSteps = [
+  { soLuong: 1, loiNhuan: 800 },
+  { soLuong: 10, loiNhuan: 550 },
+  { soLuong: 100, loiNhuan: 280 },
+  { soLuong: 500, loiNhuan: 200 },
+  { soLuong: 1000, loiNhuan: 170 },
+  { soLuong: 5000, loiNhuan: 148 },
+  { soLuong: 10000, loiNhuan: 140 }
+];
 
+  useEffect(() => {
+  if (!loiNhuan || loiNhuan.length === 0) {
+    setLoiNhuan(defaultProfitSteps);
+  }
+}, []);
   
   const [displayData, setDisplayData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,8 +86,11 @@ const handleQuantityChange = (value, id) => {
     item.id === id ? { ...item, soLuong: value || 0 } : item
   );
   const sorted = updated.sort((a, b) => a.soLuong - b.soLuong);
-  setDisplayData(sorted);
-  setLoiNhuan(sorted); // đồng bộ lại state chính nếu cần
+
+  setTimeout(() => {
+    setDisplayData(sorted);
+    setLoiNhuan(sorted); // đồng bộ lại state chính nếu cần
+  }, 1000);
 };
 
   console.log(loiNhuan);

@@ -17,13 +17,14 @@ axiosClient.interceptors.response.use(
   res => res,
   err => {
     if (err.response?.status === 401) {
-      toast.error("Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.");
-      sessionStorage.clear();
-      localStorage.clear();
-      window.location.href = "/login";
+      if (window.location.pathname !== "/login") {
+        toast.error("Phiên đăng nhập đã hết. Vui lòng đăng nhập lại.");
+        sessionStorage.clear();
+        localStorage.clear();
+        window.location.href = "/login"; // chỉ khi không phải trang login
+      }
     }
     return Promise.reject(err);
   }
 );
-
 export default axiosClient;

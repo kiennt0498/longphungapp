@@ -38,6 +38,16 @@ public class SanPhamController {
         return new ResponseEntity<>(service.getAllDV(), HttpStatus.OK);
     }
 
+    @GetMapping("loaisp")
+    public ResponseEntity getLoaiSP(){
+        return new ResponseEntity<>(service.getAllLoaiSP(), HttpStatus.OK);
+    }
+
+    @GetMapping("loaisp/{id}")
+    public ResponseEntity getSanPhamByLoai(@PathVariable Integer id){
+        return new ResponseEntity<>(service.getSanPhamById(id), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity createProd(@RequestBody SanPhamDto dto) {
         var newDto = service.save(dto);

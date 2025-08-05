@@ -6,12 +6,15 @@ import { formatCurrency, formatDate } from "../../helpers/formatData";
 const OrderCard = ({
   item,
   format,
-  onView,
+  onNhanDon,
   onCancel,
   customActions,
-  actionLabel = "Xem chi tiết",
+  actionLabel = "Chi tiết đơn",
   actionIcon = <IoEyeSharp />,
+  actionLabel2 = "Nhận đơn",
+  actionIcon2 = <IoEyeSharp />,
   cancelIcon = <IoTrashBin />,
+  onView
 }) => (
   <Col span={6} key={item.maDonHang}>
     <Card
@@ -47,16 +50,29 @@ const OrderCard = ({
       {customActions ? (
         <Row>{customActions(item)}</Row>
       ) : (
-        onView && (
+        onNhanDon && (
+          <>
           <Row>
-            <Button
+           <Button
               onClick={() => onView(item)}
-              style={{ width: "100%" }}
-              type="primary"
+              color="cyan"
+              variant="solid"
+              style={{width: "100%"}}
             >
               {actionLabel} {actionIcon}
             </Button>
           </Row>
+          <Row>
+           <Button
+              onClick={() => onNhanDon(item)}
+              type="primary"
+              style={{width: "100%", marginTop: "3%"}}
+            >
+              {actionLabel2} {actionIcon2}
+            </Button>
+          </Row>
+          </>
+          
         )
       )}
     </Card>

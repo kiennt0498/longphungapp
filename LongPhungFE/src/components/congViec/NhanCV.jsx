@@ -29,6 +29,7 @@ const NhanCV = ({ listNhan, handleNhanViec }) => {
               showButton={true}
               onButtonClick={handleNhanViec}
               textButton="Nhận việc"
+              showButton2={false}
             />
           </List.Item>
         )}

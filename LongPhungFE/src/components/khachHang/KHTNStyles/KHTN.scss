@@ -1,0 +1,21 @@
+.khach-hang-page {
+  padding: 24px;
+
+  min-height: 100vh;
+
+  .page-header {
+    margin-bottom: 24px;
+
+    h2 {
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: #888;
+    }
+  }
+
+  .card-block {
+    margin-bottom: 24px;
+  }
+}

@@ -17,7 +17,6 @@ public class VatTuDto implements Serializable {
     BigDecimal giaNhap;
     ChatLieuDto chatLieu;
     Double heSoBu;
-    Double heSoThuMua;
     LoaiVatTu loaiVatTu;
     DoViTinhDto doViTinh;
 }

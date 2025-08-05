@@ -1,9 +1,10 @@
 import { Button, Card, Col, Row, Typography } from "antd";
 import { formatCurrency, formatDate } from "../../helpers/formatData";
+import { useState } from "react";
 const { Text } = Typography;
 
-const JobCard = ({ item, showButton, onButtonClick, textButton, extra }) => {
-  console.log(item);
+const JobCard = ({ item, showButton, onButtonClick,onButtonClick2, textButton, textButton2, extra, showButton2 }) => {
+
   
   return (
     <Card
@@ -32,10 +33,17 @@ const JobCard = ({ item, showButton, onButtonClick, textButton, extra }) => {
           )}
         </Row>
       </div>
-      {showButton && (
+        {showButton && (
         <div style={{ marginTop: "auto" }}>
-          <Button type="primary" block onClick={() => onButtonClick(item.id)}>
+          <Button type="primary" block onClick={() => onButtonClick(item)}>
             {textButton}
+          </Button>
+        </div>
+      )}
+      {showButton2 && (
+        <div style={{ marginTop: "1%" }}>
+          <Button type="primary" block onClick={() => onButtonClick2(item)}>
+            {textButton2}
           </Button>
         </div>
       )}

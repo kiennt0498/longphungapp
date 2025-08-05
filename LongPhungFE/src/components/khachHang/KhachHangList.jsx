@@ -126,6 +126,9 @@ const KhachHangList = () => {
     window.location.href = API_FILE+"/download/cus"
   }
 
+  
+
+
 
   const showModal = (data) => {
     if (data) {
@@ -213,6 +216,10 @@ const KhachHangList = () => {
       nhanVien: khachHang.nhanVien || nv,
     });
   }, [khachHang]);
+
+  const setFileUp = ( data) =>{
+    getData()
+  }
 
   return (
     <div>
@@ -303,7 +310,7 @@ const KhachHangList = () => {
           </Form.Item>
         </Form>
       </Modal>
-      <ModalExcel open={open} onCloseM={onCloseM} API={API} />
+      <ModalExcel open={open} onCloseM={onCloseM} API={API} setFileUp={setFileUp}/>
     </div>
   );
 };

@@ -4,14 +4,8 @@ import com.example.longphungapp.Exception.BadReqException;
 import com.example.longphungapp.Interface.MapperInterface;
 import com.example.longphungapp.dto.NhanVienDto;
 import com.example.longphungapp.dto.ResLichSuDto;
-import com.example.longphungapp.entity.LichSuCV;
-import com.example.longphungapp.entity.NhanVien;
-import com.example.longphungapp.entity.TaiKhoan;
-import com.example.longphungapp.fileEnum.BoPhan;
-import com.example.longphungapp.fileEnum.ChucVu;
-import com.example.longphungapp.repository.LichSuCVRepository;
-import com.example.longphungapp.repository.NhanVienRepository;
-import com.example.longphungapp.repository.TaiKhoanRepository;
+import com.example.longphungapp.entity.*;
+import com.example.longphungapp.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +29,10 @@ public class NhanVienService {
     NhanVienRepository dao;
     @Autowired
     TaiKhoanRepository TKDao;
+    private final BoPhanRepository boPhanRepository;
+    private final KhuRepository khuRepository;
+    private final XuongRepository xuongRepository;
+    private final ChucVuRepository chucVuRepository;
 
     private final LichSuCVRepository lichSuCVRepository;
 
@@ -76,9 +74,11 @@ public class NhanVienService {
 
         var entity = MapperInterface.MAPPER.toEntity(dto);
 
-        entity.setId(generateNextId(entity.getChucVu()));
+        entity.setId(generateNextId(entity.getChucVu().getId()));
 
-        TaiKhoan tk = new TaiKhoan(dto.getTaiKhoan().getSdt(),"a123");
+
+
+        TaiKhoan tk = new TaiKhoan(dto.getTaiKhoan().getSdt(),dto.getTaiKhoan().getSdt());
 
         TKDao.save(tk);
 
@@ -96,21 +96,24 @@ public class NhanVienService {
 
     }
 
-    private String generateNextId(ChucVu chucVu) {
+    private String generateNextId(Integer id) {
         // Lấy ID lớn nhất hiện tại dựa trên chức vụ
-        String prefix = chucVu.name();
         String maNV = "";
 
-        if(prefix.matches("NHAN_VIEN")){
+        if(id == 5 ){
             maNV = "NV";
         }
-        if(prefix.matches("TRUONG_PHONG")){
-            maNV = "TP";
+
+        if(id == 2){
+            maNV = "QLX";
         }
-        if(prefix.matches("QUAN_LY")){
-            maNV = "QL";
+        if(id == 3){
+            maNV = "QLK";
         }
-        if(prefix.matches("ADMIN")){
+        if(id == 4){
+            maNV = "QLBP";
+        }
+        if(id ==1){
             maNV = "AD";
         }
 
@@ -127,7 +130,7 @@ public class NhanVienService {
             }
         }
 
-        return maNV + String.format("%05d", nextNumber);
+        return maNV + String.format("%03d", nextNumber);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -169,8 +172,8 @@ public class NhanVienService {
         return dao.findByTaiKhoan_SdtContains(sdt);
     }
 
-    public List<NhanVien> findByBoPhan(BoPhan bp) {
-        return dao.findByBoPhan(bp);
+    public List<NhanVien> findByBoPhan(Integer id) {
+        return dao.findByBoPhan_Id(id);
     }
 
     public List<LichSuCV> getLichSu(ResLichSuDto dto){
@@ -179,4 +182,21 @@ public class NhanVienService {
         System.out.println(newList.size());
         return newList;
     }
+
+    public List<BoPhan> getBoPhanAll(){
+        return boPhanRepository.findAll();
+    }
+
+    public List<ChucVu> getChucVuAll(){
+        return chucVuRepository.findAll();
+    }
+
+    public List<Xuong> getXuongAll(){
+        return xuongRepository.findAll();
+    }
+
+    public List<Khu> getKhuAll(){
+        return khuRepository.findAll();
+    }
+
 }

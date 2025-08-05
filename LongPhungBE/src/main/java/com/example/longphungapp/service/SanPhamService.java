@@ -90,6 +90,7 @@ public class SanPhamService {
         }).toList();
 
         entity.setNguyenVatLieus(listNL);
+        entity.setHeSoThuMua(dto.getHeSoThuMua());
 
         System.out.println("list dto");
         listNL.stream().forEach(i -> System.out.println(i.getId()));
@@ -141,6 +142,12 @@ public class SanPhamService {
             return dto;
         }).toList();
         return list;
+    }
+    public List<LoaiSp> getAllLoaiSP(){
+        return loaiDao.findAll();
+    }
+    public List<SanPham> getSanPhamById(Integer id){
+        return dao.findByLoaiSp_Id(id);
     }
 
 }

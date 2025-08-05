@@ -1,5 +1,6 @@
 package com.example.longphungapp.controller;
 
+import com.example.longphungapp.dto.NguyenVatLieuDto;
 import com.example.longphungapp.dto.PhieuDto;
 import com.example.longphungapp.service.KhoService;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -48,4 +51,10 @@ public class KhoController {
         khoService.deletePhieu(id);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("tonkho/list")
+    public ResponseEntity getTonKho(@RequestBody List<Long> list){
+        return ResponseEntity.ok(khoService.getTonKho(list));
+    }
+
 }

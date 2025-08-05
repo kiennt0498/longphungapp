@@ -17,8 +17,6 @@ import java.util.Set;
 @Table(name = "don_hang")
 public class DonHang {
 
-
-
     @Temporal(TemporalType.DATE)
     @Column(name = "ngay_chot_don")
     private Date ngayChotDon;
@@ -26,8 +24,6 @@ public class DonHang {
     @Temporal(TemporalType.DATE)
     @Column(name = "ngay_giao_hang")
     private Date ngayGiaoHang;
-
-
 
     @ManyToOne
     @JoinColumn(name = "khach_hang_id")
@@ -55,5 +51,14 @@ public class DonHang {
     @Column(name = "dia_chi")
     private String diaChi;
 
+    @Column(name = "thue")
+    private Double thue;
 
+    @Column(name = "khoa")
+    private Boolean khoa;
+
+    @PrePersist
+    public void prePersist() {
+        khoa = false;
+    }
 }

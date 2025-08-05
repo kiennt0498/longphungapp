@@ -28,17 +28,12 @@ import { filterData } from "../../contexts/filterUtils";
 
 const SanPhamList = () => {
   const service = new SanPhamService();
-  const [isLoading,setIsloading] = useState(false)
+  const [isLoading, setIsloading] = useState(false);
 
   const products = useSelector((state) => state.SanPham.sanPhams);
   const dispatch = useDispatch();
 
-  const fieldMapping = {
-    search: "tenSP",
-  }
-
-  const {filters} = useFilters()
-  const filtersData = filterData(products, filters,fieldMapping,[])
+  const [searchText, setSearchText] = useState("");
 
   const [open, setOpen] = useState(false);
   const [key, setKey] = useState(true);
@@ -77,8 +72,6 @@ const SanPhamList = () => {
       console.log(error);
     }
   };
-
-  const onSearch = async (choose, valuse) => {};
 
   const columns = [
     { title: "Mã sản phẩm", dataIndex: "id", key: "id" },
@@ -127,7 +120,7 @@ const SanPhamList = () => {
   ];
 
   const getData = async () => {
-    setIsloading(true)
+    setIsloading(true);
     try {
       const res = await service.getList();
       if (res.status === 200) {
@@ -138,12 +131,20 @@ const SanPhamList = () => {
     } catch (error) {
       console.log(error);
     }
-    setIsloading(false)
+    setIsloading(false);
   };
 
   useEffect(() => {
     getData();
   }, [dispatch]);
+
+  const filtersData = products.filter((item) =>
+    item.tenSP?.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const onSearch = (e) => {
+    setSearchText(e.target.value);
+  };
 
   return (
     <div>
@@ -158,8 +159,21 @@ const SanPhamList = () => {
             Thêm sản phẩm
           </Button>
         </Col>
+        <Col span={12}>
+          <Input
+            placeholder="Nhập tên sản phẩm"
+            value={searchText}
+            onChange={onSearch}
+          />
+        </Col>
       </Row>
-      <Table dataSource={filtersData} columns={columns} rowKey="id" loading={isLoading} />
+
+      <Table
+        dataSource={filtersData}
+        columns={columns}
+        rowKey="id"
+        loading={isLoading}
+      />
       <ModalSanPham isModalOpen={open} onClose={onClose} choose={key} />
     </div>
   );

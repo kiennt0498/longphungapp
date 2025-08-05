@@ -25,6 +25,7 @@ public class SanPhamDto implements Serializable {
     HinhDangDto hinhDang;
     BigDecimal gia;
     String maVach;
+    private Double heSoThuMua;
     private List<NguyenVatLieuDto> nguyenVatLieus ;
     private QuyTrinhDto quyTrinh;
     private List<LoiNhuanDto> loiNhuan ;

@@ -22,8 +22,7 @@ public class CongViecCTDto implements Serializable {
     DonHangCTDto donHangCT;
     NhanVienDto nhanVien;
     TacVu tacVu;
-
-
     private TrangThai trangThai;
+
 
 }

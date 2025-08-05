@@ -20,7 +20,7 @@ public class CongDoanController {
 
     @PostMapping("save")
     public ResponseEntity save(@RequestBody CongDoanDto dto){
-        return ResponseEntity.ok(service.save(dto));
+        return ResponseEntity.ok(service.saveCongDoan(dto));
     }
 
     @PutMapping("update")

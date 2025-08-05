@@ -24,5 +24,9 @@ public class DonHangCTDto implements Serializable {
     private BigDecimal donGia;
     private BigDecimal giaGoc;
     private QuyTrinhDto quyTrinh;
+    private String tenSanPham;
+    private String yeuCauDacBiet;
+    private String noiDungThietKe;
+
 
 }

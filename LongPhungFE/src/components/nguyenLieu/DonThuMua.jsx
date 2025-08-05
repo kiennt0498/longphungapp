@@ -17,15 +17,13 @@ const DonThuMua = ({data, isThuMua, handleHuyDon}) => {
   }
   const {filters} = useFilters()
   const filtersData = filterData(data, filters,filterMapper,["dateRange"])
-  console.log("Date range:", filters.dateRange)
-
- 
+  
   const huyDon = (id) => {
     handleHuyDon(id);
   };
 
   const handleSelect = (data) => {
-    navigate("/nguyenlieu/danh-sach-gia/"+ data);
+    navigate("/nguyenlieu/danh-sach-gia/"+ data, {state: { isThuMua } });
   };
 
   const tongTien = (data) => {

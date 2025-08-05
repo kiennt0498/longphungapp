@@ -1,12 +1,50 @@
-import React from "react";
-import { List } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Col,
+  Divider,
+  Form,
+  List,
+  Modal,
+  Row,
+  Select,
+  Space,
+} from "antd";
 import JobCard from "../common/JobCard";
 import ModalExcel from "../common/ModalExcel";
 import { API_FILE } from "../../services/constans";
+import DynamicForm from "../common/DynamicForm";
+import { toast } from "react-toastify";
 
-const DaNhanCV = ({ listDaNhan, handleNopViec, handleCancel, isModalOpen, setIsUpload, setFileUp }) => {
-  console.log("list da nhan",listDaNhan);
-  
+const DaNhanCV = ({
+  listDaNhan,
+  handleNopViec,
+  handleCancel,
+  isModalOpen,
+  setIsUpload,
+  setFileUp,
+
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [congViec, setCongViec] = useState({});
+  const [isChecked, setIsChecked] = useState(true);
+
+  const showModal = (data) => {
+    setIsOpen(true);
+    setCongViec(data);
+  };
+
+  useEffect(() => {
+  const tacVu = localStorage.getItem("tacVu");
+  if (tacVu === "THIET_KE") {
+    setIsChecked(false);
+  }
+}, []);
+
+  const cancel = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
       <List
@@ -18,7 +56,10 @@ const DaNhanCV = ({ listDaNhan, handleNopViec, handleCancel, isModalOpen, setIsU
               item={i}
               showButton={true}
               onButtonClick={handleNopViec}
-              textButton="Nộp Việc"
+              onButtonClick2={showModal}
+              textButton="Nộp việc"
+              textButton2="Hoàn đơn"
+              showButton2={isChecked}
               extra={
                 i.donHangCT?.images && (
                   <a
@@ -41,6 +82,14 @@ const DaNhanCV = ({ listDaNhan, handleNopViec, handleCancel, isModalOpen, setIsU
         isUpload={() => setIsUpload(true)}
         setFileUp={setFileUp}
       />
+      <Modal
+        open={isOpen}
+        title="Chia đơn"
+        onCancel={cancel}
+        footer={true}
+      >
+    
+      </Modal>
     </>
   );
 };

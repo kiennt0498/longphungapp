@@ -19,8 +19,6 @@ public class DonHangCT {
     @Column(name = "id", nullable = false)
     private Long id;
 
-
-
     @ManyToOne
     @JoinColumn(name = "san_pham_ma_sp")
     private SanPham sanPham;
@@ -28,18 +26,15 @@ public class DonHangCT {
     @Column(name = "so_luong")
     private Integer soLuong;
 
+
+
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
     private TrangThai trangThai;
 
-
-
-
     @ManyToOne
     @JoinColumn(name = "don_hang_id")
     private DonHang donHang;
-
-
 
     @Column(name = "chieu_dai")
     private Double chieuDai;
@@ -47,15 +42,8 @@ public class DonHangCT {
     @Column(name = "chieu_rong")
     private Double chieuRong;
 
-    @Column(name = "ghi_chu")
-    private String ghiChu;
-
     @ManyToOne
-    @JoinColumn(name = "quy_trinh_id")
-    private QuyTrinh quyTrinh;
-
-    @ManyToOne
-    @JoinColumn(name = "images_id")
+    @JoinColumn(name = "images_id", nullable = true)
     private Images images;
 
     @Column(name = "don_gia", precision = 19, scale = 2)
@@ -63,6 +51,15 @@ public class DonHangCT {
 
     @Column(name = "gia_goc", precision = 19, scale = 2)
     private BigDecimal giaGoc;
+
+    @Column(name = "ten_san_pham")
+    private String tenSanPham;
+
+    @Column(name = "yeu_cau_dac_biet")
+    private String yeuCauDacBiet;
+
+    @Column(name = "noi_dung_thiet_ke")
+    private String noiDungThietKe;
 
     @Override
     public final boolean equals(Object o) {

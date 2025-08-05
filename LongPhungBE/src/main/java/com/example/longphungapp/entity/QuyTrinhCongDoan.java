@@ -28,4 +28,5 @@ public class QuyTrinhCongDoan {
     @Column(name = "thu_tu")
     private Integer thuTu;
 
+
 }

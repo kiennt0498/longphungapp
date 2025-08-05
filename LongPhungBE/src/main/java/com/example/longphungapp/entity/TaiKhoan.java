@@ -1,6 +1,6 @@
 package com.example.longphungapp.entity;
 
-import com.example.longphungapp.fileEnum.ChucVu;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -67,6 +67,7 @@ public class FileControll {
 
     }
 
+
     @GetMapping("download/emp")
     public ResponseEntity downFileEmp() throws IOException {
         ResponseEntity<byte[]> body = ResponseEntity.status(200)
@@ -105,10 +106,7 @@ public class FileControll {
             HttpServletRequest req) {
         try {
 
-
             Resource resource = imageService.loadImageFile(filename);
-
-
 
             String contentType = req.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
 
@@ -132,11 +130,13 @@ public class FileControll {
             throw new RuntimeException(e);
         }
     }
-    @DeleteMapping("image/{filename:.+}")
-    public ResponseEntity<String> deleteImage(@PathVariable String filename) {
-        hangService.deleteImg(filename);
-        imageService.deleteImageFile(filename);
 
-        return ResponseEntity.ok("Đã xóa ảnh: " + filename);
+    @GetMapping("download/bao-cao-san-pham")
+    public ResponseEntity downBaoCaoSP() throws IOException {
+        ResponseEntity<byte[]> body = ResponseEntity.status(200)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename= Bao-Cao-San-Pham.xlsx")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(exportFile.exportBaoCaoSP());
+        return body;
     }
 }

@@ -11,15 +11,12 @@ import { API_SOCKET } from "../../services/constans";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { toast } from "react-toastify";
-import DonHangService from "../../services/DonHangService";
+import { useNavigate } from "react-router-dom";
 
 const NhanViecForm = () => {
   const stompClient = useRef(null);
-  const service = new DonHangService();
+  const navigate = useNavigate();
 
-  const tacVu = localStorage.getItem("tacVu");
-
-  const [check, setCheck] = useState(false);
   const [isUpload, setIsUpload] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -36,19 +33,24 @@ const NhanViecForm = () => {
   const [fileUp, setFileUp] = useState({});
   const [idDon, setIdDon] = useState();
 
-  const maNV =  localStorage.getItem("maNV")
-
-  
+  const maNV = localStorage.getItem("maNV");
 
   useEffect(() => {
     const socket = new SockJS(API_SOCKET);
+    socket.onclose = (e) => {
+      console.error("SockJS closed", e);
+      if (e?.status === 403 || e?.code === 1002) {
+        navigate("/login"); // Chuyển hướng nếu bị lỗi 403
+      }
+    };
+
     stompClient.current = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
         console.log("STOMP Connected");
 
         // Nhận danh sách công việc có thể nhận
-        stompClient.current.subscribe("/topic/jobs/"+ tacVu, (message) => {
+        stompClient.current.subscribe("/topic/jobs", (message) => {
           const newJobs = JSON.parse(message.body);
           setListNhan((prevJobs) => {
             if (JSON.stringify(prevJobs) !== JSON.stringify(newJobs)) {
@@ -104,9 +106,45 @@ const NhanViecForm = () => {
           }
         );
 
+        stompClient.current.subscribe(
+          `/topic/error/chia-don/${maNV}`,
+          (message) => {
+            try {
+              const data = JSON.parse(message.body);
+              toast.error(data.error || "Lỗi chia việc!", {
+                position: "top-center",
+              });
+            } catch (e) {
+              toast.error("Lỗi định dạng phản hồi từ server", {
+                position: "top-center",
+              });
+            }
+          }
+        );
+        stompClient.current.subscribe(
+          `/topic/success/chia-don/${maNV}`,
+          (message) => {
+            toast.success(message.body || "Bạn đã chia việc thành công!", {
+              position: "top-center",
+            });
+          }
+        );
+
         // Yêu cầu dữ liệu ban đầu từ server
-       
-        sendTacVuData()
+
+        sendTacVuData();
+      },
+      onStompError: (frame) => {
+        console.error("STOMP error", frame);
+        if (frame.headers["message"]?.includes("403")) {
+          navigate("/login"); // hoặc navigate("/login") nếu dùng react-router
+        }
+      },
+      onWebSocketError: (error) => {
+        console.error("WebSocket error", error);
+        if (error?.message?.includes("403")) {
+          navigate("/login");
+        }
       },
     });
 
@@ -117,22 +155,13 @@ const NhanViecForm = () => {
     };
   }, []);
 
-  useEffect(() => {
-    sendTacVuData();
-  }, [tacVu]);
 
-  console.log(listNhan);
-  console.log(listDaNhan);
-  console.log(listDuyet);
-  console.log(listHoanThanh);
-  
-  
   // 3. Hàm gửi dữ liệu theo tacVu
   const sendTacVuData = () => {
-    if (stompClient.current && stompClient.current.connected && tacVu) {
+    if (stompClient.current && stompClient.current.connected) {
       stompClient.current.publish({
         destination: "/app/getJobs",
-        body: tacVu,
+        
       });
       stompClient.current.publish({
         destination: "/app/getJobsNhan",
@@ -163,15 +192,22 @@ const NhanViecForm = () => {
     setIsModalOpen(false);
   };
 
-  const handleNhanViec = (id) => {
+  const handleNhanViec = (data) => {
+    const id = data.id || data; // Lấy id từ data
     if (stompClient.current) {
       stompClient.current.publish({
         destination: "/app/nhan",
-        body: JSON.stringify({ id, maNV, tacVu }),
+        body: JSON.stringify({ id, maNV}),
       });
       toast.success("Bạn đã nhận việc thành công!");
     }
   };
+
+  console.log("listNhan:", listNhan);
+  console.log("listDaNhan:", listDaNhan);
+  console.log("listDuyet:", listDuyet);
+  console.log("listHoanThanh:", listHoanThanh);
+  
 
   useEffect(() => {
     if (isUpload && fileUp && idDon) {
@@ -179,39 +215,45 @@ const NhanViecForm = () => {
     }
   }, [isUpload, fileUp, idDon]);
 
-  const handleNopViec = (id) => {
+  const handleNopViec = (data) => {
+    console.log("handleNopViec called with data:", data);
+    const id = data.id || data;
+    const tacVu = data.tacVu || "THIET_KE" // Lấy id từ data
     setIdDon(id);
-    if(tacVu === "THIET_KE"){
+    if (tacVu === "THIET_KE") {
       if (!fileUp || Object.keys(fileUp).length === 0) {
         toast.warning("Gửi file để nộp", { position: "top-center" });
         showModal();
         return;
       }
-  
-      service.updateDonCT(id, fileUp);
-      
+      console.log("id nop viec:", id);
+
+      console.log("File to upload:", fileUp);
+
+      const data = { id, maNV, file: fileUp.id };
+      console.log("Data to handleNopViec:", data);
+
       if (stompClient.current) {
         stompClient.current.publish({
           destination: "/app/noptk",
-          body: JSON.stringify({id, maNV, tacVu}),
+          body: JSON.stringify(data),
         });
         handleCancel();
       }
       setIsUpload(false);
       setIdDon();
       setFileUp({});
-      return
+      return;
     }
 
     if (stompClient.current) {
       stompClient.current.publish({
         destination: "/app/nopcv",
-        body: JSON.stringify({id, maNV, tacVu}),
+        body: JSON.stringify({ id, maNV }),
       });
       handleCancel();
     }
   };
-
 
   const items = [
     {
@@ -226,7 +268,12 @@ const NhanViecForm = () => {
           )}
         </span>
       ),
-      children: <NhanCV listNhan={listNhan} handleNhanViec={handleNhanViec} />,
+      children: (
+        <NhanCV
+          listNhan={listNhan}
+          handleNhanViec={handleNhanViec}
+        />
+      ),
     },
     {
       key: "2",
@@ -251,7 +298,7 @@ const NhanViecForm = () => {
         />
       ),
     },
-    tacVu === "THIET_KE" &&{
+    {
       key: "3",
       closable: false,
       icon: <CiClock2 />,

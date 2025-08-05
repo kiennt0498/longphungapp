@@ -25,6 +25,8 @@ public class DonHangDto implements Serializable {
     KhachHangDto khachHang;
     private NhanVienDto nhanVien;
     BigDecimal gia;
+    String diaChi;
+    Double thue;
     TrangThai trangThai;
 
 

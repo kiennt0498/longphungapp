@@ -4,28 +4,30 @@ import { message, Modal, Upload } from "antd";
 import { toast } from "react-toastify";
 const { Dragger } = Upload;
 
-
-const ModalExcel = ({ open, onCloseM,API, isUpload,setFileUp }) => {
+const ModalExcel = ({ open, onCloseM, API, isUpload, setFileUp }) => {
   const props = {
     name: "file",
     multiple: true,
     action: API,
     onChange(info) {
-      
       const { status } = info.file;
       if (status !== "uploading") {
         console.log(info.file, info.fileList);
       }
       if (status === "done") {
         toast.success(`${info.file.name} nhập file thành công.`);
-        isUpload()
-        setFileUp(info.file.response)
+
+        // Kiểm tra trước khi gọi
+        if (typeof isUpload === "function") {
+          isUpload();
+        }
+
+        if (typeof setFileUp === "function") {
+          setFileUp(info.file.response);
+        }
       } else if (status === "error") {
         toast.error(`${info.file.name} nhập file thất bại.`);
       }
-    },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
     },
   };
   return (
@@ -34,12 +36,8 @@ const ModalExcel = ({ open, onCloseM,API, isUpload,setFileUp }) => {
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">
-          Nhấn vào hoặc kéo file vào vùng
-        </p>
-        <p className="ant-upload-hint">
-          chỉ tải 1 file 1 lần
-        </p>
+        <p className="ant-upload-text">Nhấn vào hoặc kéo file vào vùng</p>
+        <p className="ant-upload-hint">chỉ tải 1 file 1 lần</p>
       </Dragger>
     </Modal>
   );

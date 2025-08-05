@@ -16,6 +16,7 @@ import {
   Popconfirm,
   Select,
   Checkbox,
+  Alert,
 } from "antd";
 import ModalDonHang from "./ModalDonHang";
 import { CiCirclePlus } from "react-icons/ci";
@@ -27,6 +28,7 @@ import SanPhamService from "../../services/SanPhamService";
 import { capNhatGia, tinhGiaBan } from "../../helpers/CongThucTinhGia";
 import ExportPDF from "../common/ExportPDF";
 import { formatCurrency } from "../../helpers/formatData";
+import { kiemTraHangTonKho } from "../../helpers/kiemTrahangTonKho";
 
 const { Title, Text } = Typography;
 
@@ -35,12 +37,14 @@ const BaoGiaDonHang = ({ getData }) => {
   const [openFile, setOpenFile] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [products, setProducts] = useState([]);
-  const [tienThucTe,setTienThucTe] = useState()
-  const [openExport,setOpenExport] = useState(false)
+  const [listWarding, setListWarding] = useState([]);
+  const [du, setDu] = useState(false);
+  const [tienThucTe, setTienThucTe] = useState();
+  const [openExport, setOpenExport] = useState(false);
   const [check, setCheck] = useState(true);
   const API = API_FILE + "/upload/image";
   const service = new SanPhamService();
-  const TAX_RATE = 0.08;
+  const [taxRate, setTaxRate] = useState(0.08);
 
   const onOpenFile = () => {
     setOpenFile(true);
@@ -50,16 +54,15 @@ const BaoGiaDonHang = ({ getData }) => {
   };
 
   const onOpenExport = () => {
-    const newData = products.map((item)=>{
-      return {...item, donGia:item.gia-item.gia*discount/100}
-    })
-    setProducts(newData)
+    const newData = products.map((item) => {
+      return { ...item, donGia: item.gia - (item.gia * discount) / 100 };
+    });
+    setProducts(newData);
     setOpenExport(true);
   };
   const handleCancelExport = () => {
     setOpenExport(false);
   };
-  
 
   const onOpen = () => {
     setOpenDraw(true);
@@ -74,88 +77,120 @@ const BaoGiaDonHang = ({ getData }) => {
     setCheck(!check);
     if (!check) {
       setDiscount(0);
-      setTienThucTe(0)
+      setTienThucTe(0);
     }
   };
   const onChangeTong = (value) => {
     const subtotal = calculateSubtotal();
-    const chietKhau = (subtotal - value)/subtotal*100
-    setDiscount(chietKhau)
+    const chietKhau = ((subtotal - value) / subtotal) * 100;
+    setDiscount(chietKhau);
   };
 
   const addSp = async (data) => {
-  const res = await service.getLoiNhuan(data.id);
-  const loiNhuan = res?.data || [];
+    const res = await service.getLoiNhuan(data.id);
+    const loiNhuan = res?.data || [];
+    console.log("he so thu mua:", data.heSoThuMua);
+    
+    const congDoans =
+      data.quyTrinh?.quyTrinhCongDoans?.map((item) => item.congDoan) || [];
 
-  const congDoans = data.quyTrinh?.quyTrinhCongDoans?.map((item) => item.congDoan) || [];
+    const inputGia = {
+      quyTrinh: { congDoans },
+      nguyenVatLieus: data.nguyenVatLieus,
+      heSoThuMua: data.heSoThuMua,
+      loiNhuan,
+      chieuDai: 1,
+      chieuRong: 1,
+      soLuong: 1,
+    };
 
-  const inputGia = {
-    quyTrinh: { congDoans },
-    nguyenVatLieus: data.nguyenVatLieus,
-    loiNhuan,
-    chieuDai: 1,
-    chieuRong: 1,
-    soLuong: 1,
+    console.log("Input Gia:", inputGia);
+    
+
+    const newData = {
+      id: data.id,
+      tenSP: data.tenSP,
+      ghiChu: "",
+      chieuDai: 1,
+      chieuRong: 1,
+      heSoThuMua: data.heSoThuMua,
+      gia: capNhatGia(inputGia),
+      donGia: capNhatGia(inputGia),
+      soLuong: 1,
+      giaGoc: tinhGiaBan(inputGia, 1, 1),
+      loiNhuan,
+      quyTrinh: { ...data.quyTrinh, congDoans },
+      nguyenVatLieus: data.nguyenVatLieus,
+    };
+
+    setProducts((prev) => [...prev, newData]);
   };
 
-  const newData = {
-    id: data.id,
-    tenSP: data.tenSP,
-    ghiChu: "",
-    chieuDai: 1,
-    chieuRong: 1,
-    gia: capNhatGia(inputGia),
-    donGia: capNhatGia(inputGia),
-    soLuong: 1,
-    giaGoc: tinhGiaBan(inputGia, 1, 1),
-    loiNhuan,
-    quyTrinh: { ...data.quyTrinh, congDoans },
-    nguyenVatLieus: data.nguyenVatLieus,
-  };
+  // const checkTK = async () => {
+  //   const result = await kiemTraHangTonKho(products);
+  //   setDu(result.du);
+  //   if (!result.du) {
+  //     setListWarding(result.thieu);
+  //   }
+  // };
 
-  setProducts((prev) => [...prev, newData]);
-};
-
-  console.log(products);
-  
+  // useEffect(() => {
+  //   checkTK();
+  // }, [products]);
 
   const updateDai = (key, value) => {
-  setProducts((prevProducts) =>
-    prevProducts.map((product) => {
-      if (product.id !== key) return product;
+    setProducts((prevProducts) =>
+      prevProducts.map((product) => {
+        if (product.id !== key) return product;
 
-      const chieuDai = value || 1;
-      const chieuRong = product.chieuRong || 1;
+        const chieuDai = value || 1;
+        const chieuRong = product.chieuRong || 1;
 
-      return {
-        ...product,
-        chieuDai,
-        gia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
-        donGia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
-        giaGoc: tinhGiaBan(product, chieuDai, chieuRong),
-      };
-    })
-  );
-};
+        return {
+          ...product,
+          chieuDai,
+          gia: capNhatGia(product, {
+            chieuDai,
+            chieuRong,
+            soLuong: product.soLuong,
+          }),
+          donGia: capNhatGia(product, {
+            chieuDai,
+            chieuRong,
+            soLuong: product.soLuong,
+          }),
+          giaGoc: tinhGiaBan(product, chieuDai, chieuRong),
+        };
+      })
+    );
+  };
 
-const updateRong = (key, value) => {
-  setProducts((prevProducts) =>
-    prevProducts.map((product) => {
-      if (product.id !== key) return product;
+  const updateRong = (key, value) => {
+    setProducts((prevProducts) =>
+      prevProducts.map((product) => {
+        if (product.id !== key) return product;
 
-      const chieuRong = value || 1;
-      const chieuDai = product.chieuDai || 1;
+        const chieuRong = value || 1;
+        const chieuDai = product.chieuDai || 1;
 
-      return {
-        ...product,
-        chieuRong,
-        gia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
-        donGia: capNhatGia(product, { chieuDai, chieuRong, soLuong: product.soLuong }),
-        giaGoc: tinhGiaBan(product, chieuDai, chieuRong),
-      };
-    })
-  );
-};
+        return {
+          ...product,
+          chieuRong,
+          gia: capNhatGia(product, {
+            chieuDai,
+            chieuRong,
+            soLuong: product.soLuong,
+          }),
+          donGia: capNhatGia(product, {
+            chieuDai,
+            chieuRong,
+            soLuong: product.soLuong,
+          }),
+          giaGoc: tinhGiaBan(product, chieuDai, chieuRong),
+        };
+      })
+    );
+  };
 
   const updateQuantity = (key, quantity) => {
     setProducts((prevProducts) =>
@@ -176,10 +211,7 @@ const updateRong = (key, value) => {
     if (!Array.isArray(products)) {
       return 0;
     }
-    return products.reduce(
-      (sum, product) => sum + product.gia,
-      0
-    );
+    return products.reduce((sum, product) => sum + product.gia, 0);
   };
 
   const calculateSubtotalfinaly = () => {
@@ -187,13 +219,14 @@ const updateRong = (key, value) => {
       return 0;
     }
     return products.reduce(
-      (sum, product) => sum + (product.gia-product.gia*discount/100) * product.soLuong,
+      (sum, product) =>
+        sum + (product.gia - (product.gia * discount) / 100) * product.soLuong,
       0
     );
   };
-  
+
   const subtotalfinaly = calculateSubtotalfinaly();
-  const tax = subtotalfinaly * TAX_RATE;
+  const tax = subtotalfinaly * taxRate;
   const total = subtotalfinaly + tax;
 
   const onChange = (value) => {
@@ -205,17 +238,17 @@ const updateRong = (key, value) => {
     setProducts(newProducs);
   };
 
-  
+  const finalyData = () => {
+    const newData = products.map((item) => {
+      return {
+        ...item,
+        donGia: item.gia - (item.gia * discount) / 100,
+        giaGoc: item.giaGoc,
+      };
+    });
 
-  const finalyData = () =>{
-    const newData = products.map((item)=>{
-      return {...item, donGia:item.gia-item.gia*discount/100, giaGoc:item.giaGoc}
-    })
-    
-    console.log(newData);
-    
-    getData(newData,total)
-  }
+    getData(newData, total, taxRate);
+  };
 
   const summary = (pageData) => {
     let totalDonGia = 0;
@@ -223,20 +256,20 @@ const updateRong = (key, value) => {
     let totalChietKhau = 0;
     let totalGiaConLai = 0;
     let totalTienConLai = 0;
-  
+
     pageData.forEach(({ gia, soLuong }) => {
       const chietKhauTien = (gia * discount) / 100;
       const donGiaConLai = gia - chietKhauTien;
       const thanhTien = gia * soLuong;
       const tienConLai = donGiaConLai * soLuong;
-  
+
       totalDonGia += gia;
       totalThanhTien += thanhTien;
       totalChietKhau += chietKhauTien;
       totalGiaConLai += donGiaConLai;
       totalTienConLai += tienConLai;
     });
-  
+
     return (
       <Table.Summary fixed>
         <Table.Summary.Row>
@@ -344,7 +377,7 @@ const updateRong = (key, value) => {
       title: "Giá còn lại",
       key: "giaConLai",
       render: (_, record) =>
-        formatCurrency(record.gia - record.gia * discount / 100),
+        formatCurrency(record.gia - (record.gia * discount) / 100),
     },
     {
       title: "Tiền còn lại",
@@ -382,26 +415,66 @@ const updateRong = (key, value) => {
         <div className="text-center mb-12">
           <Title>Bảng giá sản phẩm</Title>
         </div>
-        <Row style={{ marginBottom: "1%" }}>
-          <Col span={10}>
+        <div className="text-center mb-12">
+          {!du && (
+            <Row gutter={[0, 16]}>
+              {listWarding.map((item) => (
+                <Col span={24} key={item.id}>
+                  <Alert
+                    message={`Nguyên liệu ${item.ten} không đủ`}
+                    type="warning"
+                    showIcon
+                    style={{ textAlign: "center", justifyContent: "center" }}
+                  />
+                </Col>
+              ))}
+            </Row>
+          )}
+        </div>
+        <Row
+          style={{ marginBottom: "1%", marginTop: "1%" }}
+          justify="space-between"
+        >
+          {/* Bên trái */}
+          <Col>
             <Button type="primary" color="blue" variant="text" onClick={onOpen}>
               <CiCirclePlus /> Thêm sản phẩm
             </Button>
           </Col>
-          <Col span={14}>
-            <Checkbox onChange={onChangeChek}>Điều chỉnh giá bán</Checkbox>
 
-            <label style={{ marginLeft: "1%" }}>Chiết khấu thực tế (%): </label>
-            <InputNumber value={discount} disabled={check} onChange={onChange} />
+          {/* Bên phải */}
+          <Col>
+            <Space>
+              <Checkbox onChange={onChangeChek}>Điều chỉnh giá bán</Checkbox>
 
-            <label style={{ marginLeft: "1%" }}>Giá bán thực tế: </label>
-            <InputNumber
-              min={0}
-              value={tienThucTe}
-              disabled={check}
-              onChange={onChangeTong}
-              style={{ width: "30%" }}              
-            />
+              <label>Chiết khấu thực tế (%): </label>
+              <InputNumber
+                value={discount}
+                disabled={check}
+                onChange={onChange}
+              />
+
+              <label>Giá bán thực tế: </label>
+              <InputNumber
+                min={0}
+                value={tienThucTe}
+                disabled={check}
+                onChange={onChangeTong}
+                style={{ width: 120 }}
+              />
+
+              <label>Thuế: </label>
+              <Select
+                defaultValue={taxRate}
+                style={{ width: 80 }}
+                onChange={(value) => setTaxRate(value)}
+                options={[
+                  { value: 0, label: "0%" },
+                  { value: 0.08, label: "8%" },
+                  { value: 0.1, label: "10%" },
+                ]}
+              />
+            </Space>
           </Col>
         </Row>
         <Card className="mb-8">
@@ -428,7 +501,7 @@ const updateRong = (key, value) => {
           </Row>
           <Row style={{ marginBottom: "3%" }}>
             <Col span={6}>
-              <Text>Thuế VAT({TAX_RATE * 100} %)</Text>
+              <Text>Thuế VAT({taxRate * 100} %)</Text>
             </Col>
             <Col span={6} offset={12} style={{ textAlign: "right" }}>
               <Text>{formatCurrency(tax)}</Text>
@@ -457,20 +530,20 @@ const updateRong = (key, value) => {
 
         <Divider />
         <Row gutter={1}>
-          <Col span={12}><Button
-            style={{ marginLeft: "80%" }}
-            type="primary"
-            onClick={() => finalyData()}
-          >
-            Lên đơn
-          </Button></Col>
-          <Col><Button
-            
-            type="primary"
-            onClick={() => onOpenExport()}
-          >
-            Xuất file PDF
-          </Button></Col>
+          <Col span={12}>
+            <Button
+              style={{ marginLeft: "80%" }}
+              type="primary"
+              onClick={() => finalyData()}
+            >
+              Lên đơn
+            </Button>
+          </Col>
+          <Col>
+            <Button type="primary" onClick={() => onOpenExport()}>
+              Xuất file PDF
+            </Button>
+          </Col>
         </Row>
       </div>
       <ModalDonHang
@@ -481,9 +554,12 @@ const updateRong = (key, value) => {
         addSp={addSp}
       />
       <MoalExcel open={openFile} onCloseM={handleCancelFile} API={API} />
-      <ExportPDF open={openExport} onClose={handleCancelExport} products={products} />
-
-   
+      <ExportPDF
+        open={openExport}
+        onClose={handleCancelExport}
+        products={products}
+        thue = {taxRate}  // Pass the tax rate to ExportPDF component
+      />
     </div>
   );
 };

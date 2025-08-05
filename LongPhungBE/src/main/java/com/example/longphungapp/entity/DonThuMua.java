@@ -73,10 +73,15 @@ public class DonThuMua {
     @JoinColumn(name = "nhan_vien_thu_mua_id")
     private NhanVien nhanVienThuMua;
 
+
+
     @JsonIgnore
     @OneToMany(mappedBy = "donThuMua", orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<ListGiaThuMua> listGiaThuMuas = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "vat_tu_id")
+    private VatTu vatTu;
 
     @PrePersist
     public void prePersist() {

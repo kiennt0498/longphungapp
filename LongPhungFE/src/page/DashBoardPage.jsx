@@ -1,5 +1,4 @@
 import React, { use, useEffect, useMemo, useState } from "react";
-import { AiOutlineLogin, AiOutlineLogout } from "react-icons/ai";
 import { GrGroup } from "react-icons/gr";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
 import { Col, Dropdown, Layout, Menu, Row, Space } from "antd";
@@ -38,6 +37,12 @@ import { FaTasks } from "react-icons/fa";
 import AuthService from "../services/AuthService";
 import PrivateRoute from "../components/common/PrivateRoute";
 import QuanLyChatLuong from "../components/chatLuong/QuanLyChatLuong";
+import TongKPIList from "../components/thongKe/TongKPIList";
+import QuangCao from "../components/thongKe/SanPham";
+import SanPham from "../components/thongKe/SanPham";
+import PPDonHang from "../components/danhSachDon/PPDonHang";
+import KhachHangTiemNang from "../components/khachHang/KhachHangTiemNang";
+import FormKhaoSat from "../components/khachHang/FormKhaoSat/FormKhaoSat";
 
 const { Header, Sider, Content } = Layout;
 const DashBoardPage = () => {
@@ -59,14 +64,25 @@ const DashBoardPage = () => {
   const baseRoute = location.pathname.split("/")[1];
   const dynamikeys = useMemo(() => filterConfig[baseRoute] || [], [baseRoute]);
 
-  const isFullWith = ["donhang", "kho", ""].includes(baseRoute);
+  const isFullWith = ["donhang", "kho", "", "taikhoan", "thongke","khach-hang-tiem-nang","khao-sat-khach-hang","sanpham/them"].includes(baseRoute);
 
   const itemMenu = [
     {
       key: "1",
       icon: <FaRegAddressBook />,
       label: "Khách hàng",
-      onClick: () => navigate("/khachhang"),
+      children: [
+        {
+          key: "1.1",
+          label: "Danh sách khách hàng",
+          onClick: () => navigate("/khachhang")
+        },
+        {
+          key: "1.2",
+          label: "Khách hàng tiềm năng",
+          onClick: () => navigate("/khach-hang-tiem-nang")
+        },
+      ],
     },
     {
       key: "2",
@@ -109,8 +125,13 @@ const DashBoardPage = () => {
         },
         {
           key: "5.2",
-          label: "Tạo đơn",
+          label: "Tạo đơn hàng",
           onClick: () => navigate("/donhang/tao-don"),
+        },
+        {
+          key: "5.3",
+          label: "Chốt đơn",
+          onClick: () => navigate("/donhang/chot-don"),
         },
        
       ],
@@ -138,7 +159,8 @@ const DashBoardPage = () => {
       label: "Công việc",
       onClick: () => navigate("/congviec"),
     },
-    {
+   
+     {
       key: "8",
       icon: <FaWarehouse />,
       label: "Quản lý kho",
@@ -161,15 +183,46 @@ const DashBoardPage = () => {
         
       ],
     },
-    
+     {
+      key: "thongke",
+      icon: <FaWarehouse />,
+      label: "Báo cáo",
+      children: [
+        {
+          key: "thongkesanpham",
+          label: "Sản phẩm",
+          onClick: () => navigate("thongke/sanpham"),
+        },
+        {
+          key: "thongkeVL",
+          label: "Nguyên vật liệu",
+          onClick: () => navigate("thongke/vatlieu"),
+        },
+        {
+          key: "thongkeKPI",
+          label: "KPI",
+          onClick: () => navigate("thongke/kpi"),
+        },
+        
+      ],
+    },
+    {
+      key: "phanphoi",
+      icon: <FaWarehouse />,
+      label: "Phân phối đơn",
+      onClick: () => navigate("/phanphoi"),
+    }
   ];
 
   const allowedLabelsByRole = {
-    VAN_PHONG: ["Khách hàng", "Sản phẩm", "Đơn hàng", "Công việc"],
-    SAN_XUAT: ["Công việc"],
+    8: ["Khách hàng", "Sản phẩm", "Đơn hàng", "Công việc"],
+    3: ["Công việc"],
   };
 
-  const isQuanLy = chucVu === "QUAN_LY";
+  console.log(boPhan);
+  
+
+  const isQuanLy = chucVu === 1;
 
   const filteredItems = isQuanLy
     ? itemMenu
@@ -177,41 +230,40 @@ const DashBoardPage = () => {
         (allowedLabelsByRole[boPhan] || []).includes(item.label)
       );
 
-  const items = [
-    ...(username
-      ? [
-          {
-            key: "9.1",
-            label: "Tài khoản",
-            onClick: () => navigate("/taikhoan"),
-          },
-          {
-            key: "9.2",
-            label: "Lịch sử làm việc",
-            onClick: () => navigate("/taiKhoan/lich-su-lam-viec"),
-          },
-          {
-            key: "9.4",
-            label: "Đăng xuất",
-            onClick: () => {
-              localStorage.removeItem("username");
-              localStorage.removeItem("maNV");
-              localStorage.removeItem("chucVu");
-              localStorage.removeItem("boPhan");
-              authService.logout();
-              sessionStorage.setItem("isLogin", false);
-              navigate("/login");
-            },
-          },
-        ]
-      : [
-          {
-            key: "9.3",
-            label: "Đăng nhập",
-            onClick: () => navigate("/login"),
-          },
-        ]),
-  ];
+ const items = useMemo(() => {
+  if (username) {
+    return [
+      {
+        key: "9.1",
+        label: "Tài khoản",
+        onClick: () => navigate("/taikhoan"),
+      },
+      {
+        key: "9.2",
+        label: "Lịch sử làm việc",
+        onClick: () => navigate("/taikhoan/lich-su-lam-viec"),
+      },
+      {
+        key: "9.4",
+        label: "Đăng xuất",
+        onClick: () => {
+          localStorage.clear();
+          authService.logout();
+          sessionStorage.setItem("isLogin", false);
+          navigate("/login");
+        },
+      },
+    ];
+  } else {
+    return [
+      {
+        key: "9.3",
+        label: "Đăng nhập",
+        onClick: () => navigate("/login"),
+      },
+    ];
+  }
+}, [username, navigate]);
 
   return (
     <Layout>
@@ -240,6 +292,7 @@ const DashBoardPage = () => {
             <Menu
               theme="light"
               mode="horizontal"
+              // items={filteredItems}
               items={filteredItems}
               style={{ minWidth: 0 }}
             />
@@ -326,6 +379,23 @@ const DashBoardPage = () => {
                     </PrivateRoute>
                   }
                 />
+                <Route
+                  path="/khach-hang-tiem-nang"
+                  element={
+                    <PrivateRoute>
+                      <KhachHangTiemNang />
+                    </PrivateRoute>
+                  }
+                />
+
+                <Route
+                  path="/khao-sat-khach-hang/:phone"
+                  element={
+                    <PrivateRoute>
+                      <FormKhaoSat />
+                    </PrivateRoute>
+                  }
+                />
 
                 {/* Sản phẩm */}
                 <Route path="sanpham">
@@ -366,7 +436,7 @@ const DashBoardPage = () => {
                     }
                   />
                   <Route
-                    path="tao-don"
+                    path="chot-don"
                     element={
                       <PrivateRoute>
                         <DonHangForm />
@@ -386,6 +456,14 @@ const DashBoardPage = () => {
                     element={
                       <PrivateRoute>
                         <QuanLyChatLuong />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="tao-don"
+                    element={
+                      <PrivateRoute>
+                        <FormKhaoSat />
                       </PrivateRoute>
                     }
                   />
@@ -475,30 +553,46 @@ const DashBoardPage = () => {
                     }
                   />
                 </Route>
+
+                <Route path="thongke">
+                  <Route
+                    index
+                    path="sanpham"
+                    element={
+                      <PrivateRoute>
+                        <SanPham />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="vatlieu"
+                    element={
+                      <PrivateRoute>
+                        <QuangCao />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route
+                    path="kpi"
+                    element={
+                      <PrivateRoute>
+                        <TongKPIList />
+                      </PrivateRoute>
+                    }
+                  />
+                </Route>
+                <Route
+                  path="phanphoi"
+                  element={
+                    <PrivateRoute>
+                      <PPDonHang/>
+                    </PrivateRoute>
+                  }
+                />
               </Routes>
             </div>
           </Content>
-          {!isFullWith && (
-            <Sider
-              width={300}
-              style={{
-                background: "#fff",
-                overflow: "hidden",
-                borderLeft: "1px solid #f0f0f0",
-                display: "flex",
-                flexDirection: "column",
-              }}
-              breakpoint="md"
-              collapsedWidth="0"
-              onCollapse={(collapsed) => {
-                setCollapsed(collapsed);
-              }}
-            >
-              <div style={{ flex: 1, overflowY: "auto" }}>
-                <BangLocData dynamicKeys={dynamikeys} />
-              </div>
-            </Sider>
-          )}
+          
         </Layout>
       </div>
       <FloatButtonPage />

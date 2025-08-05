@@ -20,6 +20,4 @@ public class KhachHangDto implements Serializable {
     String tenKhachHang;
     String sdt;
     private String diaChi;
-
-    NhanVienDto nhanVien;
 }

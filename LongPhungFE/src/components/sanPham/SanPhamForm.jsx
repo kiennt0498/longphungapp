@@ -5,6 +5,7 @@ import {
   Form,
   Image,
   Input,
+  InputNumber,
   Row,
   Select,
   Upload,
@@ -12,7 +13,6 @@ import {
 import { MdScale } from "react-icons/md";
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import ModalSanPham from "./ModalSanPham";
 import SanPhamService from "../../services/SanPhamService";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -299,22 +299,17 @@ const SanPhamForm = ({ form, quyTrinh, listNV }) => {
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item
-                  name="hinhDang"
-                  label="Hình dáng sản phẩm"
+                  <Form.Item
+                  name="heSoThuMua"
+                  label="Hệ số thu mua"
                   rules={[
                     {
                       required: true,
-                      message: "Vui lòng chọn hình dáng sản phẩm",
+                      message: "Vui lòng nhập hệ số thu mua",
                     },
                   ]}
                 >
-                  <Select
-                    showSearch
-                    allowClear
-                    options={listHinh ?? []}
-                    placeholder="Hình dáng"
-                  />
+                  <InputNumber />
                 </Form.Item>
               </Col>
             </Row>

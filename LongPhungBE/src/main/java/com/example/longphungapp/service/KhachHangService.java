@@ -30,26 +30,29 @@ public class KhachHangService {
     public List<KhachHang> findAll() {
         return dao.findAll();
     }
+
     @Transactional(rollbackFor = Exception.class)
     public KhachHangDto create(KhachHangDto dto) {
+        System.out.println(dto.getTenKhachHang());
+        System.out.println(dto.getSdt());
         var found  = dao.findBySdt(dto.getSdt());
         if(found != null){
             throw new BadReqException("Khách hàng đã tồn tại");
         }
         KhachHang entity = new KhachHang();
-        BeanUtils.copyProperties(dto, entity,"nhanViens");
+        BeanUtils.copyProperties(dto, entity);
 
-        var nv = nvDao.findById(dto.getNhanVien().getId()).get();
+
         String ma = "KH";
         Long stt = dao.countByIdLike(ma+"%");
         String maKH = ma+stt;
-        entity.setNhanVien(nv);
+
         entity.setId(maKH);
 
         var newEntity = dao.save(entity);
-        var newNV = MapperInterface.MAPPER.toDto(newEntity.getNhanVien());
+
         dto.setId(newEntity.getId());
-        dto.setNhanVien(newNV);
+
 
         return dto;
     }
@@ -63,8 +66,8 @@ public class KhachHangService {
 
         var newEntity = dao.save(found);
 
-        var nv = MapperInterface.MAPPER.toDto(newEntity.getNhanVien());
-        dto.setNhanVien(nv);
+
+
         return dto;
     }
 
@@ -97,5 +100,9 @@ public class KhachHangService {
                 (i)->!existingPhones.contains(i.getSdt())).toList();
 
         return newList.stream().map(this::create).collect(Collectors.toList());
+    }
+
+    public KhachHang findBySdt(String sdt) {
+        return dao.findBySdt(sdt);
     }
 }

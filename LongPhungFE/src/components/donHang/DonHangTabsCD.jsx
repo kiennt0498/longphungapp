@@ -16,17 +16,19 @@ const DonHangTabsCD = ({ listCD, handleDuyetSP, handleLamLai }) => {
   const downFile = async (data) => {
     try {
       const res = await axios.get(
-        `${API_FILE}/image/${data.donHangCT.images.tenTep}`,
+        `${API_FILE}/image/${data.images.tenTep}`,
         { responseType: "blob" }
       );
       const url = URL.createObjectURL(res.data);
       Object.assign(document.createElement("a"), {
         href: url,
-        download: data.donHangCT.images.tenTep,
+        download: data.images.tenTep,
       }).click();
       URL.revokeObjectURL(url);
     } catch (error) {
       toast.error("Không thể tải file!");
+      console.log("Error downloading file:", error);
+      
     }
   };
 
@@ -38,7 +40,7 @@ const DonHangTabsCD = ({ listCD, handleDuyetSP, handleLamLai }) => {
         renderItem={(i) => (
           <List.Item key={i.id}>
             <Card
-              title={<span>{i.donHangCT.donHang.maDonHang}</span>}
+              title={<span>{i.donHang.maDonHang}</span>}
               style={{
                 padding: "2%",
                 display: "flex",
@@ -48,13 +50,13 @@ const DonHangTabsCD = ({ listCD, handleDuyetSP, handleLamLai }) => {
               }}
             >
               <div>
-                <Text>Tên sản phẩm: {i.donHangCT.sanPham.tenSP} </Text>
+                <Text>Tên sản phẩm: {i.sanPham.tenSP} </Text>
                 <Row>
-                  <Text>Số lượng: {i.donHangCT.soLuong} </Text>
+                  <Text>Số lượng: {i.soLuong} </Text>
                 </Row>
                 <Row justify="space-between">
                   <Col>Hạn: {formatDate(i.ngayGiao)}</Col>
-                  <Col>KPI: {formatCurrency(i.kpi)}</Col>
+                  <Col>Giá: {formatCurrency(i.donGia * i.soLuong)}</Col>
                 </Row>
               </div>
               <div style={{ marginTop: "auto", marginLeft: "5%" }}>

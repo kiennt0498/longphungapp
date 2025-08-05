@@ -7,6 +7,7 @@ public enum TacVu {
     KE_TOAN("kế toán"),
     THIET_KE("Thiết kế"),
     SAN_XUAT("Sản xuất"),
+    THU_MUA("Thu mua"),
     IN("in");
 
 

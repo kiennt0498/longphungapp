@@ -1,5 +1,5 @@
 // BaoGiaEditor.jsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Button,
   Table,
@@ -16,51 +16,18 @@ import {
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Page2PDF from "./Page2PDF";
+import { getLoiNhuans } from "../../helpers/CongThucTinhGia";
 
 const { Title, Text } = Typography;
 
-const ExportPDF = ({ open, onClose, products }) => {
+const ExportPDF = ({ open, onClose, products, thue }) => {
   const contentRef = useRef();
   const page2Ref = useRef();
   const coc = 0;
-
-  const nguyenLieu = [
-    {
-      tenNguyenLieu: "Mica trong 3mm",
-      giaNguyenLieu: 50000,
-      heSoThuMua: 1.1,
-      heSoDienTich: 1.2,
-      heSoBu: 1.05,
-      heSoGiaDienTich: 1.15,
-    },
-    {
-      tenNguyenLieu: "Nhựa ABS",
-      giaNguyenLieu: 35000,
-      heSoThuMua: 1,
-      heSoDienTich: 1.1,
-      heSoBu: 1,
-      heSoGiaDienTich: 1.1,
-    },
-  ];
-
-  const congDoan = [
-    {
-      tenCongDoan: "Cắt mica laser",
-      tenPhuLieu: "Mũi cắt laser",
-      giaPhuLieu: 10000,
-      haoHutMayMoc: 0.05,
-      haoHutNhanSu: 0.1,
-      heSoTienCong: 1.2,
-    },
-    {
-      tenCongDoan: "In UV",
-      tenPhuLieu: "Mực in UV",
-      giaPhuLieu: 8000,
-      haoHutMayMoc: 0.03,
-      haoHutNhanSu: 0.08,
-      heSoTienCong: 1.1,
-    },
-  ];
+  const [nguyenLieu, setNguyenLieu] = useState([]);
+  const [congDoan, setCongDoan] = useState([]);
+  const name = localStorage.getItem("name") || "Công ty Long Lân Quy Phụng";
+  const sdt = localStorage.getItem("username")
 
   const columns = [
     { title: "STT", width: 50, render: (_, record, index) => index + 1 },
@@ -81,7 +48,7 @@ const ExportPDF = ({ open, onClose, products }) => {
     0
   );
   const toatalDonGia = products.reduce((sum, row) => sum + row.donGia, 0);
-  const vat = total * 0.1;
+  const vat = total * thue;
   const finalTotal = total + vat - coc;
 
   const exportPDF = async () => {
@@ -89,27 +56,26 @@ const ExportPDF = ({ open, onClose, products }) => {
       // Capture trang 1 (Báo giá)
       const canvas1 = await html2canvas(contentRef.current, { scale: 2 });
       const imgData1 = canvas1.toDataURL("image/png");
-  
+
       // Capture trang 2 (Nguyên liệu & công đoạn)
       const canvas2 = await html2canvas(page2Ref.current, { scale: 2 });
       const imgData2 = canvas2.toDataURL("image/png");
-  
+
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
-  
+
       // Trang 1
       const pdfHeight1 = (canvas1.height * pdfWidth) / canvas1.width;
       pdf.addImage(imgData1, "PNG", 0, 0, pdfWidth, pdfHeight1);
-      
-  
+
       // Trang 2
       pdf.addPage();
       const pdfHeight2 = (canvas2.height * pdfWidth) / canvas2.width;
       pdf.addImage(imgData2, "PNG", 0, 0, pdfWidth, pdfHeight2);
-  
+
       // Xuất file
       pdf.save("bang-bao-gia.pdf");
-  
+
       // Đóng Drawer
       onClose();
     } catch (error) {
@@ -123,6 +89,31 @@ const ExportPDF = ({ open, onClose, products }) => {
       currency: "VND",
     }).format(amount);
   };
+
+  useEffect(() => {
+  const allNguyenLieu = products.flatMap(p =>
+    p.nguyenVatLieus?.map(nl => ({
+      ...nl,
+      dai: p.chieuDai,
+      rong: p.chieuRong,
+      soLuong: p.soLuong,
+      loiNhuan: getLoiNhuans(p.soLuong,p.loiNhuan)
+    })) || []
+  );
+
+  const allCongDoan = products.flatMap(p =>
+    p.quyTrinh?.congDoans?.map(cd => ({
+      ...cd,
+      dai: p.chieuDai,
+      rong: p.chieuRong,
+      soLuong: p.soLuong,
+      loiNhuan: getLoiNhuans(p.soLuong,p.loiNhuan)
+    })) || []
+  );
+  
+  setNguyenLieu(allNguyenLieu);
+  setCongDoan(allCongDoan);
+}, [products]);
 
   return (
     <Drawer
@@ -146,7 +137,7 @@ const ExportPDF = ({ open, onClose, products }) => {
           CÔNG TY CỔ PHẦN LONG LÂN QUY PHỤNG
         </Title>
         <Text strong style={{ textAlign: "center", display: "block" }}>
-          Địa chỉ: Số 28/3 Nguyễn Lương Bằng, Vĩnh Linh, Quảng Trị - MST:
+          Địa chỉ: Số nhà 28/3 Nguyễn Lương Bằng, Khu phố 8, Xã Vĩnh Linh, Tỉnh Quảng Trị, Việt Nam - MST:
           3200713719
         </Text>
         <Text
@@ -261,7 +252,7 @@ const ExportPDF = ({ open, onClose, products }) => {
             textAlign: "center",
           }}
         >
-          Nhân viên báo giá: Mộng Thúy - SDT: 0983770666
+          Nhân viên báo giá: {name} - SDT: {sdt}
           <br />
           Trưởng phòng kinh doanh: Lê Thị Kiều Oanh - SDT: 0983770666
           <br />
@@ -269,7 +260,7 @@ const ExportPDF = ({ open, onClose, products }) => {
         </Text>
       </div>
       <div style={{ pageBreakBefore: "always" }} ref={page2Ref}>
-        <Page2PDF nguyenLieu={nguyenLieu} congDoan={congDoan} />
+        <Page2PDF nguyenLieu={nguyenLieu} congDoan={congDoan}/>
       </div>
     </Drawer>
   );

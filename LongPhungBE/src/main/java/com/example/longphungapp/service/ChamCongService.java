@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -19,21 +20,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ChamCongService {
     private final LichSuCVRepository lichSuCVRepository;
+    private final ChamCongRepository chamCongRepository;
 
-    public BigDecimal tinhKPI(String maNV, Integer thang, Integer nam) {
-        // Nếu thang hoặc nam null → dùng thời gian hiện tại
-        LocalDate now = LocalDate.now();
-        int month = (thang != null) ? thang : now.getMonthValue();
-        int year = (nam != null) ? nam : now.getYear();
 
-        var list = lichSuCVRepository.findByMonthAndYear(maNV, month, year);
-        var listHoanThanh = list.stream()
-                .filter(i -> i.getTrangThai() == TrangThai.DA_GIAO);
+    public List<Object[]> getKpiTheoThang(String thang) {
+        System.out.println("pt thang: " + thang);
+        YearMonth ym = YearMonth.parse(thang); // yyyy-MM
+        LocalDate startDate = ym.atDay(1);
+        LocalDate endDate = ym.atEndOfMonth();
 
-        BigDecimal tongKPI = listHoanThanh
-                .map(i -> i.getCongViecCT().getKpi())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        return tongKPI;
+        return chamCongRepository.findKpiRawByThang(startDate, endDate);
     }
+
+    public List<Object[]> getLoiNhuanDoanhThu(String thang){
+        YearMonth ym = YearMonth.parse(thang);
+        LocalDate startDate = ym.atDay(1);
+        LocalDate endDate = ym.atEndOfMonth();
+        return chamCongRepository.getLoiNhuanDoanhThu(startDate, endDate);
+    }
+
 }

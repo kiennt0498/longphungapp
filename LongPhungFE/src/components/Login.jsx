@@ -1,14 +1,12 @@
-import React, { use } from 'react';
-import { Button, Checkbox, Form, Input } from 'antd';
+import React, { use } from "react";
+import { Button, Checkbox, Form, Input } from "antd";
 import { FaUserCircle } from "react-icons/fa";
-import AuthService from '../services/AuthService';
+import AuthService from "../services/AuthService";
 
-import { setIsLogin } from '../redux/slide/TaiKhoanSlice';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-
-
+import { setIsLogin } from "../redux/slide/TaiKhoanSlice";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -21,22 +19,35 @@ const Login = () => {
       const res = await service.login(acc);
       console.log(res);
       if (res.status === 200) {
+        const data = res.data;
+        
         localStorage.setItem("username", values.sdt);
-        localStorage.setItem("maNV",res?.data?.maNV);
-        localStorage.setItem("boPhan",res?.data?.boPhan);
-        localStorage.setItem("chucVu",res?.data?.chucVu);
-        localStorage.setItem("tacVu",res?.data?.tacVu);
-        sessionStorage.setItem("isLogin", true)
-        dispatch(setIsLogin(res.data));
-        toast.success("Đăng nhập thành công")
-        navigate("/taiKhoan/lich-su-lam-viec")
-      }else{
-        toast.error("Đăng nhập thất bại")
-      }
+        localStorage.setItem("name", data?.name || "");
+        localStorage.setItem("maNV", data?.maNV || "");
+        localStorage.setItem("chucVu", data?.chucVu || "");
+        localStorage.setItem("xuong", data?.xuong || "");
+        localStorage.setItem("khu", data?.khu || "");
+        localStorage.setItem("boPhan", data?.boPhan || "");
 
+        // Chỉ lưu nếu không null/undefined
+        if (data?.xuong !== null && data?.xuong !== undefined)
+          localStorage.setItem("xuong", data.xuong);
+        else localStorage.removeItem("xuong"); // tránh lưu "null"
+
+        if (data?.khu !== null && data?.khu !== undefined)
+          localStorage.setItem("khu", data.khu);
+        else localStorage.removeItem("khu");
+
+        sessionStorage.setItem("isLogin", "true");
+        dispatch(setIsLogin(data));
+        toast.success("Đăng nhập thành công");
+        navigate("/taikhoan/lich-su-lam-viec");
+      } else {
+        toast.error("Đăng nhập thất bại");
+      }
     } catch (error) {
       console.log(error);
-      toast.error("Đăng nhập thất bại")
+      toast.error("Đăng nhập thất bại");
     }
   };
 

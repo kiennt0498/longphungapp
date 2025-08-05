@@ -5,7 +5,20 @@
 
   .ant-layout-header {
     background: white;
-    overflow: "visible";
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Dàn đều 2 bên */
+    padding: 0 1rem;
+    .ant-menu {
+      flex: 1; /* Chiếm toàn bộ chiều rộng còn lại */
+      display: flex;
+      justify-content: center; /* Căn giữa menu */
+      align-items: center; /* Căn giữa theo chiều dọc */
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      max-width: 85%; /* Giới hạn chiều rộng của menu */
+    }
     .logo {
       
       display: flex;
@@ -31,8 +44,9 @@
     display: flex;
     position: relative;
     .userBar {
-      position: absolute;
-      right: 3rem;
+      position: relative; 
+      display: flex;
+      align-items: center;
     }
   }
   .ant-layout-content {
@@ -142,4 +156,11 @@
   background-color: rgb(254, 226, 226) !important;
   border-color: rgb(254, 226, 226) !important;
   color: rgb(185, 28, 28) !important;
+}
+
+@media (max-width: 768px) {
+  .ant-layout-header {
+    flex-direction: column;
+    align-items: flex-end;
+  }
 }

@@ -28,7 +28,7 @@ function ModalNhapGia({ open, onClose, onOK, edit}) {
           <InputNumber min={1} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item label="Phí vận chuyển" name="phiVC">
-          <InputNumber min={1} style={{ width: '100%' }} />
+          <InputNumber min={0} style={{ width: '100%' }} />
         </Form.Item>
       </Form>
     </Modal>

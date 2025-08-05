@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 @Repository
 public interface CongViecCTRepository extends JpaRepository<CongViecCT, Long> {
@@ -17,6 +18,9 @@ public interface CongViecCTRepository extends JpaRepository<CongViecCT, Long> {
 
     List<CongViecCT> findByDonHangCT_DonHang_Id(Long id);
 
-    List<CongViecCT> findByTrangThaiAndTacVu(TrangThai trangThai, TacVu tacVu);
+    List<CongViecCT> findByDonHangCT_DonHang_IdAndTrangThaiIn(Long donHangCTDonHangId, Collection<TrangThai> trangThais);
+
+    List<CongViecCT> findByDonHangCT_Id(Long id);
+
 
 }

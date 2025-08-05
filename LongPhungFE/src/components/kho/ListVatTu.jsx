@@ -12,7 +12,7 @@ import {
 } from "antd";
 import { EditOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { formatCurrency } from "../../helpers/formatData";
+import { formatCurrency, formatNumber } from "../../helpers/formatData";
 import { RiDeleteBin7Line } from "react-icons/ri";
 import SockJS from "sockjs-client";
 import { API_SOCKET } from "../../services/constans";
@@ -137,15 +137,6 @@ const ListVatTu = () => {
       },
     },
     {
-      title: "Đơn vị tính",
-      dataIndex: "vatTu",
-      key: "donViTinh",
-      render: (_, record) => {
-        return record.vatTu?.doViTinh?.ten || "NAN"
-      },
-    },
-
-    {
       title: "Loại",
       dataIndex: "vatTu",
       key: "loai",
@@ -166,6 +157,22 @@ const ListVatTu = () => {
       title: "Số lượng tồn kho",
       dataIndex: "soLuong",
       key: "soLuong",
+    },
+    {
+      title: "Kích thước",
+      dataIndex: "kichThuoc",
+      key: "kichThuoc",
+      render: (_, record) => {
+        return formatNumber(record.kichThuoc) || "NAN";
+      },
+    },
+    {
+      title: "Đơn vị tính",
+      dataIndex: "vatTu",
+      key: "donViTinh",
+      render: (_, record) => {
+        return record.vatTu?.doViTinh?.ten || "NAN"
+      },
     },
     {
       title: "Giá trị tồn kho",

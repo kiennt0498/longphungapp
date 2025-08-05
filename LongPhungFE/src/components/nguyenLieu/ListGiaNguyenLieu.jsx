@@ -4,13 +4,14 @@ import { formatCurrency, formatDate } from "../../helpers/formatData";
 import { HiPlus } from "react-icons/hi";
 import ModalNhapGia from "./ModalNhapGia";
 import { FaArrowLeft } from "react-icons/fa6";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { MdDownloadDone } from "react-icons/md";
 import { API_SOCKET } from "../../services/constans";
 import NguyenLieuService from "../../services/NguyenLieuService";
 import { CiEdit } from "react-icons/ci";
+import { toast } from "react-toastify";
 
 function ListGiaNguyenLieu() {
   const [open, setOpen] = useState(false);
@@ -21,18 +22,23 @@ function ListGiaNguyenLieu() {
   const stompClient = useRef(null);
   const service = new NguyenLieuService();
   const { id } = useParams();
-  const maNV = "NV00001";
+  const maNV = localStorage.getItem("maNV");
+  const location = useLocation();
+  const isThuMua = location.state?.isThuMua;
 
   const getDonThuMua = async (id) => {
     const res = await service.getDonThuMua(id);
     setDon(res.data);
   };
 
-  console.log(don);
-  
+
 
   useEffect(() => {
     const socket = new SockJS(API_SOCKET);
+    console.log(socket);
+    console.log("API_SOCKET", API_SOCKET);
+    
+    
     stompClient.current = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -100,7 +106,10 @@ function ListGiaNguyenLieu() {
     onOpen();
   };
   const chotGia = (record) => {
-    const newData = {...don, phiVanChuyen: record.phiVC, giaThuMua: record.donGia, done: true}
+    console.log(record);
+    
+    const newData = {...don, phiVanChuyen: record.phiVC, giaThuMua: record.donGia,
+       done: true, nhanVienThuMua: record.nhanVien};
     
     
     try {
@@ -112,8 +121,8 @@ function ListGiaNguyenLieu() {
       }
       navigate(-1);
     } catch (error) {
-      console.log(error);
-      
+      console.log("Error chốt giá:", error);
+      toast.error("Chốt giá thất bại, vui lòng thử lại sau.");
     }
     
   };
@@ -148,7 +157,8 @@ function ListGiaNguyenLieu() {
       key: "tong",
       render: (_, record) => formatCurrency(tongTien(record)),
     },
-    {
+    ...(isThuMua ?[
+      {
       key: "action",
       render: (_, record) => {
         const button = []
@@ -183,6 +193,7 @@ function ListGiaNguyenLieu() {
         return <Space>{button}</Space>;
       },
     },
+    ]:[])
   ];
 
   const columnsDH = [
@@ -276,14 +287,14 @@ function ListGiaNguyenLieu() {
         <Table
           columns={columnsDH}
           dataSource={[don]}
-          rowKey="key"
+          rowKey="id"
           pagination={false}
           bordered
         />
         <Table
           columns={columnsCT}
           dataSource={[don]}
-          rowKey="key"
+          rowKey="id"
           pagination={false}
           bordered
         />
@@ -293,13 +304,13 @@ function ListGiaNguyenLieu() {
         <Col>
           <h1>List Nguyên Liệu</h1>
         </Col>
-        <Col>
+        <Col hidden={!isThuMua}>
           <Button type="primary" icon={<HiPlus />} onClick={onCreate}>
             Thêm giá thu mua
           </Button>
         </Col>
       </Row>
-      <Table columns={columns} dataSource={listGia} rowKey="key" />
+      <Table columns={columns} dataSource={listGia} rowKey="id" />
       <ModalNhapGia
         open={open}
         onClose={onClose}

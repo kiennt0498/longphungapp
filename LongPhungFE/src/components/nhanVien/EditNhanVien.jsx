@@ -10,29 +10,29 @@ const EditNhanVien = ({ onClose, open, onChange, data, bp, cv, tv }) => {
     }
   }, [data, form]);
 
-  const dataBP = bp.map((i) => {
-    const data1 = {
-      label: `${i.description}`,
-      value: i.name,
-    };
-    return data1;
-  });
+  // const dataBP = bp.map((i) => {
+  //   const data1 = {
+  //     label: `${i.description}`,
+  //     value: i.name,
+  //   };
+  //   return data1;
+  // });
 
-  const dataCV = cv.map((i) => {
-    const data2 = {
-      label: `${i.description}`,
-      value: i.name,
-    };
-    return data2;
-  });
+  // const dataCV = cv.map((i) => {
+  //   const data2 = {
+  //     label: `${i.description}`,
+  //     value: i.name,
+  //   };
+  //   return data2;
+  // });
 
-  const dataTV = tv.map((i) => {
-    const data3 = {
-      label: `${i.description}`,
-      value: i.name,
-    };
-    return data3;
-  });
+  // const dataTV = tv.map((i) => {
+  //   const data3 = {
+  //     label: `${i.description}`,
+  //     value: i.name,
+  //   };
+  //   return data3;
+  // });
 
   const handleSubmit = async () => {
     try {
@@ -103,7 +103,7 @@ const EditNhanVien = ({ onClose, open, onChange, data, bp, cv, tv }) => {
           <Input disabled />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="Bộ phận"
           name="boPhan"
           rules={[
@@ -119,8 +119,8 @@ const EditNhanVien = ({ onClose, open, onChange, data, bp, cv, tv }) => {
             optionFilterProp="label"
             options={dataBP}
           />
-        </Form.Item>
-        <Form.Item
+        </Form.Item> */}
+        {/* <Form.Item
           label="Chức vụ"
           name="chucVu"
           rules={[
@@ -153,7 +153,7 @@ const EditNhanVien = ({ onClose, open, onChange, data, bp, cv, tv }) => {
             optionFilterProp="label"
             options={dataTV}
           />
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </Drawer>
   );

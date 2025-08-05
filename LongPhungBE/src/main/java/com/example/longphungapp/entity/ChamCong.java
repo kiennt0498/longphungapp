@@ -4,6 +4,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Getter
 @Setter
 @Entity
@@ -19,7 +23,17 @@ public class ChamCong {
     private NhanVien nhanVien;
 
     @ManyToOne
-    @JoinColumn(name = "cong_viec_ct_id")
-    private CongViecCT congViecCT;
+    @JoinColumn(name = "lich_su_cv_id")
+    private LichSuCV lichSuCV;
 
+    @Column(name = "kpi", precision = 19, scale = 2)
+    private BigDecimal kpi;
+
+    @Column(name = "ngay_nhan")
+    private LocalDateTime ngayNhan;
+
+    @PrePersist
+    public void prePersist() {
+        ngayNhan = LocalDateTime.now();
+    }
 }

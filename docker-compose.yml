@@ -47,7 +47,8 @@ services:
     volumes:
       - ./LongPhungFE/certs/fullchain.pem:/etc/nginx/certs/fullchain.pem:ro
       - ./LongPhungFE/certs/privkey.pem:/etc/nginx/certs/privkey.pem:ro
-      - ./certbot/www:/usr/share/nginx/html
+      # - ./certbot/www:/usr/share/nginx/html
+      
     networks:
       - longphung-network
 
