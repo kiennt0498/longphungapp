@@ -9,6 +9,7 @@ import {
   Divider,
   message,
   Alert,
+  Checkbox,
 } from "antd";
 import {
   UserOutlined,
@@ -25,10 +26,16 @@ import KeychainDesignInfo from "./KeychainDesignInfo";
 import "./FormKhaoSat.scss"; // Assuming you have a CSS file for styles
 import { useDispatch, useSelector } from "react-redux";
 import SanPhamService from "../../../services/SanPhamService";
-import { setListSP, setLoaiSP } from "../../../redux/slide/SanPhamSlice";
+import {
+  setHinhDang,
+  setListSP,
+  setLoaiSP,
+} from "../../../redux/slide/SanPhamSlice";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import DonHangService from "../../../services/DonHangService";
+import KhachHangSerivce from "../../../services/KhachHangService";
+import { setListKH, setKhachHang } from "../../../redux/slide/KhachHangSlice";
 
 const { Step } = Steps;
 const { Title, Text } = Typography;
@@ -39,10 +46,13 @@ const FormKhaoSat = () => {
   const [formData, setFormData] = useState({});
   const [formList, setFormList] = useState([{ id: uuidv4(), form: null }]);
   const [sanPhams, setSanPhams] = useState([]);
+  const [thietKe, setThietKe] = useState(false);
   const [gia, setGia] = useState([]);
   const [listGia, setListGia] = useState([]);
   const loaiSP = useSelector((state) => state.SanPham.loaiSP);
   const sanPhamList = useSelector((state) => state.SanPham.sanPhams);
+  const hinhDangList = useSelector((state) => state.SanPham.hinhDang);
+  const khachHang = useSelector((state) => state.KhachHang.khachHang);
   const dispatch = useDispatch();
   const maNV = localStorage.getItem("maNV");
   const serviceDonHang = new DonHangService();
@@ -50,14 +60,29 @@ const FormKhaoSat = () => {
   useEffect(() => {
     const fetchLoaiSP = async () => {
       const res = await new SanPhamService().getLoaiSP();
+      const resHD = await new SanPhamService().getHinhDang();
+      const resKhachhang = await new KhachHangSerivce().getListCus();
       if (res?.data) dispatch(setLoaiSP(res.data));
+      resHD?.data && dispatch(setHinhDang(resHD.data));
+      resKhachhang.data && dispatch(setListKH(resKhachhang.data));
     };
     fetchLoaiSP();
   }, []);
 
-  const getTenSP = (id) => {
-    const sp = sanPhamList.find((item) => item.id === id);
-    return sp?.tenSP;
+  const getHinhDang = (hinhDang) => {
+    const id = typeof hinhDang === "object" ? hinhDang?.id : hinhDang;
+    const sp = hinhDangList.find((item) => item.id === id);
+    return sp?.ten;
+  };
+  const getTenLoai = (loai) => {
+    console.log(loai);
+
+    if (!loaiSP || !loai) return null;
+
+    const id = typeof loai === "object" ? loai?.id : loai;
+    const found = loaiSP.find((item) => item.id === id);
+
+    return found?.ten || "Chưa xác định";
   };
 
   // Rehydrate formList from saved data
@@ -78,25 +103,25 @@ const FormKhaoSat = () => {
     );
   };
 
-  const setGiaList = (index, gia) => {
-    setListGia((prev) => {
-      const newList = [...prev];
-      newList[index] = gia;
-      return newList;
-    });
-  };
+  // const setGiaList = (index, gia) => {
+  //   setListGia((prev) => {
+  //     const newList = [...prev];
+  //     newList[index] = gia;
+  //     return newList;
+  //   });
+  // };
 
-  const tinhGia = () => {
-    const tongGia = listGia.reduce((sum, gia) => sum + (gia || 0), 0);
-    setGia(tongGia);
-  };
+  // const tinhGia = () => {
+  //   const tongGia = listGia.reduce((sum, gia) => sum + (gia || 0), 0);
+  //   setGia(tongGia);
+  // };
 
-  console.log("gia: ", gia);
-  console.log("list gia: ", listGia);
+  // console.log("gia: ", gia);
+  // console.log("list gia: ", listGia);
 
-  useEffect(() => {
-    tinhGia();
-  }, [listGia]);
+  // useEffect(() => {
+  //   tinhGia();
+  // }, [listGia]);
 
   const handleSetDataProductList = async () => {
     const data = [];
@@ -118,6 +143,8 @@ const FormKhaoSat = () => {
       const values = await form.validateFields();
       let updatedSanPhams = sanPhams;
 
+      if(currentStep)
+
       if (currentStep === 1) {
         const ok = await handleSetDataProductList();
         if (!ok) return;
@@ -128,28 +155,40 @@ const FormKhaoSat = () => {
       if (currentStep === 2) {
         const values = await form.validateFields();
         const { designs = [] } = values;
-        tinhGia();
+        console.log(designs);
+
+        // tinhGia();
         // 👉 Merge các trường còn lại vào sanPhams
         const mergedSanPhams = sanPhams.map((sp, index) => ({
           ...sp,
           hasDesignFile: designs[index]?.hasDesignFile ?? false,
           noiDungThietKe: designs[index]?.noiDungThietKe ?? "",
           yeuCauDacBiet: designs[index]?.yeuCauDacBiet ?? "",
-          image: designs[index]?.fileUpload?.file?.response ?? null,
+          images: designs[index]?.fileUpload?.file?.response ?? null,
         }));
 
-        const newSanPhams = mergedSanPhams.map((item) => {
-          return {
-            ...item,
-            sanPham: { id: item.sanPham },
-          };
-        });
+        const newSanPhams = mergedSanPhams.map((i) => ({
+          ...i,
+          hinhDang:
+            i.hinhDang && typeof i.hinhDang === "object"
+              ? i.hinhDang
+              : i.hinhDang
+              ? { id: i.hinhDang }
+              : null,
+        }));
 
-        setSanPhams(newSanPhams);
+        console.log("newSanPhams: ", newSanPhams);
+
+        const finalSanphams = newSanPhams.map((sp) => ({
+          ...sp,
+          loaiSp: typeof sp.loaiSp === "object" ? sp.loaiSp : { id: sp.loaiSp },
+        }));
+
+        setSanPhams(finalSanphams);
         setFormData((prev) => ({
           ...prev,
           ...values,
-          sanPhams: newSanPhams,
+          sanPhams: finalSanphams,
         }));
       }
 
@@ -172,25 +211,25 @@ const FormKhaoSat = () => {
       const values = await form.validateFields();
 
       const finalData = {
+        // ...khachHang,
         ...formData,
         ...values,
         sanPhams,
-        gia,
         maNhanVien: maNV,
+        thietKe: thietKe,
       };
-
-      
 
       console.log("📦 Data to send:", finalData);
 
-      const res = await serviceDonHang.createDonAo(finalData );
+      const res = await serviceDonHang.createDonAo(finalData);
       console.log(res);
-       
+
       if (res?.status === 201) {
         toast.success("Tạo đơn hàng thành công!");
         form.resetFields();
         setFormData({});
         setFormList([{ id: uuidv4(), form: null }]);
+        dispatch(setKhachHang({}))
         setCurrentStep(0);
       } else {
         toast.error("Tạo đơn không thành công");
@@ -208,19 +247,22 @@ const FormKhaoSat = () => {
     { title: "Xác nhận", icon: <CheckCircleOutlined /> },
   ];
 
+ 
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return <KeychainCustomerInfo />;
+        return <KeychainCustomerInfo form={form}/>;
       case 1:
         return (
           <KeychainProductInfo
             loaiSP={loaiSP}
-            setGia={setGiaList}
+            // setGia={setGiaList}
             sanPhams={sanPhams}
             formList={formList}
             setFormList={setFormList}
             onFormReady={handleFormReady}
+            form={form}
           />
         );
       case 2:
@@ -243,55 +285,65 @@ const FormKhaoSat = () => {
                 <p>
                   <Text strong>Số điện thoại:</Text> {formData.sdt}
                 </p>
-                {formData.email && (
-                  <p>
-                    <Text strong>Email:</Text> {formData.email}
-                  </p>
-                )}
               </Card>
 
               {formData.sanPhams &&
-                formData.sanPhams.map((sp, index) => (
-                  <Card
-                    size="small"
-                    title="Thông tin sản phẩm"
-                    type="inner"
-                    key={index}
-                  >
-                    <p>
-                      <Text strong>Tên sản phẩm:</Text>{" "}
-                      {sp.tenSanPham || "Chưa xác định"}
-                    </p>
-                    <p>
+                formData.sanPhams.map((sp, index) => {
+                  console.log("sp.loaiSP = ", sp.loaiSp);
+                  return (
+                    <Card
+                      size="small"
+                      title={`Sản phẩm #${index + 1}`}
+                      type="inner"
+                      key={index}
+                    >
+                      <p>
+                        <Text strong>Tên sản phẩm:</Text>{" "}
+                        {sp.tenSanPham || "Chưa xác định"}
+                      </p>
+                      <p>
+                        <Text strong>Loại sản phẩm:</Text>{" "}
+                        {`${getTenLoai(sp.loaiSp)}` || "Chưa xác định"}
+                      </p>
+                      {/* <p>
                       <Text strong>Mã sản phẩm:</Text>{" "}
                       {getTenSP(sp.sanPham) || "Chưa xác định"}
-                    </p>
-                    <p>
+                    </p> */}
+                      {/* <p>
                       <Text strong>Số lượng:</Text> {sp.soLuong}
-                    </p>
-                    <p>
-                      <Text strong>Kích thước:</Text>{" "}
-                      {`${sp.chieuDai || 1} x ${sp.chieuRong || 1}` ||
-                        "Chưa xác định"}
-                    </p>
-                    <p>
-                      <Text strong>Hình dạng:</Text> {sp.hinhDang}
-                    </p>
-                    <p>
-                      <Text strong>File thiết kế:</Text>{" "}
-                      {sp.hasDesignFile ? "Có" : "Không"}
-                    </p>
-                    <p>
-                      <Text strong>Mô tả thiết kế:</Text> {sp.noiDungThietKe}
-                    </p>
-                    {sp.specialRequests && (
+                    </p> */}
                       <p>
-                        <Text strong>Yêu cầu đặc biệt:</Text> {sp.yeuCauDacBiet}
+                        <Text strong>Kích thước:</Text>{" "}
+                        {`${sp.kichThuoc}` || "Chưa xác định"}
                       </p>
-                    )}
-                  </Card>
-                ))}
+                      <p>
+                        <Text strong>Hình dạng:</Text>{" "}
+                        {getHinhDang(sp.hinhDang) || "Chưa xác định"}
+                      </p>
+                      <p>
+                        <Text strong>File thiết kế:</Text>{" "}
+                        {sp.hasDesignFile ? "Có" : "Không"}
+                      </p>
+                      <p>
+                        <Text strong>Mô tả thiết kế:</Text> {sp.noiDungThietKe}
+                      </p>
+                      {sp.specialRequests && (
+                        <p>
+                          <Text strong>Yêu cầu đặc biệt:</Text>{" "}
+                          {sp.yeuCauDacBiet}
+                        </p>
+                      )}
+                    </Card>
+                  );
+                })}
             </Space>
+            <Divider />
+            {/* <Checkbox
+              checked={thietKe}
+              onChange={(e) => setThietKe(e.target.checked)}
+            >
+              Tự thiết kế
+            </Checkbox> */}
           </Card>
         );
       default:

@@ -57,8 +57,6 @@ const ModalDonHang = ({ open, handleOk, handleCancel, addSp, products }) => {
   }, [products, sanPhams, searchText, selectedLoai, selectedChatLieu]);
 
   const filteSP = (data) => {
-    console.log(data);
-    
     addSp(data);
   };
 

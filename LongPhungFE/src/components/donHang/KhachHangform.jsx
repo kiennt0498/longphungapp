@@ -1,59 +1,44 @@
-import { Button, Col, Divider, Form, Input, Row, Table } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  Divider,
+  Form,
+  Input,
+  Row,
+  Typography,
+} from "antd";
 import TextArea from "antd/es/input/TextArea";
-import Column from "antd/es/table/Column";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const KhachHangform = ({ khachHangs, form }) => {
+const KhachHangform = ({ donHang, form, donCT }) => {
   const [data, setData] = useState([]);
-  const khachHang = useSelector((state) => state.KhachHang.khachHang);
+  
   const maNV = localStorage.getItem("maNV");
+  const { Title, Text } = Typography;
 
-  console.log(khachHang);
+  console.log(donHang);
+  
 
-  const filterData = (value) => {
-    const filter = khachHangs.filter((item) => {
-      return item.sdt.includes(value) || item.tenKhachHang.includes(value);
-    });
-    setData(filter);
-  };
-
-  const handleReset = () => {
-    form.resetFields();
-  };
-
-  useEffect(() => {
-    if (khachHang) {
-      form.setFieldsValue({
-        id: khachHang.id,
-        sdt: khachHang.sdt,
-        tenKhachHang: khachHang.tenKhachHang,
-        diaChi: khachHang.diaChi,
-        nhanVien: maNV,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    setData(khachHangs);
-  }, [khachHangs]);
+  if (donHang?.khachHang) {
+  form.setFieldsValue({
+    id: donHang.khachHang.id || "",
+    sdt: donHang.khachHang.sdt || "",
+    tenKhachHang: donHang.khachHang.tenKhachHang || "",
+    diaChi: donHang.khachHang.diaChi || "",
+  });
+}
 
   return (
-    <Row>
+    <Row align="top">
       <Col span={11}>
-        <Form.Item>
-          <Button type="primary" onClick={handleReset}>
-            Làm mới
-          </Button>
-        </Form.Item>
-
-        <Form.Item label="Số thứ tự" name="id">
+        <Form.Item label="Mã khách hàng" name="id">
           <Input disabled />
         </Form.Item>
         <Form.Item
           label="Số điện thoại"
           name="sdt"
-          onChange={(e) => filterData(e.target.value)}
           rules={[
             {
               required: true,
@@ -69,7 +54,7 @@ const KhachHangform = ({ khachHangs, form }) => {
           rules={[
             {
               required: true,
-              message: "Vui lòng nhập tên khách hànghàng",
+              message: "Vui lòng nhập tên khách hàng",
             },
           ]}
         >
@@ -78,35 +63,42 @@ const KhachHangform = ({ khachHangs, form }) => {
         <Form.Item label="Địa chỉ nhận hàng" name="diaChi">
           <TextArea rows={9} placeholder="Nhập địa chỉ nhận hàng" />
         </Form.Item>
-
-        <Form.Item label="Nhân viên liên đơn" name="nhanVien">
-          <Input disabled />
-        </Form.Item>
       </Col>
+
       <Divider style={{ height: "100%", minHeight: "30rem" }} type="vertical" />
-      <Col span={12}>
-        <h2>Danh sách khách hàng</h2>
-        <Table
-          dataSource={data}
-          rowKey="id"
-          onRow={(record) => ({
-            onDoubleClick: () => {
-              form.setFieldsValue({
-                id: record.id,
-                sdt: record.sdt,
-                tenKhachHang: record.tenKhachHang,
-              });
-            },
-          })}
-        >
-          <Column title="Stt" dataIndex="id" key="id" />
-          <Column title="Số điện thoại" dataIndex="sdt" key="sdt" />
-          <Column
-            title="Tên khách hàng"
-            dataIndex="tenKhachHang"
-            key="tenKhachHang"
-          />
-        </Table>
+
+      <Col flex="auto">
+        <h2>Thông tin sản phẩm</h2>
+        {donCT.map((sp, index) => (
+          <Card
+            size="small"
+            title={`Sản phẩm #${index + 1}`}
+            type="inner"
+            key={index}
+            style={{ marginBottom: "16px" }}
+          >
+            <p>
+              <Text strong>Tên sản phẩm:</Text> {sp.tenSanPham || "Chưa xác định"}
+            </p>
+            <p>
+              <Text strong>Loại sản phẩm:</Text> {sp.loaiSp?.ten || "Chưa xác định"}
+            </p>
+            <p>
+              <Text strong>Kích thước:</Text> {sp.kichThuoc || "Chưa xác định"}
+            </p>
+            <p>
+              <Text strong>Hình dạng:</Text> {sp.hinhDang?.ten || "Chưa xác định"}
+            </p>
+            <p>
+              <Text strong>Mô tả thiết kế:</Text> {sp.noiDungThietKe || ""}
+            </p>
+            {sp.yeuCauDacBiet && (
+              <p>
+                <Text strong>Yêu cầu đặc biệt:</Text> {sp.yeuCauDacBiet}
+              </p>
+            )}
+          </Card>
+        ))}
       </Col>
     </Row>
   );

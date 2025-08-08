@@ -74,7 +74,7 @@ const SingleProductCard = ({ id, loaiSP, setGia, onRemove, onFormReady,  initial
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
-              name="loaiSP"
+              name="loaiSp"
               label="Loại sản phẩm"
               rules={[{ required: true, message: "Chọn loại sản phẩm" }]}
             >
@@ -87,7 +87,7 @@ const SingleProductCard = ({ id, loaiSP, setGia, onRemove, onFormReady,  initial
               </Select>
             </Form.Item>
           </Col>
-          <Col span={12}>
+          {/* <Col span={12}>
             <Form.Item
               name="sanPham"
               label="Mã sản phẩm"
@@ -101,7 +101,7 @@ const SingleProductCard = ({ id, loaiSP, setGia, onRemove, onFormReady,  initial
                 ))}
               </Select>
             </Form.Item>
-          </Col>
+          </Col> */}
         </Row>
         {SelectedForm ? <SelectedForm form={form} index={index} setGia={setGia} sanPham={selectedSanPham} /> : null}
       </Form>

@@ -5,30 +5,24 @@ import DonHangService from "../../services/DonHangService";
 import { IoMdTrash } from "react-icons/io";
 import OrderCard from "../common/OrderCard";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setDonHang } from "../../redux/slide/DonHangSlice";
 
 const service = new DonHangService();
 
 const DonHangTabsXN = ({ listXN, format, showModalHuy }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bill, setBill] = useState({});
-  const [products, setProducts] = useState([]);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   console.log(listXN);
   
   
-  const showModal = async (data) => {
-    try {
-      const res = await service.getDonHangCT(data.maDonHang);
-      if (res?.data) {
-        console.log(res.data);
-        
-        setProducts(res.data);
-        setBill(data);
-        setIsModalOpen(true);
-      }
-    } catch (error) {
-      toast.error(" Lỗi service ");
-    }
+  const handleChotDon = async (data) => {
+    dispatch(setDonHang(data))
+    navigate("/donhang/chot-don")
   };
 
   const handleCancel = () => setIsModalOpen(false);
@@ -47,22 +41,16 @@ const DonHangTabsXN = ({ listXN, format, showModalHuy }) => {
             cancelIcon={<IoMdTrash />}
             customActions={(item) => (
               <Button
-                onClick={() => showModal(item)}
+                onClick={() => handleChotDon(item)}
                 style={{ width: "100%" }}
                 type="primary"
               >
-                Xác nhận thanh toán
+                Chốt đơn hàng
               </Button>
             )}
           />
         ))}
       </Row>
-      <ModalChotDon
-        isModalOpen={isModalOpen}
-        handleCancel={handleCancel}
-        data={bill}
-        products={products}
-      />
     </div>
   );
 };

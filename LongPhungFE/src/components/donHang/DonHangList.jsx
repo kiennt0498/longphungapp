@@ -58,7 +58,7 @@ const DonHangList = () => {
         const subs = [
           ["/topic/donhang", setListTK, setCountTK],
           [`/topic/donchoduyet/${maNV}`, setListCD, setCountCD],
-          [`/topic/donduyet/${maNV}`, setListXN, setCountXN],
+          [`/topic/donhangchot/${maNV}`, setListXN, setCountXN],
           [`/topic/donhoanthanh/${maNV}`, setListHT, setCountHT],
           [`/topic/donhuy/${maNV}`, setListHuy, setCountHuy],
         ];
@@ -69,7 +69,7 @@ const DonHangList = () => {
           );
         });
 
-        ["getDonHang", "getDonChoDuyet", "getDonDuyet", "getDonHT", "getDonHuy"].forEach(dest => {
+        ["getDonHang", "getDonChoDuyet", "getDonChot", "getDonHT", "getDonHuy"].forEach(dest => {
           stompClient.current.publish({ destination: `/app/${dest}`, body: maNV });
         });
       },
@@ -138,7 +138,7 @@ const DonHangList = () => {
   const tabLabels = useMemo(() => ({
     tk: <span>Đơn chờ thiết kế {countTK > 0 && <Badge count={countTK} overflowCount={99} />}</span>,
     cd: <span>Đơn chờ duyệt {countCD > 0 && <Badge count={countCD} overflowCount={99} />}</span>,
-    xn: <span>Đơn chờ thanh toán {countXN > 0 && <Badge count={countXN} overflowCount={99} />}</span>,
+    xn: <span>Đơn chờ chốt {countXN > 0 && <Badge count={countXN} overflowCount={99} />}</span>,
     ht: <span>Đơn hoàn thành {countHT > 0 && <Badge count={countHT} overflowCount={99} />}</span>,
     huy: <span>Đơn bị hủy {countHuy > 0 && <Badge count={countHuy} overflowCount={99} />}</span>,
     phieu: <span>Gửi phiếu in {countPhieu > 0 && <Badge count={countPhieu} overflowCount={99} />}</span>,

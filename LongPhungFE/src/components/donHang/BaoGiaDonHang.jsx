@@ -110,6 +110,7 @@ const BaoGiaDonHang = ({ getData }) => {
     const newData = {
       id: data.id,
       tenSP: data.tenSP,
+      loaiSp: data.loaiSp,
       ghiChu: "",
       chieuDai: 1,
       chieuRong: 1,
@@ -536,7 +537,7 @@ const BaoGiaDonHang = ({ getData }) => {
               type="primary"
               onClick={() => finalyData()}
             >
-              Lên đơn
+              Tiếp tục
             </Button>
           </Col>
           <Col>

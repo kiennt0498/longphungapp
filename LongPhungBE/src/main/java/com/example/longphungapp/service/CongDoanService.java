@@ -67,8 +67,10 @@ public class CongDoanService {
                 i.setDieuChinh(cong);
                 var congNV = i.getKpiGoc().multiply(BigDecimal.valueOf(cong/100));
                 i.setCongNV(congNV);
-                var giaNL = congNV.add(i.getKhauHaoMay());
-                i.setGiaMuaNguyenLieu(giaNL);
+                if(i.getKhauHaoMay() != null){
+                    var giaNL = congNV.add(i.getKhauHaoMay());
+                    i.setGiaMuaNguyenLieu(giaNL);
+                }
                 return i;
             }).toList();
             dao.saveAll(newList);

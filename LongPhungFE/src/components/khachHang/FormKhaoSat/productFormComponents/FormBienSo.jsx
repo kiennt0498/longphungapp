@@ -9,15 +9,15 @@ const FormBienSo = ({index,setGia,sanPham}) => (
     <Col xs={24} md={12}>
       <Form.Item
         name="tenSanPham"
-        label="Tên/Thông tin cần khắc"
-        rules={[{ required: true, message: 'Vui lòng nhập thông tin cần khắc!' }]}
+        label="Tên mẫu"
+       
       >
-        <Input placeholder="VD: Nguyễn Văn A, 0909xxxxxx" size="large" />
+        <Input placeholder="VD:Biển Nguyễn Văn A" size="large" />
       </Form.Item>
     </Col>
-    <Col xs={24}>
+    {/* <Col xs={24}>
       <TinhTienField index={index} setGia={setGia} sanPham={sanPham}/>
-    </Col>
+    </Col> */}
     
   </Row>
 );

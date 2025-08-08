@@ -27,6 +27,9 @@ public class DonHangCTDto implements Serializable {
     private String tenSanPham;
     private String yeuCauDacBiet;
     private String noiDungThietKe;
+    private String kichThuoc;
+    private HinhDangDto hinhDang;
+    private LoaiSpDto loaiSp;
 
 
 }

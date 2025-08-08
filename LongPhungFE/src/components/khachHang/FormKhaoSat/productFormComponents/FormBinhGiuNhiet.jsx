@@ -7,17 +7,20 @@ const FormBinhGiuNhiet = ({index,setGia,sanPham}) => (
     <Col xs={24} md={12}>
       <Form.Item
         name="tenSanPham"
-        label="Tên/Thông tin cần khắc"
-        rules={[
-          { required: true, message: "Vui lòng nhập thông tin cần khắc!" },
-        ]}
+        label="Tên mẫu"
+        
       >
-        <Input placeholder="VD: Nguyễn Văn A, 0909xxxxxx" size="large" />
+        <Input placeholder="VD: Bình giữ nhiệt sao long" size="large" />
       </Form.Item>
     </Col>
-    <Col xs={24}>
+    <Col xs={12} md={12}>
+            <Form.Item name="kichThuoc" label="Kích thước" >
+              <InputNumber placeholder="VD: 500ml" size="large" style={{ width: "100%" }}/>
+            </Form.Item>
+          </Col>
+    {/* <Col xs={24}>
       <TinhTienField index={index} setGia={setGia} sanPham={sanPham}/>
-    </Col>
+    </Col> */}
   </Row>
 );
 

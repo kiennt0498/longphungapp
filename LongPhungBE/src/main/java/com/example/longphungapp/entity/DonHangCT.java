@@ -61,6 +61,17 @@ public class DonHangCT {
     @Column(name = "noi_dung_thiet_ke")
     private String noiDungThietKe;
 
+    @Column(name = "kich_thuoc", length = 20)
+    private String kichThuoc;
+
+    @ManyToOne
+    @JoinColumn(name = "hinh_dang_id")
+    private HinhDang hinhDang;
+
+    @ManyToOne
+    @JoinColumn(name = "loai_sp_id")
+    private LoaiSp loaiSp;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

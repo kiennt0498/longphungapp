@@ -28,6 +28,7 @@ public interface MapperInterface {
     SanPham toEntity(SanPhamDto dto);
     @Mapping(target = "quyTrinh", ignore = true)
     @Mapping(target = "nguyenVatLieus", ignore = true)
+    @Mapping(target = "loiNhuan", ignore = true)
     SanPhamDto toDto(SanPham entity);
 
     ChatLieu toEntity(ChatLieuDto dto);

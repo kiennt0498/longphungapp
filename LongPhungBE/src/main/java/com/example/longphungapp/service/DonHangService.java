@@ -61,6 +61,7 @@ public class DonHangService {
     public void createDonAo(donAoDto dto) {
 
         var kh = new KhachHang();
+        System.out.println("dto sdt" + dto.getSdt());
         var khFound = khDao.findBySdt(dto.getSdt());
         if(khFound == null){
             var khDto = new KhachHangDto();
@@ -96,15 +97,19 @@ public class DonHangService {
                 .map(i->{
                     var donCT = new DonHangCT();
                     BeanUtils.copyProperties(i, donCT);
-                    var sp = new SanPham();
                     if(i.getImages() != null){
                         var image = new Images();
-                        BeanUtils.copyProperties(i.getImages(), image);
+                        image.setId(i.getImages().getId());
                         donCT.setImages(image);
                     }
-
-                    sp.setId(i.getSanPham().getId());
-                    donCT.setSanPham(sp);
+                    if(i.getHinhDang() != null){
+                        var hd = new HinhDang();
+                        hd.setId(i.getHinhDang().getId());
+                        donCT.setHinhDang(hd);
+                    }
+                    var loai = new LoaiSp();
+                    loai.setId(i.getLoaiSp().getId());
+                    donCT.setLoaiSp(loai);
                     donCT.setDonHang(donHang);
                     donCT.setSoLuong(i.getSoLuong());
                     donCT.setNoiDungThietKe(i.getNoiDungThietKe());
@@ -113,9 +118,21 @@ public class DonHangService {
                     donCT.setYeuCauDacBiet(i.getYeuCauDacBiet());
                     donCT.setTenSanPham(i.getTenSanPham());
                     donCT.setTrangThai(TrangThai.CHO_NHAN_DON);
+
                     ctDao.save(donCT);
                     return donCT;
                 }).toList();
+
+         listDonCT.stream().forEach(i->{
+            var cv = new CongViecCT();
+            cv.setDonHangCT(i);
+            cv.setTrangThai(TrangThai.CHO_NHAN_DON);
+            cv.setTacVu(TacVu.THIET_KE);
+            if(dto.getThietKe()){
+                cv.setNhanVien(nv);
+            }
+            cvDao.save(cv);
+        });
 
     }
 

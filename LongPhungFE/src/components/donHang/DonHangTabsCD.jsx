@@ -50,15 +50,26 @@ const DonHangTabsCD = ({ listCD, handleDuyetSP, handleLamLai }) => {
               }}
             >
               <div>
-                <Text>Tên sản phẩm: {i.sanPham.tenSP} </Text>
-                <Row>
-                  <Text>Số lượng: {i.soLuong} </Text>
-                </Row>
-                <Row justify="space-between">
-                  <Col>Hạn: {formatDate(i.ngayGiao)}</Col>
-                  <Col>Giá: {formatCurrency(i.donGia * i.soLuong)}</Col>
-                </Row>
-              </div>
+          <Text>Công đoạn: Thiết kế</Text> <br />
+          <Text>Loại sản phẩm: {i.donHangCT?.loaiSp?.ten}</Text> <br />
+          <Text>
+            Hình dáng: {i.donHangCT?.hinhDang?.ten || "Không xác định"}
+          </Text>
+          <br />
+          <Text>
+            Kích thước: {i.donHangCT?.kichThuoc || "Không xác định"}
+          </Text>
+          <br />
+          <Text>
+            Nội dung thiết kế:{" "}
+            {i.donHangCT?.noiDungThietKe || "Không xác định"}
+          </Text>
+          <br />
+          <Text>
+            Yêu cầu đặc biệt:{" "}
+            {i.donHangCT?.yeuCauDacbiet || "Không xác định"}
+          </Text>
+          </div>
               <div style={{ marginTop: "auto", marginLeft: "5%" }}>
                 <Row gutter={16}>
                   <Col>

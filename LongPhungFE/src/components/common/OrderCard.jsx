@@ -18,7 +18,11 @@ const OrderCard = ({
 }) => (
   <Col span={6} key={item.maDonHang}>
     <Card
-      title={item.maDonHang}
+       title={
+        <div style={{ textAlign: "center", width: "100%" }}>
+          {item.donHangCT?.donHang?.maDonHang}
+        </div>
+      }
       extra={
         <Row>
           {onCancel && (
@@ -44,7 +48,6 @@ const OrderCard = ({
       <p>Số điện thoại: {item.khachHang?.sdt || "N/A"}</p>
       <p>Ngày chốt đơn: {formatDate(item.ngayChotDon)}</p>
       <p>Ngày giao hàng: {formatDate(item.ngayGiaoHang)}</p>
-      <p>Giá: {formatCurrency(item.gia)}</p>
       <p>Trạng thái: {item.trangThai}</p>
 
       {customActions ? (

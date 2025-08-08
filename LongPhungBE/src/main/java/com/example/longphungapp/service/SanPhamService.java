@@ -149,5 +149,6 @@ public class SanPhamService {
     public List<SanPham> getSanPhamById(Integer id){
         return dao.findByLoaiSp_Id(id);
     }
+    public List<HinhDang> getAllHinhDang() {return hinhDangDao.findAll(); }
 
 }

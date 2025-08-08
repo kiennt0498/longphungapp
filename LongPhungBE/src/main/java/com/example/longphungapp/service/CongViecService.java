@@ -358,9 +358,17 @@ public class CongViecService {
             congViecCTRepo.save(cv);
     };
 
-    public String getMaNVTao(Long id){
-        var congViec = congViecCTRepo.findById(id).orElseThrow(()-> new BadReqException("Không tìm thấy công việc"));
-        return congViec.getDonHangCT().getDonHang().getNhanVien().getId();
+    public String getMaNVTao(Long id, boolean isCongViec){
+        System.out.println("id cong viec get ma nhan vien tao " +id);
+        var donHangCt = new DonHangCT();
+        if(isCongViec){
+            var congViec = congViecCTRepo.findById(id).orElseThrow(()-> new BadReqException("Không tìm thấy công việc"));
+            donHangCt = congViec.getDonHangCT();
+        }else{
+            donHangCt = donHangCTRepository.findById(id).orElseThrow(()-> new BadReqException("Không tìm thấy công việc"));
+        }
+
+        return donHangCt.getDonHang().getNhanVien().getId();
     }
 
     // --- PRIVATE METHODS ---

@@ -15,18 +15,14 @@ const materials = [
 const FormTem = ({index,setGia, sanPham}) => (
   <Row gutter={16}>
     <Col xs={24} md={12}>
-      <Form.Item
-        name="bienSoTen"
-        label="Tên/Thông tin cần khắc"
-        rules={[{ required: true, message: 'Vui lòng nhập thông tin cần khắc!' }]}
-      >
-        <Input placeholder="VD: Nguyễn Văn A, 0909xxxxxx" size="large" />
-      </Form.Item>
+      <Form.Item name="tenSanPham" label="Tên mẫu (tùy chọn)">
+          <Input placeholder="Ví dụ: Tem công ty ABC" size="large" />
+        </Form.Item>
     </Col>
     
-    <Col xs={24}>
+    {/* <Col xs={24}>
       <TinhTienField index={index} setGia={setGia} sanPham={sanPham}/>
-    </Col>
+    </Col> */}
   </Row>
 );
 

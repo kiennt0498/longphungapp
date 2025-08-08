@@ -2,19 +2,23 @@ import React from "react";
 import { Form, Input, InputNumber, Select, Row, Col } from "antd";
 import TinhTienField from "./TinhTienField";
 import { useWatch } from "antd/es/form/Form";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 
-const shapes = [
-  { value: "tron", label: "Hình tròn" },
-  { value: "vuong", label: "Hình vuông" },
-  { value: "chu_nhat", label: "Hình chữ nhật" },
-  { value: "trai_tim", label: "Hình trái tim" },
-  { value: "ngoi_sao", label: "Hình ngôi sao" },
-  { value: "thiet_ke", label: "Hình tự do theo thiết kế" },
-];
+
 
 const FormMocKhoa = ({index,setGia,sanPham}) => {
+
+  const listHD = useSelector((state) => state.SanPham.hinhDang);
+
+  const shapes = listHD.map(i=>{
+    return {
+      value: i.id,
+      label: i.ten
+    }
+  })
+
 
   return (
   <>
@@ -26,18 +30,12 @@ const FormMocKhoa = ({index,setGia,sanPham}) => {
       </Col>
 
       <Col xs={12} md={12}>
-        <Form.Item name="chieuDai" label="Chiều dài (mm)" >
-          <InputNumber placeholder="VD: 50" size="large" style={{ width: "100%" }}/>
+        <Form.Item name="kichThuoc" label="Kích thước" >
+          <Input placeholder="VD: 50 x 60" size="large" style={{ width: "100%" }}/>
         </Form.Item>
       </Col>
 
       <Col xs={12} md={12}>
-        <Form.Item name="chieuRong" label="Chiều rộng (mm)">
-          <InputNumber placeholder="VD: 30" size="large" style={{ width: "100%" }}/>
-        </Form.Item>
-      </Col>
-
-      <Col xs={24}>
         <Form.Item
           name="hinhDang"
           label="Hình dạng móc khóa"
@@ -53,7 +51,7 @@ const FormMocKhoa = ({index,setGia,sanPham}) => {
         </Form.Item>
       </Col>
 
-      <Col xs={24}><TinhTienField index={index} setGia={setGia} sanPham={sanPham}/></Col>
+      {/* <Col xs={24}><TinhTienField index={index} setGia={setGia} sanPham={sanPham}/></Col> */}
     </Row>
   </>
 )};

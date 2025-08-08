@@ -293,7 +293,7 @@ const DashBoardPage = () => {
               theme="light"
               mode="horizontal"
               // items={filteredItems}
-              items={filteredItems}
+              items={itemMenu}
               style={{ minWidth: 0 }}
             />
           </Col>

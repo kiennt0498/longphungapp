@@ -52,9 +52,7 @@ public class DonHangController {
 
     @PutMapping("huydon")
     public ResponseEntity<?> huyDon(@RequestBody DonHuyDto dto, @RequestParam String maNV) {
-
         service.huyDon(dto);
-
         getDonHuy(maNV);
         getDonDuyet(maNV);
         getDonHT(maNV);
@@ -76,10 +74,10 @@ public class DonHangController {
         return ResponseEntity.ok(service.getLyDoHuy(id));
     }
 
-    @PostMapping("/donhangct/{id}/chia")
-    public void chiaDonHangCT(@PathVariable Long id, @RequestParam Integer soPhan) {
-
-    }
+//    @PostMapping("/donhangct/{id}/chia")
+//    public void chiaDonHangCT(@PathVariable Long id, @RequestParam Integer soPhan) {
+//
+//    }
 
     @MessageMapping("/getDonDuyet")
     public void getDonDuyet(@Payload String id) {
@@ -94,6 +92,11 @@ public class DonHangController {
     @MessageMapping("/getDonChoDuyet")
     public void getDonChoDuyet(@Payload String id) {
         tbService.thongBaoDonChoDuyet(id);
+    }
+
+    @MessageMapping("/getDonChot")
+    public void getDonChot(@Payload String id){
+        tbService.thongBaoDonChot(id);
     }
 
     @MessageMapping("/getDonHT")
@@ -135,8 +138,6 @@ public class DonHangController {
         var xuong = service.getXuong(maNV);
         messagingTemplate.convertAndSend("/topic/donxuonght/"+xuong, service.getDonXuongHT(xuong));
     }
-
-
 
     @MessageMapping("/NhanDon")
     public void NhanDon(NhanViecReq req) {

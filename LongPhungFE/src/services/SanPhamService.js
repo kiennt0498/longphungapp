@@ -15,6 +15,10 @@ export default class SanPhamService {
   getLoaiSP = async () => {
     return await axiosClient.get(API_SAN_PHAM + "/loaisp");
   };
+  getHinhDang = async () => {
+    return await axiosClient.get(API_SAN_PHAM + "/hinhdang");
+  };
+
   insertProd = async (data) => {
     return await axiosClient.post(API_SAN_PHAM, data);
   };

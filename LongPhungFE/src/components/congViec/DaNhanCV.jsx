@@ -58,8 +58,8 @@ const DaNhanCV = ({
               onButtonClick={handleNopViec}
               onButtonClick2={showModal}
               textButton="Nộp việc"
-              textButton2="Hoàn đơn"
-              showButton2={isChecked}
+              // textButton2="Hoàn đơn"
+              // showButton2={isChecked}
               extra={
                 i.donHangCT?.images && (
                   <a

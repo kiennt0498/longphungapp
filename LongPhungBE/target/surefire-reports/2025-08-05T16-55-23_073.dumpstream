@@ -1,5 +1,0 @@
-# Created at 2025-08-05T16:55:23.274
-Boot Manifest-JAR contains absolute paths in classpath 'E:\CongViec\LongPhungApp\LongPhungBE\target\test-classes'
-Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-'other' has different root
-

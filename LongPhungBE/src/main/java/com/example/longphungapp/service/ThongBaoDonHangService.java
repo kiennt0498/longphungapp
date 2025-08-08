@@ -1,5 +1,7 @@
 package com.example.longphungapp.service;
 
+import com.example.longphungapp.Interface.MapperInterface;
+import com.example.longphungapp.dto.DonHangCTDto;
 import com.example.longphungapp.dto.NhanViecReq;
 import com.example.longphungapp.entity.DonHangCT;
 import com.example.longphungapp.entity.DonThuMua;
@@ -33,6 +35,12 @@ public class ThongBaoDonHangService {
         messagingTemplate.convertAndSend("/topic/donhang", list);
     }
 
+    public void thongBaoDonChot(String id){
+        var list = donHangService.findByNhanVien_IdAndTrangThai(id, TrangThai.CHO_XAC_NHAN);
+        System.out.println("side don chot " + list.size());
+        messagingTemplate.convertAndSend("/topic/donhangchot/"+id, list);
+    }
+
     public void thongBaoDonHoanThanh(String nhanVienId) {
         var list = donHangService.findDonHoanThanh(nhanVienId);
         messagingTemplate.convertAndSend("/topic/donhoanthanh/" + nhanVienId, list);
@@ -45,19 +53,13 @@ public class ThongBaoDonHangService {
 
     public void thongBaoDonChoDuyet(String nhanVienId) {
         var list = donHangService.findByDonHang_NhanVien_IdAndTrangThai(nhanVienId, TrangThai.CHO_DUYET);
-        System.out.println("list don hang cd: "+list.size());
-        var listfilter = list.stream()
-                .filter(Objects::nonNull) // loại bỏ phần tử null
-                .peek(dh -> {
-                    var sanPham = dh.getSanPham();
-                    if (sanPham.getQuyTrinh() != null) {
-                        sanPham.getQuyTrinh().setQuyTrinhCongDoans(null);
-                    }
-                    sanPham.setNguyenVatLieus(null);
+        List<DonHangCTDto> listDTO = list.stream()
+                .map(donCT -> {
+                    return MapperInterface.MAPPER.toDto(donCT);
                 })
                 .toList();
 
-        messagingTemplate.convertAndSend("/topic/donchoduyet/"+nhanVienId, listfilter);
+        messagingTemplate.convertAndSend("/topic/donchoduyet/"+nhanVienId, listDTO);
         thongBaoDonDuyet(nhanVienId);
         thongBaoDonHang();
 

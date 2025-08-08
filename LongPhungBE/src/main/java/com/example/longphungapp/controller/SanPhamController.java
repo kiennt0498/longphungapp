@@ -43,6 +43,12 @@ public class SanPhamController {
         return new ResponseEntity<>(service.getAllLoaiSP(), HttpStatus.OK);
     }
 
+    @GetMapping("hinhdang")
+    public ResponseEntity getHinhDang(){
+        return new ResponseEntity<>(service.getAllHinhDang(), HttpStatus.OK);
+    }
+
+
     @GetMapping("loaisp/{id}")
     public ResponseEntity getSanPhamByLoai(@PathVariable Integer id){
         return new ResponseEntity<>(service.getSanPhamById(id), HttpStatus.OK);
