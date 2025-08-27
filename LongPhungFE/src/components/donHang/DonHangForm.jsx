@@ -13,7 +13,7 @@ import {
   theme,
 } from "antd";
 
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import FormDonHang from "./BaoGiaDonHang";
 import { MdEditNote } from "react-icons/md";
 import { FaCheckCircle, FaRegCreditCard } from "react-icons/fa";
@@ -44,15 +44,18 @@ const DonHangForm = () => {
 
   const [form] = Form.useForm();
   const [currentStep, setCurrentStep] = useState(0);
-
+  const [clearData, setClearData] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const idNV = localStorage.getItem("maNV");
+  const baoGiaRef = useRef();
+  const [dataXN, setDataXN] = useState({});
 
-  const createDon = async (sanPham,gia,thue) =>{
+  const createDon = async (sanPham,gia,thue,maDonHang) =>{
+    
      const newData = {
         don: {
-          khachHang : {...khachHang, nhanVien: {id: idNV}},
+          maDonHang: maDonHang,
+          
           gia:gia,
           nhanVien: {id: idNV},
           thue: thue,
@@ -72,12 +75,20 @@ const DonHangForm = () => {
         toast.warning("Cần ít nhất 1 sản phẩm trong danh sách")
         return
       }
-      
+
+      console.log(newData);
+      setDataXN(newData);
+            
       try {
         const res = await dhService.insterBill(newData);
         
       if(res.status === 200 && res.data){
         dispatch(setDonCT(res.data))
+        toast.success("Tạo đơn hàng thành công");
+        baoGiaRef.current?.resetForm();
+      }else{
+        toast.error("Tạo đơn hàng thất bại");
+        
       }
       } catch (error) {
         console.log(error);
@@ -108,20 +119,21 @@ const DonHangForm = () => {
   
 
   const processSteps = [
+    // {
+    //   title: "Thông tin khách hàng",
+    //   content: "Nhập thông tin khách hàng ",
+    //   icon: <MdEditNote />,
+    // },
     {
-      title: "Thông tin khách hàng",
-      content: "Nhập thông tin khách hàng ",
-      icon: <MdEditNote />,
-    },
-    {
-      title: "Lên đơn hàng chờ",
+      title: "Báo giá chốt đơn",
       content: "Nhập thông tin sản phẩm",
       icon: <FaRegCreditCard />,
-    },{
-      title: "Lên đơn thành công",
-      content: "Chờ thiết sản phẩm",
-      icon: <FaCheckCircle />,
     },
+    // {
+    //   title: "Lên đơn thành công",
+    //   content: "Chờ thiết sản phẩm",
+    //   icon: <FaCheckCircle />,
+    // },
   ];
 
   const getDataKH = async () => {
@@ -161,7 +173,7 @@ const DonHangForm = () => {
   return (
     <>
       <Form form={form} layout="vertical">
-        <Steps current={currentStep} items={processSteps} />
+        {/* <Steps current={currentStep} items={processSteps} />
         <Form.Item style={{ marginTop: 16 }}>
           <Row justify="space-between">
             <Col>
@@ -181,15 +193,18 @@ const DonHangForm = () => {
           </Row>
         </Form.Item>
 
-        <Divider />
+        <Divider /> */}
+        {currentStep === 0 && (<BaoGiaDonHang getData={createDon} ref={baoGiaRef} onNext={onNext}/>)}
+        {currentStep === 1 && (<ThongBaoTK dataXN={dataXN}/>)}
+        
 
-        {currentStep === 0 && (
+        {/* {currentStep === 0 && (
           <KhachHangform form={form} khachHangs={khachHangs} />
-        )}
+        )} */}
 
-        {currentStep === 1 && <BaoGiaDonHang getData={createDon}/>}
+        {/* {currentStep === 1 && <BaoGiaDonHang getData={createDon}/>} */}
 
-        {currentStep === 2 && <ThongBaoTK donMoi={donMoi}/>}
+        {/* {currentStep === 2 && <ThongBaoTK donMoi={donMoi}/>} */}
 
       </Form>
       <ModalHuyDon isModalOpen={isModalOpen} onConfirm={confirm} onCancel={cancel}/>

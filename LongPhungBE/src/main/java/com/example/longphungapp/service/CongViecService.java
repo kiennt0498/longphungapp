@@ -11,6 +11,7 @@ import com.example.longphungapp.repository.*;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.session.Session;
@@ -22,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CongViecService {
@@ -190,9 +191,9 @@ public class CongViecService {
         var xuong = phanPhoi.getXuong();
         var khu = phanPhoi.getKhu();
 
-        var qlXuong = nhanVienRepository.findByChucVu_IdAndXuong_Id(1, xuong.getId());
+        var qlXuong = nhanVienRepository.findByChucVu_IdAndXuong_Id(2, xuong.getId());
         var qlKhu = khu != null
-                ? nhanVienRepository.findByChucVu_IdAndXuong_IdAndKhu_Id(2, xuong.getId(), khu.getId())
+                ? nhanVienRepository.findByChucVu_IdAndXuong_IdAndKhu_Id(3, xuong.getId(), khu.getId())
                 : null;
 
         if (qlXuong != null) {
@@ -333,6 +334,7 @@ public class CongViecService {
 
     @Transactional(rollbackFor = Exception.class)
     public void createFistJobs(Long id){
+        System.out.println("id don tao cv: "+ id);
         var found = donHangCTRepository.findById(id)
                 .orElseThrow(()-> new RuntimeException("Không tìm thấy đơn hàng"));
 

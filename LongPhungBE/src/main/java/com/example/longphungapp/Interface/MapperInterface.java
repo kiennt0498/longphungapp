@@ -45,6 +45,9 @@ public interface MapperInterface {
     CongDoan toEntity(CongDoanDto dto);
     CongDoanDto toDto(CongDoan entity);
 
+    DonHang toEntity(DonHangDto dto);
+    DonHangDto toDto(DonHang entity);
+
     DonHangCT toEntity(DonHangCTDto dto);
     DonHangCTDto toDto(DonHangCT entity);
 
@@ -70,5 +73,8 @@ public interface MapperInterface {
 
     ThongBao toEntity(ThongBaoDto dto);
     ThongBaoDto toDto(ThongBao entity);
+
+    PhieuIn toEntity(PhieuInDto dto);
+    PhieuInDto toDto(PhieuIn entity);
 
 }

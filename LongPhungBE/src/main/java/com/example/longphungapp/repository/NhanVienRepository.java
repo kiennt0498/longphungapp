@@ -35,4 +35,5 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
     NhanVien findByXuong_IdAndKhu_IdAndBoPhan_Id(Integer id, Integer id1, Integer id2);
 
 
+
 }

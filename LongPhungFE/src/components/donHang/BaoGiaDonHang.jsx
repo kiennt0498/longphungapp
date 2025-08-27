@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useImperativeHandle, useState } from "react";
 import {
   Card,
   Table,
@@ -32,11 +32,12 @@ import { kiemTraHangTonKho } from "../../helpers/kiemTrahangTonKho";
 
 const { Title, Text } = Typography;
 
-const BaoGiaDonHang = ({ getData }) => {
+const BaoGiaDonHang = ({ getData, clearData }) => {
   const [openDraw, setOpenDraw] = useState(false);
   const [openFile, setOpenFile] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [products, setProducts] = useState([]);
+  const [maDonHang, setMaDonHang] = useState("");
   const [listWarding, setListWarding] = useState([]);
   const [du, setDu] = useState(false);
   const [tienThucTe, setTienThucTe] = useState();
@@ -90,7 +91,7 @@ const BaoGiaDonHang = ({ getData }) => {
     const res = await service.getLoiNhuan(data.id);
     const loiNhuan = res?.data || [];
     console.log("he so thu mua:", data.heSoThuMua);
-    
+
     const congDoans =
       data.quyTrinh?.quyTrinhCongDoans?.map((item) => item.congDoan) || [];
 
@@ -105,7 +106,6 @@ const BaoGiaDonHang = ({ getData }) => {
     };
 
     console.log("Input Gia:", inputGia);
-    
 
     const newData = {
       id: data.id,
@@ -247,8 +247,27 @@ const BaoGiaDonHang = ({ getData }) => {
       };
     });
 
-    getData(newData, total, taxRate);
+    getData(newData, total, taxRate, maDonHang);
+    setProducts([]);
+    setMaDonHang("");
+    setDiscount(0);
+    setTienThucTe(0);
+    setTaxRate(0.08);
+    setListWarding([]);
+    setDu(false);
   };
+
+  useImperativeHandle(ReferenceError, () => ({
+    resetForm: () => {
+      setProducts([]);
+      setMaDonHang("");
+      setDiscount(0);
+      setTienThucTe(0);
+      setTaxRate(0.08);
+      setListWarding([]);
+      setDu(false);
+    },
+  }));
 
   const summary = (pageData) => {
     let totalDonGia = 0;
@@ -436,15 +455,23 @@ const BaoGiaDonHang = ({ getData }) => {
           justify="space-between"
         >
           {/* Bên trái */}
-          <Col>
+          <Col span={3}>
             <Button type="primary" color="blue" variant="text" onClick={onOpen}>
               <CiCirclePlus /> Thêm sản phẩm
             </Button>
           </Col>
 
           {/* Bên phải */}
-          <Col>
+          <Col span={20}>
             <Space>
+              <Text strong>Mã sản xuất: </Text>
+              <Input
+                value={maDonHang}
+                onChange={(e) => setMaDonHang(e.target.value)}
+                placeholder="Nhập mã sản xuất"
+                style={{ width: "18rem" }}
+              />
+
               <Checkbox onChange={onChangeChek}>Điều chỉnh giá bán</Checkbox>
 
               <label>Chiết khấu thực tế (%): </label>
@@ -529,13 +556,9 @@ const BaoGiaDonHang = ({ getData }) => {
         </Card>
 
         <Divider />
-        <Row gutter={1}>
-          <Col span={12}>
-            <Button
-              style={{ marginLeft: "80%" }}
-              type="primary"
-              onClick={() => finalyData()}
-            >
+        <Row gutter={16} justify="center">
+          <Col>
+            <Button type="primary" onClick={() => finalyData()}>
               Lên đơn
             </Button>
           </Col>
@@ -558,7 +581,7 @@ const BaoGiaDonHang = ({ getData }) => {
         open={openExport}
         onClose={handleCancelExport}
         products={products}
-        thue = {taxRate}  // Pass the tax rate to ExportPDF component
+        thue={taxRate} 
       />
     </div>
   );

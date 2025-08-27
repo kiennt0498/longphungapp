@@ -3,7 +3,7 @@ import React, { use, useState } from "react";
 import { formatCurrency, formatDate } from "../../helpers/formatData";
 import ModalDonCT from "../donHang/ModalDonCT";
 
-const DonHangTabsPP = ({ listDPP, handleLamLai }) => {
+const DonHangTabsPP = ({ listDPP, handleHoanDon }) => {
   const { Text } = Typography;
   const [bill, setBill] = useState({})
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,7 +55,7 @@ const DonHangTabsPP = ({ listDPP, handleLamLai }) => {
                   </Button>
                 </Col>
                 <Col >
-                  <Button type="primary" block onClick={() => handleLamLai(i)}>
+                  <Button type="primary" block onClick={() => handleHoanDon(i)}>
                     Hoàn đơn
                   </Button>
                 </Col>

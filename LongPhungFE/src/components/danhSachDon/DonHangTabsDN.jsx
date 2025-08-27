@@ -9,24 +9,22 @@ import { toast } from "react-toastify";
 import { formatCurrency, formatDate } from "../../helpers/formatData";
 import ModalDonCT from "../donHang/ModalDonCT";
 
-const DonHangTabsDN = ({ listDN, handleHoanDon, handleLamLai }) => {
+const DonHangTabsDN = ({ listDN, handleHoanDon, handleLamLai, handleopenModal }) => {
   const { Text } = Typography;
   const khu = localStorage.getItem("khu");
   const showNhanBtn = Boolean(khu);
   console.log("List DN:", listDN);
-  const [bill, setBill] = useState({})
+  const [bill, setBill] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  
-
   const showModal = (data) => {
-    setBill(data)
+    setBill(data);
     setIsModalOpen(true);
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
-  };  
+  };
 
   return (
     <>
@@ -46,29 +44,50 @@ const DonHangTabsDN = ({ listDN, handleHoanDon, handleLamLai }) => {
               }}
             >
               <div>
-                <Text>Khách hàng: {i.khachHang.tenKhachHang} </Text>
+                <Text>
+                  Khách hàng: {i.khachHang?.tenKhachHang || "Khách lẻ"}{" "}
+                </Text>
                 <Row justify="space-between">
                   <Col>Hạn: {formatDate(i.ngayGiao)}</Col>
                   <Col>Giá: {formatCurrency(i.gia)}</Col>
                 </Row>
               </div>
-              <Row gutter={16} justify="space-between" style={{ marginTop: "auto", }}>
-                <Col >
+              <Row
+                gutter={16}
+                justify="space-between"
+                style={{ marginTop: "auto" }}
+              >
+                <Col>
                   <Button type="primary" block onClick={() => showModal(i)}>
                     Chi tiết
                   </Button>
                 </Col>
-                <Col >
+                <Col>
                   <Button type="primary" block onClick={() => handleHoanDon(i)}>
                     Hoàn đơn
                   </Button>
                 </Col>
               </Row>
+              
+                <Row>
+                  <Button
+                    onClick={() => handleopenModal(i.maDonHang)}
+                    type="primary"
+                    style={{ width: "100%", marginTop: "3%" }}
+                  >
+                    Phân phối đơn hàng
+                  </Button>
+                </Row>
+           
             </Card>
           </List.Item>
         )}
       />
-      <ModalDonCT isModalOpen={isModalOpen} handleCancel={handleCancel} data={bill}/>
+      <ModalDonCT
+        isModalOpen={isModalOpen}
+        handleCancel={handleCancel}
+        data={bill}
+      />
     </>
   );
 };

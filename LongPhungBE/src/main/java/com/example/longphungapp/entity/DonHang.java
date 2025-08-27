@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -16,14 +17,6 @@ import java.util.Set;
 @Entity
 @Table(name = "don_hang")
 public class DonHang {
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "ngay_chot_don")
-    private Date ngayChotDon;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "ngay_giao_hang")
-    private Date ngayGiaoHang;
 
     @ManyToOne
     @JoinColumn(name = "khach_hang_id")
@@ -57,8 +50,15 @@ public class DonHang {
     @Column(name = "khoa")
     private Boolean khoa;
 
+    @Column(name = "ngay_chot_don")
+    private LocalDateTime ngayChotDon;
+
+    @Column(name = "ngay_giao_hang")
+    private LocalDateTime ngayGiaoHang;
+
     @PrePersist
     public void prePersist() {
         khoa = false;
+        ngayChotDon = LocalDateTime.now();
     }
 }

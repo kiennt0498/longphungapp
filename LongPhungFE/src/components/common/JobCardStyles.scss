@@ -1,0 +1,103 @@
+// ========================
+// Variables
+// ========================
+$card-bg: #fff;
+$card-radius: 1%;
+$card-padding: 3%;
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+$text-color: #333;
+$text-muted: #666;
+$primary-gap: 8px;
+
+$transition-fast: 0.3s ease;
+
+// ========================
+// Job Card Styles
+// ========================
+.job-card {
+  background-color: $card-bg;
+  border-radius: $card-radius;
+  padding: $card-padding;
+  box-shadow: $shadow-light;
+  display: flex;
+  flex-direction: column;
+  gap: $primary-gap;
+  transition: background-color $transition-fast;
+
+  // Chữ luôn bẻ khi dài
+  * {
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  // ========================
+  // Header
+  // ========================
+  &__header {
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 4px;
+
+    .countdown {
+      font-size: 14px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .order-code {
+      color: $text-color;
+    }
+  }
+
+  // ========================
+  // Content Section
+  // ========================
+  &__content {
+    font-size: 14px;
+    color: $text-color;
+
+    .job-meta {
+      color: $text-muted;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+  }
+
+  // ========================
+  // Buttons Section
+  // ========================
+  &__buttons {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  // ========================
+  // Responsive
+  // ========================
+  @media (max-width: 768px) {
+    padding: 10px;
+
+    &__header {
+      font-size: 15px;
+    }
+
+    &__content {
+      font-size: 13px;
+    }
+  }
+}

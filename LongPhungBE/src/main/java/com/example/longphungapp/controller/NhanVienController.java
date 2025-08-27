@@ -71,4 +71,9 @@ public class NhanVienController {
         }
 
     }
+
+    @GetMapping("nvinphieu")
+    public ResponseEntity getNhanVienInPhieu(){
+        return new ResponseEntity<>(service.getNhanVienInPhieu(),HttpStatus.OK);
+    }
 }

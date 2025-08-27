@@ -13,5 +13,6 @@ public class ImagesDto implements Serializable {
     String tenAnh;
     String tenTep;
     String status;
+    String uri;
 
 }

@@ -23,4 +23,9 @@ public class Images {
     @Column(name = "uri")
     private String uri;
 
+    @Column(name = "status")
+    private String status;
+
+
+
 }

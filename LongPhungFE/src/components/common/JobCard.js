@@ -1,50 +1,72 @@
-import { Button, Card, Col, Row, Typography } from "antd";
+import { Button, Card, Col, Divider, Row, Typography } from "antd";
 import { formatCurrency, formatDate } from "../../helpers/formatData";
 import { useState } from "react";
+import CountdownTimer from "./CountdownTimer";
+import "./JobCardStyles.scss";
 const { Text } = Typography;
 
-const JobCard = ({ item, showButton, onButtonClick,onButtonClick2, textButton, textButton2, extra, showButton2 }) => {
-
-  
+const JobCard = ({
+  item,
+  showButton,
+  onButtonClick,
+  onButtonClick2,
+  textButton,
+  textButton2,
+  extra,
+  showButton2,
+  bgColor,
+  showTime,
+}) => {
   return (
-    <Card
-      title={<span>{item.donHangCT?.donHang?.maDonHang}</span>}
-      extra={extra}
-      style={{
-        padding: "2%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        height: "100%",
-      }}
-    >
-      <div>
-        <Text>Tên sản phẩm: {item.donHangCT?.sanPham?.tenSP}</Text> <br/>
-        <Text>Công đoạn: {item.congDoan?.tenCongDoan || "Thiết kế"}</Text>
-        <Row>
-          <Text>Số lượng: {item.donHangCT?.soLuong}</Text>
-        </Row>
-        <Row justify="space-between">
-          <Col>Hạn: {formatDate(item.ngayGiao)}</Col>
-          {item.tacVu === "THIET_KE" ? (
-            <Col>KPI: {formatCurrency(item.kpi)}</Col>
-          ) : (
-            <Col>KPI: {formatCurrency(item.kpi * item.donHangCT?.soLuong)}</Col>
-          )}
-        </Row>
+    <Card className="job-card" extra={extra}>
+      <div className="job-card__header">
+        {showTime && (
+          <span className="countdown">
+            <CountdownTimer createdAt={item.ngayTao} />
+          </span>
+        )}
+        {item.donHangCT ? (
+          <span className="order-code">
+            {item.donHangCT?.donHang?.maDonHang}
+          </span>
+        ) : (
+          <span className="order-code">{item.maDonHang}</span>
+        )}
       </div>
-        {showButton && (
-        <div style={{ marginTop: "auto" }}>
-          <Button type="primary" block onClick={() => onButtonClick(item)}>
-            {textButton}
-          </Button>
+
+      <Divider />
+
+      <div className="job-card__content">
+        <div className="job-meta">
+          Tên sản phẩm: {item.donHangCT?.sanPham?.tenSP}
         </div>
-      )}
-      {showButton2 && (
-        <div style={{ marginTop: "1%" }}>
-          <Button type="primary" block onClick={() => onButtonClick2(item)}>
-            {textButton2}
-          </Button>
+        <div className="job-meta">
+          Công đoạn: {item.congDoan?.tenCongDoan || "Thiết kế"}
+        </div>
+        <div className="job-meta">Số lượng: {item.donHangCT?.soLuong}</div>
+        <div className="meta-row">
+          <span>Hạn: {formatDate(item.ngayGiao)}</span>
+          <span>
+            KPI:{" "}
+            {item.tacVu === "THIET_KE"
+              ? formatCurrency(item.kpi)
+              : formatCurrency(item.kpi * item.donHangCT?.soLuong)}
+          </span>
+        </div>
+      </div>
+
+      {(showButton || showButton2) && (
+        <div className="job-card__buttons">
+          {showButton && (
+            <Button type="primary" block onClick={() => onButtonClick(item)}>
+              {textButton}
+            </Button>
+          )}
+          {showButton2 && (
+            <Button type="primary" block onClick={() => onButtonClick2(item)}>
+              {textButton2}
+            </Button>
+          )}
         </div>
       )}
     </Card>

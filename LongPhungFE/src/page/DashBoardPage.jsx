@@ -1,7 +1,7 @@
 import React, { use, useEffect, useMemo, useState } from "react";
 import { GrGroup } from "react-icons/gr";
-import { DownOutlined, UserOutlined } from "@ant-design/icons";
-import { Col, Dropdown, Layout, Menu, Row, Space } from "antd";
+import { DownOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Col, Drawer, Dropdown, Grid, Layout, Menu, Row, Space } from "antd";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Login from "../components/Login";
 
@@ -43,6 +43,7 @@ import SanPham from "../components/thongKe/SanPham";
 import PPDonHang from "../components/danhSachDon/PPDonHang";
 import KhachHangTiemNang from "../components/khachHang/KhachHangTiemNang";
 import FormKhaoSat from "../components/khachHang/FormKhaoSat/FormKhaoSat";
+import ListPhieu from "../components/phieuIn/ListPhieu";
 
 const { Header, Sider, Content } = Layout;
 const DashBoardPage = () => {
@@ -52,6 +53,8 @@ const DashBoardPage = () => {
   const authService = new AuthService();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const { Header } = Layout;
+  const { useBreakpoint } = Grid;
 
   const filterConfig = {
     khachhang: [],
@@ -65,6 +68,12 @@ const DashBoardPage = () => {
   const dynamikeys = useMemo(() => filterConfig[baseRoute] || [], [baseRoute]);
 
   const isFullWith = ["donhang", "kho", "", "taikhoan", "thongke","khach-hang-tiem-nang","khao-sat-khach-hang","sanpham/them"].includes(baseRoute);
+
+  const screens = useBreakpoint();
+  const [open, setOpen] = useState(false);
+
+  const showDrawer = () => setOpen(true);
+  const closeDrawer = () => setOpen(false);
 
   const itemMenu = [
     {
@@ -211,7 +220,14 @@ const DashBoardPage = () => {
       icon: <FaWarehouse />,
       label: "Phân phối đơn",
       onClick: () => navigate("/phanphoi"),
+    },
+    {
+      key: "phieuin",
+      icon: <FaWarehouse />,
+      label: "Phiếu in",
+      onClick: () => navigate("/phieu-in"),
     }
+    
   ];
 
   const allowedLabelsByRole = {
@@ -267,51 +283,71 @@ const DashBoardPage = () => {
 
   return (
     <Layout>
-      <Header
-        style={{ display: "flex", alignItems: "center", padding: "0 20px" }}
+      <Header className="header-custom">
+      {/* Logo */}
+      <div className={`logo ${!screens.md ? "logo--small" : ""}`}>
+        <a href="/">
+          <img src="/image/logoWeb.jpg" alt="Logo" />
+        </a>
+      </div>
+
+      {/* Menu Desktop hoặc Icon Mobile */}
+      {screens.md ? (
+        <Menu
+          theme="light"
+          mode="horizontal"
+          items={itemMenu}
+          style={{ flex: 1, minWidth: 0 }}
+        />
+      ) : (
+        <Button
+          className="menu-btn"
+          type="text"
+          icon={<MenuOutlined />}
+          onClick={showDrawer}
+        />
+      )}
+
+      {/* User Bar (luôn hiển thị trên header) */}
+      <div className="userBar">
+        <Dropdown menu={{ items }} trigger={["click"]}>
+          <a onClick={(e) => e.preventDefault()}>
+            <Space>
+              <UserOutlined />
+              {screens.md && "Tài khoản"}
+              <DownOutlined />
+            </Space>
+          </a>
+        </Dropdown>
+      </div>
+
+      {/* Drawer cho mobile */}
+      <Drawer
+        title="Menu"
+        placement="left"
+        closable={true}
+        onClose={closeDrawer}
+        open={open}
       >
-        <Row style={{ display: "flex", width: "100%" }} align="middle">
-          {/* Logo */}
-          <Col flex="100px" style={{ display: "flex", alignItems: "center" }}>
-            <div className="logo">
-              <a href="/">
-                <img
-                  src="/image/logoWeb.jpg"
-                  alt="Logo"
-                  style={{
-                    height: "50px", // Chiều cao cố định
-                    objectFit: "contain", // Giữ tỉ lệ gốc
-                  }}
-                />
-              </a>
-            </div>
-          </Col>
+        {/* Menu chính */}
+        <Menu mode="inline" items={itemMenu} />
 
-          {/* Menu Chính */}
-          <Col flex="auto">
-            <Menu
-              theme="light"
-              mode="horizontal"
-              // items={filteredItems}
-              items={filteredItems}
-              style={{ minWidth: 0 }}
-            />
-          </Col>
+        {/* Divider nhỏ */}
+        <div style={{ borderTop: "1px solid #eee", margin: "12px 0" }} />
 
-          {/* Tài khoản */}
-          <Col style={{ flex: "0 0 200px", textAlign: "right" }}>
-            <Dropdown menu={{ items }} trigger={["click"]}>
-              <a onClick={(e) => e.preventDefault()}>
-                <Space>
-                  <UserOutlined />
-                  Tài khoản
-                  <DownOutlined />
-                </Space>
-              </a>
-            </Dropdown>
-          </Col>
-        </Row>
-      </Header>
+        {/* Tài khoản trong Drawer */}
+        <Dropdown menu={{ items }} trigger={["click"]}>
+          <a
+            onClick={(e) => e.preventDefault()}
+            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+          >
+            <UserOutlined />
+            <span>Tài khoản</span>
+            <DownOutlined />
+          </a>
+        </Dropdown>
+      </Drawer>
+    </Header>
       <div style={{ padding: "2%" }}>
         <Layout>
           <Content
@@ -586,6 +622,14 @@ const DashBoardPage = () => {
                   element={
                     <PrivateRoute>
                       <PPDonHang/>
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="phieu-in"
+                  element={
+                    <PrivateRoute>
+                      <ListPhieu/>
                     </PrivateRoute>
                   }
                 />

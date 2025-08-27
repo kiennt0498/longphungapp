@@ -13,7 +13,7 @@ public interface PhanPhoiDonHangRepository extends JpaRepository<PhanPhoiDonHang
     @Query("select p from PhanPhoiDonHang p where p.xuong.id = ?1 and p.khu.id is not null")
     List<PhanPhoiDonHang> findByXuong_IdAndKhu_IdNotNull(Integer id);
 
-
+    PhanPhoiDonHang findByDonHang_MaDonHang(String maDonHang);
 
 
 }

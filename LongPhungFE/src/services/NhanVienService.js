@@ -35,4 +35,7 @@ export default class NhanVienSerivce {
             params : { type : choose, keyword : key}
         })
     }
+    getNhanVienInPhieu = async () =>{
+        return await axiosClient.get(API_NHAN_VIEN + "/nvinphieu")
+    }
 }

@@ -113,6 +113,13 @@ public class ImageService {
         }
     }
 
+    public Images findByTenTep(String name){
+        return dao.findByTenTep(name);
+    }
+
+    public Images saveImg(Images img){
+        return dao.save(img);
+    }
 
 
 }

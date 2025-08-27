@@ -199,4 +199,13 @@ public class NhanVienService {
         return khuRepository.findAll();
     }
 
+    public List<NhanVien> getNhanVienInPhieu(){
+        var listBP = getBoPhanAll();
+        var id = listBP.stream()
+                .filter(i -> i.getTen().equalsIgnoreCase("In phiếu"))
+                .findFirst()
+                .map(BoPhan::getId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bộ phận 'In phiếu'"));
+        return dao.findByBoPhan_Id(id);
+    }
 }

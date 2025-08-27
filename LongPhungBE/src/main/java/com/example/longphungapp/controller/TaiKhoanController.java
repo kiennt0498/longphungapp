@@ -36,4 +36,10 @@ public class TaiKhoanController {
     public ResponseEntity lichSuLamViec(@RequestBody ResLichSuDto dto){
         return ResponseEntity.ok(nhanVienService.getLichSu(dto));
     }
+
+    @GetMapping("listxuong")
+    public ResponseEntity getListXuong(){ return ResponseEntity.ok(nhanVienService.getXuongAll());}
+
+    @GetMapping("listkhu")
+    public ResponseEntity getListKhu(){ return ResponseEntity.ok(nhanVienService.getKhuAll());}
 }

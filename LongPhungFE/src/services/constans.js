@@ -13,3 +13,4 @@ export const API_KHO = `${API_BASE}/api/v1/kho`;
 export const API_ACC = `${API_BASE}/api/v1/acc`;
 export const API_AUTH = `${API_BASE}/api/v1/auth`;
 export const API_THONG_KE = `${API_BASE}/api/v1/thongke`;
+export const API_PHIEU_IN = `${API_BASE}/api/v1/phieu-in`;

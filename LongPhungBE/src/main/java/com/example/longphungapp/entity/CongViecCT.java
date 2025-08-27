@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -52,4 +53,13 @@ public class CongViecCT {
     @Column(name = "tac_vu")
     private TacVu tacVu;
 
+    @Column(name = "ngay_tao")
+    private LocalDateTime ngayTao;
+
+    @PrePersist
+    public void prePersist() {
+       LocalDateTime now = LocalDateTime.now();
+       ngayTao = now;
+
+    }
 }

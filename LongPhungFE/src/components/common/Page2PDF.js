@@ -11,6 +11,9 @@ const Page2PDF = ({ nguyenLieu = [], congDoan = [] }) => {
     _id: `${item.tenCongDoan}-${index}`,
   }));
 
+  console.log("congDoanWithId", congDoanWithId);
+  
+
   const nguyenLieuColumns = [
     { title: "Tên nguyên liệu", dataIndex: "ten" },
     {
@@ -58,7 +61,7 @@ const Page2PDF = ({ nguyenLieu = [], congDoan = [] }) => {
       },
     },
     { title: "Hao hụt máy móc", dataIndex: "khauHaoMay" },
-    { title: "Công nhân viên", dataIndex: "congNV" },
+    { title: "Công nhân viên", dataIndex: "congNV", render: (_, record) => {return formatCurrency(record.congNV * record.loiNhuan)} },
     {
       title: "Số lượng",
       dataIndex: "soLuong",
@@ -71,7 +74,8 @@ const Page2PDF = ({ nguyenLieu = [], congDoan = [] }) => {
         const gia =
           record.giaMuaNguyenLieu +
           record.heSoThuMua * (record.dai * record.rong);
-        return formatCurrency(gia * record.loiNhuan * (record.soLuong || 0));
+          const congNV = record.congNV * (record.soLuong || 1) * record.loiNhuan;
+        return formatCurrency(gia * record.loiNhuan * (record.soLuong || 1) + congNV);
       },
     },
   ];
@@ -127,14 +131,18 @@ const Page2PDF = ({ nguyenLieu = [], congDoan = [] }) => {
             <Table.Summary.Cell>
               {formatCurrency(
                 congDoanWithId.reduce((total, item) => {
-                  const soLuong = item.soLuong || 0;
+                  
+                  const soLuong = item.soLuong || 1;
                   const giaMua = item.giaMuaNguyenLieu || 0;
                   const heSo = item.heSoThuMua || 0;
                   const dai = item.dai || 0;
                   const rong = item.rong || 0;
                   const loiNhuan = item.loiNhuan || 1;
                   const gia = giaMua + heSo * (dai * rong);
-                  return total + soLuong * gia * loiNhuan;
+                  const congNV = item.congNV * loiNhuan;
+                  
+                  const congNVTotal = congNV * soLuong ;
+                  return total + soLuong * gia * loiNhuan + congNVTotal;
                 }, 0)
               )}
             </Table.Summary.Cell>

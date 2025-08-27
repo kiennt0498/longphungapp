@@ -14,6 +14,7 @@ import ModalHuyDon from "./ModalHuyDon";
 import ImageService from "../../services/ImageService";
 import { useNavigate } from "react-router-dom";
 import DonGuiPhieu from "./DonGuiPhieu";
+import PhieuInService from "../../services/PhieuInService";
 
 const DonHangList = () => {
   const [listTK, setListTK] = useState([]);
@@ -39,6 +40,7 @@ const DonHangList = () => {
   const stompClient = useRef(null);
   const service = useMemo(() => new DonHangService(), []);
   const imgService = useMemo(() => new ImageService(), []);
+  const phieuInService = useMemo(() => new PhieuInService(), []);
 
   const updateList = useCallback((msg, setList, setCount) => {
     try {
@@ -56,11 +58,12 @@ const DonHangList = () => {
       webSocketFactory: () => socket,
       onConnect: () => {
         const subs = [
-          ["/topic/donhang", setListTK, setCountTK],
-          [`/topic/donchoduyet/${maNV}`, setListCD, setCountCD],
-          [`/topic/donduyet/${maNV}`, setListXN, setCountXN],
+          // ["/topic/donhang", setListTK, setCountTK],
+          // [`/topic/donchoduyet/${maNV}`, setListCD, setCountCD],
+          // [`/topic/donduyet/${maNV}`, setListXN, setCountXN],
           [`/topic/donhoanthanh/${maNV}`, setListHT, setCountHT],
           [`/topic/donhuy/${maNV}`, setListHuy, setCountHuy],
+          [`/topic/donPhieu/${maNV}`, setListGuiPhieu, setCountPhieu],
         ];
 
         subs.forEach(([topic, setList, setCount]) => {
@@ -69,7 +72,10 @@ const DonHangList = () => {
           );
         });
 
-        ["getDonHang", "getDonChoDuyet", "getDonDuyet", "getDonHT", "getDonHuy"].forEach(dest => {
+        // ["getDonHang", "getDonChoDuyet", "getDonDuyet", "getDonHT", "getDonHuy"].forEach(dest => {
+        //   stompClient.current.publish({ destination: `/app/${dest}`, body: maNV });
+        // });
+        ["getDonHT", "getDonHuy", "getDonPhieu"].forEach(dest => {
           stompClient.current.publish({ destination: `/app/${dest}`, body: maNV });
         });
       },
@@ -89,13 +95,29 @@ const DonHangList = () => {
     return () => stompClient.current?.deactivate();
   }, [maNV, updateList]);
 
-  console.log("List TK:", listTK);
-  console.log("List CD:", listCD);
-  console.log("List XN:", listXN);
+  // console.log("List TK:", listTK);
+  // console.log("List CD:", listCD);
+  // console.log("List XN:", listXN);
   console.log("List HT:", listHT);
   console.log("List Huy:", listHuy);
   console.log("List Gui Phieu:", listGuiPhieu);
   
+  const handleGuiPhieu = async (data) => {
+    console.log("data gui phieu", data);
+    
+    await phieuInService.createPhieuIn(data)
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success("Gửi phiếu in thành công!");
+        } else {
+          toast.error("Gửi phiếu in thất bại!");
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi khi gửi phiếu in:", err);
+        toast.error("Gửi phiếu in thất bại!");
+      });   
+  }
 
   const showModalHuy = useCallback((id) => { setIdHuy(id); setOpenHuy(true); }, []);
   const closeModalHuy = useCallback(() => setOpenHuy(false), []);
@@ -136,27 +158,27 @@ const DonHangList = () => {
     new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount), []);
 
   const tabLabels = useMemo(() => ({
-    tk: <span>Đơn chờ thiết kế {countTK > 0 && <Badge count={countTK} overflowCount={99} />}</span>,
-    cd: <span>Đơn chờ duyệt {countCD > 0 && <Badge count={countCD} overflowCount={99} />}</span>,
-    xn: <span>Đơn chờ thanh toán {countXN > 0 && <Badge count={countXN} overflowCount={99} />}</span>,
+    // tk: <span>Đơn chờ thiết kế {countTK > 0 && <Badge count={countTK} overflowCount={99} />}</span>,
+    // cd: <span>Đơn chờ duyệt {countCD > 0 && <Badge count={countCD} overflowCount={99} />}</span>,
+    // xn: <span>Đơn chờ thanh toán {countXN > 0 && <Badge count={countXN} overflowCount={99} />}</span>,
     ht: <span>Đơn hoàn thành {countHT > 0 && <Badge count={countHT} overflowCount={99} />}</span>,
     huy: <span>Đơn bị hủy {countHuy > 0 && <Badge count={countHuy} overflowCount={99} />}</span>,
     phieu: <span>Gửi phiếu in {countPhieu > 0 && <Badge count={countPhieu} overflowCount={99} />}</span>,
   }), [countTK, countCD, countXN, countHT, countHuy, countPhieu]);
 
   const tabsItems = useMemo(() => [
-    { key: "1", label: tabLabels.tk, children: <DonHangTabsTK listTK={listTK} format={formatCurrency} /> },
-    { key: "2", label: tabLabels.cd, children: <DonHangTabsCD listCD={listCD} format={formatCurrency} handleLamLai={handleLamLai} handleDuyetSP={handleDuyetSP} /> },
-    { key: "3", label: tabLabels.xn, children: <DonHangTabsXN listXN={listXN} format={formatCurrency} showModalHuy={showModalHuy} /> },
-    { key: "4", label: tabLabels.ht, children: <DonHangtabsHT listHT={listHT} format={formatCurrency} showModalHuy={showModalHuy} /> },
-    { key: "5", label: tabLabels.phieu, children: <DonGuiPhieu listHuy={listGuiPhieu} format={formatCurrency} /> },
+    // { key: "1", label: tabLabels.tk, children: <DonHangTabsTK listTK={listTK} format={formatCurrency} /> },
+    // { key: "2", label: tabLabels.cd, children: <DonHangTabsCD listCD={listCD} format={formatCurrency} handleLamLai={handleLamLai} handleDuyetSP={handleDuyetSP} /> },
+    // { key: "3", label: tabLabels.xn, children: <DonHangTabsXN listXN={listXN} format={formatCurrency} showModalHuy={showModalHuy} /> },
+    { key: "4", label: tabLabels.phieu, children: <DonGuiPhieu listGuiPhieu={listGuiPhieu} format={formatCurrency} handleGuiPhieu={handleGuiPhieu} handleCancel={closeModalHuy}/> },
+    { key: "5", label: tabLabels.ht, children: <DonHangtabsHT listHT={listHT} format={formatCurrency} showModalHuy={showModalHuy} /> },
     { key: "6", label: tabLabels.huy, children: <DonHangTabsHuy listHuy={listHuy} format={formatCurrency} /> },
     
   ], [tabLabels, listTK, listCD, listXN, listHT, listHuy, listGuiPhieu, formatCurrency, handleLamLai, handleDuyetSP, showModalHuy]);
 
   return (
     <>
-      <Tabs type="card" defaultActiveKey="1" items={tabsItems} />
+      <Tabs type="card" defaultActiveKey="4" items={tabsItems} />
       <ModalHuyDon openHuy={openHuy} onCancel={closeModalHuy} onComfirm={handleHuyDon} form={form} />
     </>
   );

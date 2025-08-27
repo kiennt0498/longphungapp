@@ -1,0 +1,67 @@
+.CongViec {
+  // List item căn giữa
+  .ant-list-item {
+    display: flex;
+    justify-content: center;
+  }
+
+  // Card của mỗi job
+  .job-card {
+    width: 100%;
+    max-width: 320px; // giới hạn desktop
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    // Phần button trong card
+    .job-card-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      button {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  // Responsive breakpoints
+  @media (max-width: 768px) {
+    // Tablet: 2 cột
+    .ant-list-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 576px) {
+    // Mobile: 1 cột full width
+    .ant-list-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .job-card {
+      max-width: 100%;
+    }
+
+    // Modal full screen
+    .ant-modal {
+      width: 100% !important;
+      max-width: 100%;
+      margin: 0;
+      top: 0;
+      padding: 0;
+
+      .ant-modal-content {
+        border-radius: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .ant-modal-body {
+        flex: 1;
+        overflow-y: auto;
+      }
+    }
+  }
+}

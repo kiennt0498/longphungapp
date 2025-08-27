@@ -11,6 +11,7 @@ public enum TrangThai {
      CHO_XAC_NHAN("Chờ xác nhận"),
      CHO_THANH_TOAN("Chờ thanh toán"),
      CHO_VAN_CHUYEN("Chờ vận chuyển"),
+     CHO_GUI_PHIEU("Chờ gửi phiếu"),
      NGUNG_SAN_XUAT("Ngừng sản xuất"),
      DA_GIAO("Đã giao"),
      CHO_XAC_NHAN_CHIA("Chờ xác nhận chia nhỏ"), // đang chờ QL khu xác nhận chia nhỏ

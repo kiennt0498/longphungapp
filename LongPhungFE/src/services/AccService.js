@@ -16,6 +16,13 @@ export default class AccService  {
     getListCV = async (data) =>{
         return await axiosClient.post(API_ACC+"/listcv",data)
     }
+
+    getListXuong = async () =>{
+        return await axiosClient.get(API_ACC+"/listxuong")
+    }
+    getListKhu = async () =>{
+        return await axiosClient.get(API_ACC+"/listkhu")
+    }
     
 
 }

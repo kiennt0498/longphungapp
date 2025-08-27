@@ -32,4 +32,11 @@ export default class DonHangService {
   createDonAo = async (data) => {
     return await axiosClient.post(API_HOA_DON + "/createDonAo",data);
   };
+  setPhanPhoi = async (data) => {
+    return await axiosClient.post(API_HOA_DON + "/setPhanPhoi", data);
+  }
+  getDonPhieu = async (id) => {
+    return await axiosClient.get(API_HOA_DON + "/getDonGuiPhieu/"+id);
+  }
+
 }

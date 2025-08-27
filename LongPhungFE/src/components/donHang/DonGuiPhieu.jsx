@@ -1,8 +1,11 @@
-import { List, Modal } from 'antd';
-import React, { useEffect, useState } from 'react'
-import JobCard from '../common/JobCard';
-import { API_FILE } from '../../services/constans';
-import ModalExcel from '../common/ModalExcel';
+import { List, Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import JobCard from "../common/JobCard";
+import { API_FILE } from "../../services/constans";
+import ModalExcel from "../common/ModalExcel";
+import ModalGuiPhieu from "./ModalGuiPhieu";
+import DonHangService from "../../services/DonHangService";
+import NhanVienSerivce from "../../services/NhanVienService";
 
 function DonGuiPhieu({
   listGuiPhieu,
@@ -11,23 +14,42 @@ function DonGuiPhieu({
   isModalOpen,
   setIsUpload,
   setFileUp,
-
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [congViec, setCongViec] = useState({});
-  const [isChecked, setIsChecked] = useState(true);
+  const [dataDon, setDataDon] = useState({});
+  const [nhanViens, setNhanViens] = useState([]);
+  const [isChecked, setIsChecked] = useState(false);
+
+  const getData = async (data) => {
+    try {
+      const service = new DonHangService();
+      const serverNV = new NhanVienSerivce();
+      const res = await service.getDonPhieu(data);
+      const resNV = await serverNV.getNhanVienInPhieu();
+      if (resNV && resNV.data) {
+        setNhanViens(resNV.data);
+      }
+      if (res && res.data) {
+        setCongViec(res.data);
+      }
+    } catch (error) {
+      console.log("Error fetching data:", error);
+    }
+  };
 
   const showModal = (data) => {
+    getData(data.maDonHang);
+    setDataDon(data);
     setIsOpen(true);
-    setCongViec(data);
   };
 
   useEffect(() => {
-  const tacVu = localStorage.getItem("tacVu");
-  if (tacVu === "THIET_KE") {
-    setIsChecked(false);
-  }
-}, []);
+    const tacVu = localStorage.getItem("tacVu");
+    if (tacVu === "THIET_KE") {
+      setIsChecked(false);
+    }
+  }, []);
 
   const cancel = () => {
     setIsOpen(false);
@@ -43,11 +65,10 @@ function DonGuiPhieu({
             <JobCard
               item={i}
               showButton={true}
-              onButtonClick={handleGuiPhieu}
-              onButtonClick2={showModal}
-              textButton="Nộp việc"
-              textButton2="Hoàn đơn"
+              onButtonClick={() => showModal(i)}
+              textButton="Gửi phiếu"
               showButton2={isChecked}
+              showTime={true}
             />
           </List.Item>
         )}
@@ -59,16 +80,15 @@ function DonGuiPhieu({
         isUpload={() => setIsUpload(true)}
         setFileUp={setFileUp}
       />
-      <Modal
-        open={isOpen}
-        title="Chia đơn"
-        onCancel={cancel}
-        footer={true}
-      >
-    
-      </Modal>
+      <ModalGuiPhieu
+        openPhieu={isOpen}
+        setOpenPhieu={setIsOpen}
+        handleGuiPhieu={handleGuiPhieu}
+        congViec={congViec}
+        nhanViens={nhanViens}
+      />
     </>
   );
 }
 
-export default DonGuiPhieu
+export default DonGuiPhieu;

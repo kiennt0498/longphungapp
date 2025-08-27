@@ -20,12 +20,12 @@ public interface DonHangRepository extends JpaRepository<DonHang, Long> {
     @Query("select ct.donHang from DonHangCT ct where ct.id = ?1")
     DonHang findByDonHangCT_Id(Long id);
 
-    @Query("select pp.donHang from PhanPhoiDonHang pp where pp.xuong = ?1 and pp.donHang.trangThai = 'CHO_SAN_XUAT'")
-    List<DonHang> findBy_Xuong(Xuong xuong);
+    @Query("select pp.donHang from PhanPhoiDonHang pp where pp.xuong.id = ?1 and pp.khu.id is null and pp.donHang.trangThai = 'CHO_SAN_XUAT'")
+    List<DonHang> findBy_Xuong(Integer xuong);
 
-    @Query("select pp.donHang from PhanPhoiDonHang pp where pp.xuong= ?1 and pp.khu = ?2 ")
-    List<DonHang> findBy_XuongAndKhu(Xuong xuong, Khu khu);
+    @Query("select pp.donHang from PhanPhoiDonHang pp where pp.xuong.id = ?1 and pp.khu.id = ?2 ")
+    List<DonHang> findBy_XuongAndKhu(Integer xuong, Integer khu);
 
     @Query("select pp.donHang from PhanPhoiDonHang pp where pp.xuong.id = ?1 and pp.donHang.trangThai = 'CHO_VAN_CHUYEN'")
-    List<DonHang> findByXuong_Id(Integer xuongId);
+    List<DonHang> findDonHTByXuong_Id(Integer xuongId);
 }
